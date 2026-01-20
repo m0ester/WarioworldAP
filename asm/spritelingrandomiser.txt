@@ -1,0 +1,63 @@
+#spriteling randomiser decoupler
+#801ce3x4 is spritelings collected, where x is the stageID + 0xb (b is greenhorn forest, boss stages included but don't have any)
+#801ce3d8 is pointer to custom spriteling collected checks value, USE BYTEWISE
+
+__________________________________________________________________________
+
+#decouples check from spriteling itself
+#og inst 
+#lhz r3, 0x10(r3)
+
+#insert at 
+80030a88
+
+#generate stage ID using bullshit
+srwi r3, r3, 4
+subi r3, r3, 0x3a
+extsb r3, r3
+#stage ID in r3, filter out boss stages
+li r16, 3
+divw r16, r3, r16
+sub r3, r3, r16
+#stage index now in r3
+#load check pointer
+lis r16, 0x801c
+ori r16, r16, 0xe3d8
+#load check instead of actual collected
+lbzx r3, r16, r3
+
+____________________________________________________________________________
+
+#store spriteling check instead of spriteling
+#r4 we will use to generate stage ID using bullshit
+#og inst 
+#sth r0, 0x10(r4)
+#insert at
+80030a54
+#generate stage ID using bullshit
+srwi r4, r4, 4
+subi r4, r4, 0x3a
+extsb r4, r4
+#stage ID in r4, filter out boss stages
+li r16, 3
+divw r16, r4, r16
+sub r4, r4, r16
+#stage index now in r4
+#load check pointer
+lis r16, 0x801c
+ori r16, r16, 0xe3d8
+#store check instead of actual collected
+stbx r0, r16, r4
+
+___________________________________________________________________________
+#random spriteling reward
+
+
+
+
+
+
+
+
+
+

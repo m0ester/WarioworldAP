@@ -1,0 +1,48 @@
+#Treasure Randomiser Decoupler
+#801ce3x8 is Treasures collected, where x is the stageID + 0xb (b is greenhorn forest, boss stages included but don't have any, we are using them as memory for checks)
+#801ce408 is pointer to custom treasure collected checks value, USE BYTEWISE
+______________________________________________________
+#decouples check from treasure itself
+#og inst
+lhz r4, 0x14(r5)
+#insert at 
+800309d4
+
+#generate stage ID using bullshit
+srwi r5, r5, 4
+subi r5, r5, 0x3a
+extsb r5, r5
+
+#stage ID in r5, filter out boss stages
+li r4, 3
+divw r4, r5, r4
+sub r5, r5, r4
+#stage index now in r5
+#load check pointer
+#load check pointer
+lis r5, 0x801c
+ori r5, r5, 0xe408
+#load check instead of actual collected
+lbzx r4, r5, r4
+
+______________________________________________________
+#store treasure check instead of treasure
+#og inst
+sth r0, 0x14(r5)
+#insert at 
+8003099c
+
+#generate stage ID using bullshit
+srwi r5, r5, 4
+subi r5, r5, 0x3a
+extsb r5, r5
+#stage ID in r5, filter out boss stages
+li r15, 3
+divw r15, r5, r15
+sub r5, r5, r16
+#stage index now in r5
+#load check pointer
+lis r15, 0x801c
+ori r15, r15, 0xe408
+#store check instead of actual collected
+stbx r0, r15, r5

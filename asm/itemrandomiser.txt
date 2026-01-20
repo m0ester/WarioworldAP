@@ -1,0 +1,6 @@
+#item randomiser decoupler
+#these codes check separate memory to see if u've collected the "check" instead of the "item" for treasures
+#r9 has check ID
+#r4 has item ID in bitfield form
+#insert at
+800309d4

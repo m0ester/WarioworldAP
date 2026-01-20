@@ -1,0 +1,37 @@
+#boss randomiser decoupler
+#801ce3ac is bosses beaten medals
+#801ce3d0 is our custom boss check flags in savefile
+#801ce478 is stage door unlocker
+
+#r3 free
+80030440
+#load from savefile memory
+lis r3, 0x801d
+lhz r15, -0x1c30(r3)
+#store in stagedoor unlocker memory
+sth r15, -0x1b88(r3)
+#og inst
+bctrl
+
+______________________________________________________________________________
+#decouples check from boss itself
+0403091c b006002e
+040e090c a0a6002e
+
+______________________________________________________________________________
+#saves over rel instruction to fix cutscene forcing open a door
+#r4, r5 free
+#insert at
+8004af40
+mflr r5
+srwi r5, r5, 16
+andi. r5, r5, 0x9f
+cmpwi r5, 0x9f
+bne END
+#if in rel, replace instruction
+lis r5, 0x80a0
+lis r4, 0x6000
+stw r4, -0x7afc(r5)
+END:
+#og inst
+li r5, 0

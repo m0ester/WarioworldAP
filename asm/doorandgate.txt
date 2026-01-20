@@ -1,0 +1,11 @@
+#insertion
+80a12838
+#r5 free
+#og inst
+lbz r0, 0x10(r4)
+#load stage 2 of world and compare
+lbz r5, 0x50(r4)
+or r0, r5, r0
+#load stage 3 of world and compare
+lbz r5, 0x90(r4)
+or r0, r5, r0
