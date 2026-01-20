@@ -12,6 +12,7 @@ class PlayerInfo():
     Kills_w = +0x8
     Medals_bh = +0xc
     #custom addresses
+    DoorsOpened_bh = +0x30
     BossesBeat_bh = +0x32
     
 class StageInfo():
@@ -33,26 +34,26 @@ class StageInfo():
     RDF = Red Diamond Fragments
     RDFU = Red Diamond Fragments Used
     C for checks"""
-    BRC = 0x0
-    Sprite = 0x4
-    GSF = 0x6
-    Treasure = 0x8
-    RDF = 0xa
-    RDFU = 0xc
+    BRC = +0x0
+    Sprite = +0x4
+    GSF = +0x6
+    Treasure = +0x8
+    RDF = +0xa
+    RDFU = +0xc
 
     #custom addresses
     SpriteC = 0x801ce3d8
-    GSFC
+    GSFC = 0x801ce400
     TreasureC = 0x801ce408
-    RDFC
+    RDFC = 0x801ce430
 
-    
     #custom offsets
-    GFC = 0X0
-    GRC = 0X1
-    HMC = 0X2
-    WCC = 0X3
-    SMC = 0X4
-    BWC = 0X5
-    MMC = 0X6
-    PSC = 0X7
+    """all bitfield bytes"""
+    GFC = +0X0
+    GRC = +0X1
+    HMC = +0X2
+    WCC = +0X3
+    SMC = +0X4
+    BWC = +0X5
+    MMC = +0X6
+    PSC = +0X7

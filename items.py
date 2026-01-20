@@ -2,7 +2,7 @@ from typing import Any, NamedTuple, TYPE_CHECKING
 
 
 class WwItem(Item):
-    game: = str"Warioworld"
+    game = str:"Warioworld"
 	
 class ItemType(Enum):
 	SPRITELING = 0
