@@ -1,0 +1,78 @@
+from typing import NamedTuple
+
+class Treasure(NamedTuple):
+    """loc is vanilla location, Cloc is check location"""
+    loc: int
+    value: int
+    name: str
+    Cloc: int
+
+
+
+
+Treasures = [
+    Treasure(0x801ce3b8,	1,	"Ruby",	0x801ce408),
+    Treasure(0x801ce3b8,	2,	"Opal",	0x801ce408),
+    Treasure(0x801ce3b8,	4,	"Amethyst",	0x801ce408),
+(0x801ce3b8,	8,	"Amber",	0x801ce408),
+(0x801ce3b8,	10,	"Sapphire",	0x801ce408),
+(0x801ce3b8,	20,	"Topaz",	0x801ce408),
+(0x801ce3b8,	40,	"Emerald",	0x801ce408),
+(0x801ce3b8,	80,	"Diamond",	0x801ce408),
+(0x801ce3c8,	1,	"Porcelain Urn",	0x801ce409),
+(0x801ce3c8,	2,	"Fine China",	0x801ce409),
+(0x801ce3c8,	4,	"Ceramic Vase",	0x801ce409),
+(0x801ce3c8,	8,	"Teapot",	0x801ce409),
+(0x801ce3c8,	10,	"Vase",	0x801ce409),
+(0x801ce3c8,	20,	"Precious Pot",	0x801ce409),
+(0x801ce3c8,	40,	"Lucky Figurine",	0x801ce409),
+(0x801ce3c8,	80,	"NES",	0x801ce409),
+(0x801ce3e8,	1,	"Candlestick",	0x801ce40a),
+(0x801ce3e8,	2,	"Silver Candlestick",	0x801ce40a),
+(0x801ce3e8,	4,	"Forest Painting",	0x801ce40a),
+(0x801ce3e8,	8,	"Castle Painting",	0x801ce40a),
+(0x801ce3e8,	10,	"Crystal Ball",	0x801ce40a),
+(0x801ce3e8,	20,	"Knight's Helmet",	0x801ce40a),
+(0x801ce3e8,	40,	"Gladiator's Helmet",	0x801ce40a),
+(0x801ce3e8,	80,	"Ornate Bag",	0x801ce40a),
+(0x801ce3f8,	1,	"Bugle",	0x801ce40b),
+(0x801ce3f8,	2,	"Tambourine",	0x801ce40b),
+(0x801ce3f8,	4,	"Triangle",	0x801ce40b),
+(0x801ce3f8,	8,	"Clarinet",	0x801ce40b),
+(0x801ce3f8,	10,	"Trombone",	0x801ce40b),
+(0x801ce3f8,	20,	"Saxophone",	0x801ce40b),
+(0x801ce3f8,	40,	"Drum",	0x801ce40b),
+(0x801ce3f8,	80,	"Nintendo64",	0x801ce40b),
+(0x801ce418,	1,	"Nice Glass",	0x801ce40c),
+(0x801ce418,	2,	"Ancient Chalice",	0x801ce40c),
+(0x801ce418,	4,	"Nice Cup",	0x801ce40c),
+(0x801ce418,	8,	"Ornate Decanter",	0x801ce40c),
+(0x801ce418,	10,	"Glass Decanter",	0x801ce40c),
+(0x801ce418,	20,	"Nice Saucer",	0x801ce40c),
+(0x801ce418,	40,	"Glass Bowl",	0x801ce40c),
+(0x801ce418,	80,	"Jade Box",	0x801ce40c),
+(0x801ce428,	1,	"Nice Goblet",	0x801ce40d),
+(0x801ce428,	2,	"Violin",	0x801ce40d),
+(0x801ce428,	4,	"Earring",	0x801ce40d),
+(0x801ce428,	8,	"Jewelled Sword",	0x801ce40d),
+(0x801ce428,	10,	"Gold Tiara",	0x801ce40d),
+(0x801ce428,	20,	"Nice Sceptre",	0x801ce40d),
+(0x801ce428,	40,	"King's Crown",	0x801ce40d),
+(0x801ce428,	80,	"GameBoy Advance",	0x801ce40d),
+(0x801ce448,	1,	"Big Mirror",	0x801ce40e),
+(0x801ce448,	2,	"Antique Clock",	0x801ce40e),
+(0x801ce448,	4,	"Gold Mirror",	0x801ce40e),
+(0x801ce448,	8,	"Stained Glass",	0x801ce40e),
+(0x801ce448,	10,	"Bronze Mirror",	0x801ce40e),
+(0x801ce448,	20,	"Gold Clock",	0x801ce40e),
+(0x801ce448,	40,	"Gold Pocketwatch",	0x801ce40e),
+(0x801ce448,	80,	"Crazy Glasses",	0x801ce40e),
+(0x801ce458,	1,	"Ancient Ring",	0x801ce40f),
+(0x801ce458,	2,	"Ancient Necklace",	0x801ce40f),
+(0x801ce458,	4,	"Ancient Relief",	0x801ce40f),
+(0x801ce458,	8,	"Small Pyramid",	0x801ce40f),
+(0x801ce458,	10,	"Ancient Bracelet",	0x801ce40f),
+(0x801ce458,	20,	"Anubis Statue",	0x801ce40f),
+(0x801ce458,	40,	"Monarch Mask",	0x801ce40f),
+(0x801ce458,	80,	"Nintendo GameCube",	0x801ce40f),
+]
