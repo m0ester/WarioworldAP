@@ -1,20 +1,17 @@
 from typing import Any, NamedTuple, TYPE_CHECKING
-
-
-class WwItem(Item):
-    game = str:"Warioworld"
+from enum import Enum
+from BaseClassees import ItemClassification as IC
+from gamedata import Treasure, Spriteling, BossMedal, StageDoor
 	
 class ItemType(Enum):
 	SPRITELING = 0
 	TREASURE = 1
 	RED_DIAMOND = 2
 	BOSS_MEDAL = 3
-	ENTRANCE = 4
+	DOOR = 4
 	STATUE_PIECE = 5
 
 class WwItemData(NamedTuple):
-    name: str
-    classification: int
-    address: int
+    type: str
+    classification: IC
     quantity: int
-    item_id: Optional[int]
