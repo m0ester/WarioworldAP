@@ -299,3 +299,24 @@ Bosses_b = [
     BossBeat(200,	"Defeated The Mean Emcee",  113),
     BossBeat(400,	"Defeated Ironsider",   114),
     BossBeat(800,	"Defeated Captain Skull",   115),]
+
+
+class Junk(NamedTuple):
+    value: int
+    name: str
+    ItemID: int
+
+JunkItems = [
+    Junk(+10, "10 coins", 118),
+    Junk(+2, "Garlic", 119),
+]
+
+class Trap(NamedTuple):
+    value = int
+    name = str
+    ItemID: int
+
+TrapItems = [
+    Trap(-10, "Unithorn Attack", 120),
+    Trap(0, "Death Trap",   121),
+]
