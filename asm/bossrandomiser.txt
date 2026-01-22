@@ -14,12 +14,61 @@ sth r15, -0x1b88(r3)
 bctrl
 
 ______________________________________________________________________________
+#rng stage after beating a boss code
+#r3 free. r5 free
+#nop previous line
+04030918 60000000
+#insert at 
+8003091c
+
+#check if boss already beat, if so do nothing
+and. r3, r5, r0
+bne END2
+#store new boss before continuing
+or r0, r5, r0
+#og inst, stores boss medals
+sth r0, 0x8(r6)
+#randomise next stage
+RAND:
+#call rng function
+lis r3, 0x8016
+ori r3, r3, 0x849c
+mtctr r3
+mflr r5
+bctrl
+mtlr r5
+#make output nice
+#12 bosses, so load 10 (all bosses except captain which gets us no doors)
+li r15, 10
+rlwinm r3, r3, 0, 16, 31
+divwu r5, r3, r15
+mullw r5, r5, r15
+sub r3, r3, r5
+#turn integer into bitfield
+li r5, 1
+slw r3, r5, r3
+#load doors unlocked from save
+lis r5, 0x801d
+lhz r5, -0x1c30(r5)
+#compare and reroll if already cleared
+and. r15, r5, r3
+bne RAND
+#otherwise, continue
+or r3, r5, r3
+b END
+
+END:
+#store in savefile memory
+lis r5, 0x801d
+sth r3, -0x1c30(r5)
+END2:
+______________________________________________________________________________
 #decouples check from boss itself
 0403091c b006002e
 040e090c a0a6002e
 
 ______________________________________________________________________________
-#saves over rel instruction to fix cutscene forcing open a door
+#saves over rel instruction to fix cutscene thing
 #r4, r5 free
 #insert at
 8004af40
@@ -35,3 +84,50 @@ stw r4, -0x7afc(r5)
 END:
 #og inst
 li r5, 0
+
+______________________________________________________________________________
+#final boss check set
+#insert at
+80083064
+#load boss max health
+lha r0, 0x12(r3)
+#og inst, load boss current health
+lha r3, 0x10(r3)
+#check if boss has 16 max health (final boss)
+cmpwi r0, 0x10
+bne END
+#check if boss is dead
+cmpwi r3, 0
+bne END
+#if so, set final boss kill flag
+lis r3, 0x801d
+lhz r11, -0x1c2e(r3)
+li r0, 0x1000
+or r11, r0, r11
+sth r11, -0x1c2e(r3)
+li r3, 0
+END:
+
+_______________________________________________________________________________
+
+#RELSHIT DO NOT USE 
+
+#r9 pointer to stage door unlocker
+#initial gameload
+#insert at 
+804b38c0
+
+#load from savefile memory
+lis r15, 0x801d
+lhz r15, -0x1c30(r15)
+#og inst
+sth r15, 0x8(r9)
+
+#r8 pointer to stage door unlocker
+#stage load
+809f3614
+#load from savefile memory
+lis r15, 0x801d
+lhz r15, -0x1c30(r15)
+#og inst
+sth r5, 0x8(r8)
