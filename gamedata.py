@@ -15,6 +15,7 @@ class Treasure(NamedTuple):
     name: str
     ItemID: int
     classification = FILL
+    ItemType = 1
 
 Treasures_h = [
     Treasure(0x801ce3b8,	1,	"Ruby", 1),
@@ -160,6 +161,7 @@ class Spriteling(NamedTuple):
     name: str
     ItemID: int
     classification =  FILL
+    ItemType = 2
 
 Spritelings_h = [
     Spriteling(0x801ce3b4,	1,	"Greenhorn Forest Red Spriteling",  65),
@@ -258,6 +260,7 @@ class BossMedal(NamedTuple):
     name: str
     ItemID: int
     classification = PROG
+    ItemType = 3
 
 BossMedals_h = [
     BossMedal(1,	"Greenfist Boss Medal", 105),
@@ -279,6 +282,7 @@ class StageDoor(NamedTuple):
     name: str
     ItemID: int
     classification = PROG
+    ItemType = 4
 
 Doors_b = [
     StageDoor(1,	"Greenhorn Ruins Door", 117),
@@ -320,6 +324,7 @@ class Junk(NamedTuple):
     name: str
     ItemID: int
     classification = FILL
+    ItemType = 5
 
 JunkItems = [
     Junk(0x801ce3a4,    +50, "50 coins", 128),
@@ -332,6 +337,7 @@ class Trap(NamedTuple):
     name: str
     ItemID: int
     classification = TRAP
+    ItemType = 6
 
 TrapItems = [
     Trap(0x801ce3a4,  -50, "Unithorn Attack", 130),
