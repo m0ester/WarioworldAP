@@ -20,19 +20,19 @@ class FragmentRequirement(Range):
 class SpritelingRequirement(NamedRange):
     """How many spritelings are needed for goal completion
     Plant ending by default, you may change to other endings here
-    Plant 1
-    Wooden 2 or more
-    Stone 11 or more
-    Silver 21 or more
-    Golden 31 or more
-    Treasure all 40
+    Plant: 1
+    Wooden: 2 or more
+    Stone: 11 or more
+    Silver: 21 or more
+    Golden: 31 or more
+    Treasure: all 40
     or set your own!"""
     display_name = "Ending Type"
-    range_start = 1
+    range_start = 0
     range_end = 40
-    default = 1
+    default = 0
     special_range_names = {
-        "plant": 1,
+        "plant": 0,
         "wooden": 2,
         "stone": 11,
         "silver": 21,
