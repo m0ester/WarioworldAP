@@ -8,7 +8,8 @@ import kvui
 from typing import TYPE_CHECKING, Optional, Any
 from CommonClient import ClientCommandProcessor, CommonContext, get_base_parser, gui_enabled, logger, server_loop
 from NetUtils import ClientStatus, NetworkItem
-from gamedata import Spriteling, Treasure, BossMedal, StageDoor, Junk, Trap
+from gamedata import Spriteling, Treasure, BossMedal, StageDoor, Junk, Trap, ITEM_TABLE
+from items import WwItem
 
 
 
@@ -114,14 +115,16 @@ def _give_death(ctx: WwContext) -> None:
         ctx.has_send_death = True
         DME.write_word((0x801c5820) + 0xd8, 0)
 
+
 def _give_item(ctx: WwContext, item_name: str) -> bool:
     if not check_ingame():
         return False
-    
-    if #item is a spriteling, load value in spriteling address, or with spriteling ID, store in spriteling address
+    item_id = ITEM_TABLE[item_name].value
+    if WwItem.type == Spriteling.ItemType: #load value in spriteling address, or with spriteling ID, store in spriteling address
         write_short(Spriteling.loc,
                 read_short(Spriteling.loc)|Spriteling.value)
-        
+
+
 async def give_items(ctx: WwContext) -> None:
     """
     Give the player all outstanding items they have yet to receive.
@@ -133,11 +136,68 @@ async def give_items(ctx: WwContext) -> None:
         # If the item's index is greater than the player's expected index, give the player the item.
         if ctx.last_item_handled < idx:
             # Attempt to give the item and increment the expected index.
-            while not _give_item(ctx, items.data_table[item.item]):
+            while not _give_item(ctx):
                 await asyncio.sleep(0.01)
 
             # Increment the expected index.
             ctx.last_item_handled = idx
+
+async def dolphin_sync_task(ctx: WwContext) -> None:
+    """
+    The task loop for managing the connection to Dolphin.
+
+    While connected, read the emulator's memory to look for any relevant changes made by the player in the game.
+
+    :param ctx: The Wind Waker client context.
+    """
+    logger.info("Starting Dolphin connector. Use /dolphin for status information.")
+    while not ctx.exit_event.is_set():
+        try:
+            if DME.is_hooked() and ctx.dolphin_status == CONNECTION_ESTABLISHED:
+                if not check_ingame():
+                    # Reset the give item array while not in the game.
+                    DME.write_bytes(GIVE_ITEM_ARRAY_ADDR, bytes([0xFF] * ctx.len_give_item_array))
+                    await asyncio.sleep(0.1)
+                    continue
+                if ctx.slot is not None:
+                    if "DeathLink" in ctx.tags:
+                        await check_death(ctx)
+                    await give_items(ctx)
+                else:
+                    if not ctx.auth:
+                        ctx.auth = read_string(SLOT_NAME_ADDR, 0x40)
+                    if ctx.awaiting_rom:
+                        await ctx.server_auth()
+                await asyncio.sleep(0.1)
+            else:
+                if ctx.dolphin_status == CONNECTION_ESTABLISHED:
+                    logger.info("Connection to Dolphin lost, reconnecting...")
+                    ctx.dolphin_status = CONNECTION_LOST
+                logger.info("Attempting to connect to Dolphin...")
+                DME.hook()
+                if DME.is_hooked():
+                    if DME.read_bytes(0x80000000, 6) != b"GWWE01":
+                        logger.info(CONNECTION_REFUSED)
+                        ctx.dolphin_status = CONNECTION_REFUSED
+                        DME.un_hook()
+                        await asyncio.sleep(5)
+                    else:
+                        logger.info(CONNECTION_ESTABLISHED)
+                        ctx.dolphin_status = CONNECTION_ESTABLISHED
+                        ctx.locations_checked = set()
+                else:
+                    logger.info("Connection to Dolphin failed, attempting again in 5 seconds...")
+                    ctx.dolphin_status = CONNECTION_LOST
+                    await ctx.disconnect()
+                    await asyncio.sleep(5)
+                    continue
+        except Exception:
+            DME.un_hook()
+            logger.info("Connection to Dolphin failed, attempting again in 5 seconds...")
+            logger.error(traceback.format_exc())
+            ctx.dolphin_status = CONNECTION_LOST
+            await asyncio.sleep(5)
+            continue
 
 
 def main(connect: Optional[str] = None, password: Optional[str] = None) -> None:
@@ -154,9 +214,9 @@ def main(connect: Optional[str] = None, password: Optional[str] = None) -> None:
         ctx.server_task = asyncio.create_task(server_loop(ctx), name="ServerLoop")
 
         # Runs Universal Tracker's internal generator
-        if tracker_loaded:
-            ctx.run_generator()
-            ctx.tags.remove("Tracker")
+        #if tracker_loaded:
+        #     ctx.run_generator()
+        #     ctx.tags.remove("Tracker")
 
         if gui_enabled:
             ctx.run_gui()
