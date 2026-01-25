@@ -17,7 +17,7 @@ class Treasure(NamedTuple):
     classification = FILL
     ItemType = 1
 
-Treasures_h = [
+Treasures_h: dict = [
     Treasure(0x801ce3b8,	1,	"Ruby", 1),
     Treasure(0x801ce3b8,	2,	"Opal", 2),
     Treasure(0x801ce3b8,	4,	"Amethyst", 3),
@@ -89,7 +89,7 @@ class Chest(NamedTuple):
     loc: int
     CheckID: int
 
-Chests_b = [
+Chests_b: dict = [
     Chest(1,	"Greenhorn Forest Red Chest",	0x801ce408, 1),
     Chest(2,	"Greenhorn Forest Yellow Chest",	0x801ce408, 2),
     Chest(4,	"Greenhorn Forest Chartreuse Chest",	0x801ce408, 3),
@@ -163,7 +163,7 @@ class Spriteling(NamedTuple):
     classification =  FILL
     ItemType = 2
 
-Spritelings_h = [
+Spritelings_h: dict = [
     Spriteling(0x801ce3b4,	1,	"Greenhorn Forest Red Spriteling",  65),
     Spriteling(0x801ce3b4,	2,	"Greenhorn Forest Yellow Spriteling",   66),
     Spriteling(0x801ce3b4,	4,	"Greenhorn Forest Green Spriteling",    67),
@@ -211,7 +211,7 @@ class Cage(NamedTuple):
     loc: int
     CheckID: int
 
-Cages_b = [ 
+Cages_b: dict = [ 
 
     Cage(1,	"Greenhorn Forest Caged Red Spriteling",	0x801ce3d8, 65),
     Cage(2,	"Greenhorn Forest Caged Yellow Spriteling",	0x801ce3d8, 66),
@@ -262,7 +262,7 @@ class BossMedal(NamedTuple):
     classification = PROG
     ItemType = 3
 
-BossMedals_h = [
+BossMedals_h: dict = [
     BossMedal(1,	"Greenfist Boss Medal", 105),
     BossMedal(2,	"Sandworm Boss Medal",  106),
     BossMedal(4,	"DinoMighty Big Key Fragment",  107),
@@ -284,7 +284,7 @@ class StageDoor(NamedTuple):
     classification = PROG
     ItemType = 4
 
-Doors_b = [
+Doors_b: dict = [
     StageDoor(1,	"Greenhorn Ruins Door", 117),
     StageDoor(2,	"DinoMighty's Showdown Door",   118),
     StageDoor(4,	"Horror Manor Door",    119),
@@ -303,7 +303,7 @@ class BossBeat(NamedTuple):
     name: str
     CheckID: int
 
-Bosses_b = [
+Bosses_b: dict = [
     BossBeat(1,	"Defeated Greenfist",   105),
     BossBeat(2,	"Defeated Sandworm",    106),
     BossBeat(4,	"Defeated DinoMighty",  107),
@@ -315,7 +315,8 @@ Bosses_b = [
     BossBeat(0x10,	"Defeated Red-Brief J", 113),
     BossBeat(0x200,	"Defeated The Mean Emcee",  114),
     BossBeat(0x400,	"Defeated Ironsider",   115),
-    BossBeat(0x800,	"Defeated Captain Skull",   116),]
+    BossBeat(0x800,	"Defeated Captain Skull",   116),
+    BossBeat(0x1000,  "Black Jewel Defeated", 117),]
 
 
 class Junk(NamedTuple):
@@ -326,7 +327,7 @@ class Junk(NamedTuple):
     classification = FILL
     ItemType = 5
 
-JunkItems = [
+JunkItems: dict = [
     Junk(0x801ce3a4,    +50, "50 coins", 128),
     Junk(DME.read_word(0x801c5820) + 0xd8, +2, "Garlic", 129),
 ]
@@ -339,8 +340,24 @@ class Trap(NamedTuple):
     classification = TRAP
     ItemType = 6
 
-TrapItems = [
+TrapItems: dict = [
     Trap(0x801ce3a4,  -50, "Unithorn Attack", 130),
     Trap(DME.read_word(0x801c5820) + 0xd8,  0,  "Death Trap",   131),
     Trap(DME.read_word(0x801c5820) + 0xd8,  -2, "Take Damage", 132),
+]
+
+
+ITEM_TABLE: dict = [
+    Spritelings_h,
+    TrapItems,
+    JunkItems,
+    Treasures_h,
+    BossMedals_h,
+    Doors_b,
+]
+
+CHECK_TABLE: dict = [
+    Chests_b,
+    Cages_b,
+    Bosses_b,
 ]
