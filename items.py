@@ -1,39 +1,67 @@
-from typing import Any, NamedTuple, TYPE_CHECKING
+from typing import Any, NamedTuple, TYPE_CHECKING, Optional
 from enum import Enum
+from collections.abc import Iterable
 from BaseClasses import Item, ItemClassification as IC
-import gamedata
+from gamedata import ITEM_TABLE, Spriteling, Junk, Trap, Treasure, BossMedal, StageDoor
+from worlds.AutoWorld import World
 
-PROG = IC.progression
-FILL = IC.filler
-USEF = IC.useful
-SKIP = IC.skip_balancing
-TRAP = IC.trap
+"logic to set progression value of spritelings depending on settings"
+"logic to give player a fixed amount of big keys depending on big keys set"
+def generateItem(items: str | Iterable[str], world: World) -> Item | list[Item]:
+	"""
+    Create items based on their names.
+    Depending on the input, this function can return a single item or a list of items.
 
-class ItemType(Enum):
-	SPRITELING = 0
-	TREASURE = 1
-	RED_DIAMOND = 2
-	BOSS_MEDAL = 3
-	DOOR = 4
-	STATUE_PIECE = 5
-    OTHER = 6
+    :param items: The name or names of the items to create.
+    :param world: The game world.
+    :raises KeyError: If an unknown item name is provided.
+    :return: A single item or a list of items.
+    """
+	ret: list[Item] = []
+	singleton = False
+	if isinstance(items, str):
+		items = [items]
+		singleton = True
+	for item in items:
+		if item in ITEM_TABLE:
+			ret.append(world.create_item(item))
+		else:
+			raise KeyError(f"Unknown item {item}")
 
-class WwItemData(NamedTuple):
-    type: str
-    classification: IC
-    quantity: int
-    address: int = 0
-    item_type: ItemType = ItemType.OTHER
+	return ret[0] if singleton else ret
+
 
 class WwItem(Item):
-	game: str = "Warioworld"
+    """
+    This class represents an item in Warioworld.
 
-	def __init__(self, name: str, player: int, data: WwItemData, classification: Optional[IC] = None) -> None:
-		super().__init__(
-			name,
-			data.classification if classification is None else classification,
-			None if data.code is None else WwItem.get_Apid(data.code),
-		)
-	
-	def get_apID(code: int) -> int:
-		"""retrieve the ap ID"""
+    :param name: The item's name.
+    :param player: The ID of the player who owns the item.
+    :param data: The data associated with this item.
+    :param classification: Optional classification to override the default.
+    """
+
+    game: str = "Warioworld"
+    type: Optional[str]
+
+    def __init__(self, name: str, player: int, data: Spriteling | Junk | Trap | Treasure | BossMedal | StageDoor,	classification: Optional[IC] = None) -> None:
+        super().__init__(
+            name,
+            data.classification if classification is None else classification,
+            None if data.ItemID is None else WwItem.get_apid(data.ItemID),
+            player,
+        )
+
+        self.type = data.ItemType
+        self.item_id = data.value
+
+    @staticmethod
+    def get_apid(code: int) -> int:
+        """
+        Compute the Archipelago ID for the given item code.
+
+        :param code: The unique code for the item.
+        :return: The computed Archipelago ID.
+        """
+        base_id: int = 2322432
+        return base_id + code
