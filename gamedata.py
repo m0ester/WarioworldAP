@@ -316,7 +316,7 @@ Bosses_b: dict = [
     BossBeat(0x200,	"Defeated The Mean Emcee",  114),
     BossBeat(0x400,	"Defeated Ironsider",   115),
     BossBeat(0x800,	"Defeated Captain Skull",   116),
-    BossBeat(0x1000,  "Black Jewel Defeated", 117),]
+    BossBeat(0x1000,  " Defeated Black Jewel", 117),]
 
 
 class Junk(NamedTuple):
