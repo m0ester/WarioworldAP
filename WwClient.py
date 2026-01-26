@@ -104,6 +104,15 @@ async def check_alive() -> bool:
         return True
     return False
 
+async def check_death(ctx: WwContext) -> None:
+    if ctx.slot is not None and check_ingame():
+        if currentHP <= 0:
+            if not ctx.has_send_death and time.time() >= ctx.last_death_link + 3:
+                ctx.has_send_death = True
+                await ctx.send_death(ctx.player_names[ctx.slot] + " ran out of hearts.")
+        else:
+            ctx.has_send_death = False
+
 def _give_death(ctx: WwContext) -> None:
 
     if (
@@ -156,7 +165,7 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
             if DME.is_hooked() and ctx.dolphin_status == CONNECTION_ESTABLISHED:
                 if not check_ingame():
                     # Reset the give item array while not in the game.
-                    DME.write_bytes(GIVE_ITEM_ARRAY_ADDR, bytes([0xFF] * ctx.len_give_item_array))
+                    #DME.write_bytes(GIVE_ITEM_ARRAY_ADDR, bytes([0xFF] * ctx.len_give_item_array))
                     await asyncio.sleep(0.1)
                     continue
                 if ctx.slot is not None:
@@ -164,8 +173,6 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                         await check_death(ctx)
                     await give_items(ctx)
                 else:
-                    if not ctx.auth:
-                        ctx.auth = read_string(SLOT_NAME_ADDR, 0x40)
                     if ctx.awaiting_rom:
                         await ctx.server_auth()
                 await asyncio.sleep(0.1)
