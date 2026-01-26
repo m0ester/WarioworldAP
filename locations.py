@@ -1,7 +1,5 @@
-from typing import NamedTuple, TYPE_CHECKING
-from enum import Enum, Flag
 from BaseClasses import Location
-from gamedata import CHECK_TABLE, Chest, Cage, BossBeat
+from gamedata import Chest, Cage, BossBeat
 
 class WwLocation(Location):
     game: str = "Warioworld"
@@ -16,6 +14,6 @@ class WwLocation(Location):
             self.stage_id = data.name.split()[1:]
         else:
             self.stage_id = data.name.split()[:2]
-        #self.region = self.code
+        self.region = self.stage_id
         self.bit = data.value
         self.address = self.address
