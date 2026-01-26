@@ -32,36 +32,33 @@ def generateItem(items: str | Iterable[str], world: World) -> Item | list[Item]:
 
 
 class WwItem(Item):
-    """
-    This class represents an item in Warioworld.
+	"""
+	This class represents an item in Warioworld.
+	:param name: The item's name.
+	:param player: The ID of the player who owns the item.
+	:param data: The data associated with this item.
+	:param classification: Optional classification to override the default.
+	"""
+	game: str = "Warioworld"
+	type: Optional[str]
 
-    :param name: The item's name.
-    :param player: The ID of the player who owns the item.
-    :param data: The data associated with this item.
-    :param classification: Optional classification to override the default.
-    """
-
-    game: str = "Warioworld"
-    type: Optional[str]
-
-    def __init__(self, name: str, player: int, data: Spriteling | Junk | Trap | Treasure | BossMedal | StageDoor,	classification: Optional[IC] = None) -> None:
-        super().__init__(
+	def __init__(self, name: str, player: int, data: Spriteling | Junk | Trap | Treasure | BossMedal | StageDoor,	classification: Optional[IC] = None) -> None:
+		super().__init__(
             name,
             data.classification if classification is None else classification,
             None if data.ItemID is None else WwItem.get_apid(data.ItemID),
-            player,
-        )
-
-        self.type = data.ItemType
-        self.item_id = data.value
-
-    @staticmethod
+            player,)
+		self.name = data.name
+		self.type = data.ItemType
+		self.item_id = data.value	
+			
+	"""@staticmethod
     def get_apid(code: int) -> int:
-        """
+
         Compute the Archipelago ID for the given item code.
 
         :param code: The unique code for the item.
         :return: The computed Archipelago ID.
-        """
+
         base_id: int = 2322432
-        return base_id + code
+        return base_id + code"""
