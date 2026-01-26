@@ -9,7 +9,10 @@ SKIP = IC.skip_balancing
 TRAP = IC.trap
 
 class Treasure(NamedTuple):
-    """loc is vanilla location"""
+    """loc is vanilla location
+    value is ingame value
+    ItemID is archipelago itemcode
+    """
     loc: int
     value: int
     name: str
@@ -316,8 +319,7 @@ Bosses_b: dict = [
     BossBeat(0x200,	"Defeated The Mean Emcee",  114),
     BossBeat(0x400,	"Defeated Ironsider",   115),
     BossBeat(0x800,	"Defeated Captain Skull",   116),
-    BossBeat(0x1000,  " Defeated Black Jewel", 117),]
-
+    BossBeat(0x1000,  "Defeated Black Jewel", 117),]
 
 class Junk(NamedTuple):
     loc: int
@@ -345,7 +347,6 @@ TrapItems: dict = [
     Trap(DME.read_word(0x801c5820) + 0xd8,  0,  "Death Trap",   131),
     Trap(DME.read_word(0x801c5820) + 0xd8,  -2, "Take Damage", 132),
 ]
-
 
 ITEM_TABLE: dict = [
     Spritelings_h,
