@@ -10,8 +10,7 @@ from CommonClient import ClientCommandProcessor, CommonContext, get_base_parser,
 from NetUtils import ClientStatus, NetworkItem
 from gamedata import Spriteling, Treasure, BossMedal, StageDoor, Junk, Trap, ITEM_TABLE
 from items import WwItem
-
-
+from worlds.stardew_valley.stardew_rule import true_
 
 CONNECTION_REFUSED = (
     "Dolphin failed to connect. Please ensure you are using a Warioworld NTSC ROM. Trying again in 5 seconds..."
@@ -98,6 +97,8 @@ async def check_playable() -> bool:
 async def check_ingame() -> bool:
     if DME.read_word(0x801ce6f4) == 3:
         return False
+    else:
+        return True
 
 async def check_alive() -> bool:
     if check_ingame() and  currentHP != 0:
@@ -123,16 +124,18 @@ def _give_death(ctx: WwContext) -> None:
     ):
         ctx.has_send_death = True
         DME.write_word((0x801c5820) + 0xd8, 0)
-
+    else:
+        ctx.has_send_death = False
 
 def _give_item(ctx: WwContext, item_name: str) -> bool:
     if not check_ingame():
         return False
-    item_id = ITEM_TABLE[item_name].value
-    if WwItem.type == Spriteling.ItemType: #load value in spriteling address, or with spriteling ID, store in spriteling address
-        write_short(Spriteling.loc,
-                read_short(Spriteling.loc)|Spriteling.value)
-
+    else:
+        item_id = ITEM_TABLE[item_name].value
+        if WwItem.type == Spriteling.ItemType: #load value in spriteling address, or with spriteling ID, store in spriteling address
+            write_short(Spriteling.loc,
+                    read_short(Spriteling.loc)|Spriteling.value)
+        return True
 
 async def give_items(ctx: WwContext) -> None:
     """

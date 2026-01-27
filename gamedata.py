@@ -20,7 +20,7 @@ class Treasure(NamedTuple):
     classification = FILL
     ItemType = 1
 
-Treasures_h: dict = [
+Treasures_h: list = [
     Treasure(0x801ce3b8,	1,	"Ruby", 1),
     Treasure(0x801ce3b8,	2,	"Opal", 2),
     Treasure(0x801ce3b8,	4,	"Amethyst", 3),
@@ -92,7 +92,7 @@ class Chest(NamedTuple):
     loc: int
     CheckID: int
 
-Chests_b: dict = [
+Chests_b: list = [
     Chest(1,	"Greenhorn Forest Red Chest",	0x801ce408, 1),
     Chest(2,	"Greenhorn Forest Yellow Chest",	0x801ce408, 2),
     Chest(4,	"Greenhorn Forest Chartreuse Chest",	0x801ce408, 3),
@@ -166,7 +166,7 @@ class Spriteling(NamedTuple):
     classification =  FILL
     ItemType = 2
 
-Spritelings_h: dict = [
+Spritelings_h: list = [
     Spriteling(0x801ce3b4,	1,	"Greenhorn Forest Red Spriteling",  65),
     Spriteling(0x801ce3b4,	2,	"Greenhorn Forest Yellow Spriteling",   66),
     Spriteling(0x801ce3b4,	4,	"Greenhorn Forest Green Spriteling",    67),
@@ -214,8 +214,7 @@ class Cage(NamedTuple):
     loc: int
     CheckID: int
 
-Cages_b: dict = [ 
-
+Cages_b: list = [
     Cage(1,	"Greenhorn Forest Caged Red Spriteling",	0x801ce3d8, 65),
     Cage(2,	"Greenhorn Forest Caged Yellow Spriteling",	0x801ce3d8, 66),
     Cage(4,	"Greenhorn Forest Caged Green Spriteling",	0x801ce3d8, 67),
@@ -258,14 +257,14 @@ Cages_b: dict = [
     Cage(0x10,	"Pecan Way Caged Purple Spriteling",	0x801ce3df, 104),]
 
 class BossMedal(NamedTuple):
-    loc = 0x801ce3ac
     value: int
     name: str
     ItemID: int
     classification = PROG
     ItemType = 3
+    loc = 0x801ce3ac
 
-BossMedals_h: dict = [
+BossMedals_h: list = [
     BossMedal(1,	"Greenfist Boss Medal", 105),
     BossMedal(2,	"Sandworm Boss Medal",  106),
     BossMedal(4,	"DinoMighty Big Key Fragment",  107),
@@ -280,14 +279,14 @@ BossMedals_h: dict = [
     BossMedal(0x800,	"Captain Skull Big Key Fragment",   116),]
 
 class StageDoor(NamedTuple):
-    loc = 0x801ce3d0
     value: int
     name: str
     ItemID: int
     classification = PROG
     ItemType = 4
+    loc = 0x801ce3d0
 
-Doors_b: dict = [
+Doors_b: list = [
     StageDoor(1,	"Greenhorn Ruins Door", 117),
     StageDoor(2,	"DinoMighty's Showdown Door",   118),
     StageDoor(4,	"Horror Manor Door",    119),
@@ -301,12 +300,12 @@ Doors_b: dict = [
     StageDoor(0x400,	"Captain Skull's Showdown Door",    127),]
 
 class BossBeat(NamedTuple):
-    loc = 0x801ce3d2
     value: int
     name: str
     CheckID: int
+    loc = 0x801ce3d2
 
-Bosses_b: dict = [
+Bosses_b: list = [
     BossBeat(1,	"Defeated Greenfist",   105),
     BossBeat(2,	"Defeated Sandworm",    106),
     BossBeat(4,	"Defeated DinoMighty",  107),
@@ -329,7 +328,7 @@ class Junk(NamedTuple):
     classification = FILL
     ItemType = 5
 
-JunkItems: dict = [
+JunkItems: list = [
     Junk(0x801ce3a4,    +50, "50 coins", 128),
     Junk(DME.read_word(0x801c5820) + 0xd8, +2, "Garlic", 129),
 ]
@@ -342,13 +341,13 @@ class Trap(NamedTuple):
     classification = TRAP
     ItemType = 6
 
-TrapItems: dict = [
+TrapItems: list = [
     Trap(0x801ce3a4,  -50, "Unithorn Attack", 130),
     Trap(DME.read_word(0x801c5820) + 0xd8,  0,  "Death Trap",   131),
     Trap(DME.read_word(0x801c5820) + 0xd8,  -2, "Take Damage", 132),
 ]
 
-ITEM_TABLE: dict = [
+ITEM_TABLE: list = [
     Spritelings_h,
     TrapItems,
     JunkItems,
@@ -357,7 +356,7 @@ ITEM_TABLE: dict = [
     Doors_b,
 ]
 
-CHECK_TABLE: dict = [
+CHECK_TABLE: list = [
     Chests_b,
     Cages_b,
     Bosses_b,

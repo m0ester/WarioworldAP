@@ -1,5 +1,4 @@
 import os
-from base64 import b64encode
 from collections.abc import Mapping
 from dataclasses import fields
 from typing import Any, ClassVar
@@ -14,11 +13,11 @@ from worlds.AutoWorld import WebWorld, World
 from worlds.generic.Rules import add_item_rule
 from worlds.LauncherComponents import Component, SuffixIdentifier, Type, components, launch_subprocess
 
-from .items import WwItem
+from worlds.WarioworldAP.items import WwItem
 from .locations import WwLocation
 from .gamedata import CHECK_TABLE, ITEM_TABLE
-from .Options import WwOptions
-from .Rules import set_rules
+from .Settings import WwOptions
+#from .Rules import set_rules
 
 def run_client() -> None:
     """
@@ -27,12 +26,12 @@ def run_client() -> None:
     print("Running Warioworld Client")
     from .WwClient import main
 
-    launch_subprocess(main, name="TheWindWakerClient")
+    launch_subprocess(main, name="WarioworldClient")
 
 
 components.append(
     Component(
-        "Warioworld Client", func=run_client, component_type=Type.CLIENT, file_identifier=SuffixIdentifier(".apww")
+        "Warioworld Client", func=run_client, component_type=Type.CLIENT
     )
 )
 
@@ -56,7 +55,7 @@ class WwWorld(World):
 
     origin_region_name: str = "Overworld"
 
-    set_rules = set_rules
+    #set_rules = set_rules
 
     def setup_base_regions(self) -> None:
 
@@ -81,7 +80,7 @@ class WwWorld(World):
 
     def create_regions(self) -> None:
         """
-        Create and connect regions for the The Wind Waker world.
+        Create and connect regions for the Warioworld world.
 
         This method first randomizes the charts and picks the required bosses if these options are enabled.
         It then loops through all the world's progress locations and creates the locations, assigning dungeon locations

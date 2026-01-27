@@ -2,7 +2,7 @@ from typing import Any, NamedTuple, TYPE_CHECKING, Optional
 from enum import Enum
 from collections.abc import Iterable
 from BaseClasses import Item, ItemClassification as IC
-from gamedata import ITEM_TABLE, Spriteling, Junk, Trap, Treasure, BossMedal, StageDoor
+from .gamedata import ITEM_TABLE, Spriteling, Junk, Trap, Treasure, BossMedal, StageDoor
 from worlds.AutoWorld import World
 
 "logic to set progression value of spritelings depending on settings"

@@ -40,7 +40,7 @@ class SpritelingRequirement(NamedRange):
         "treasure": 40,}
 
 class StageRandomiser(Choice):
-    "randomises which stages are unlocked instead of opening them one by one, set to on by default"
+    """randomises which stages are unlocked instead of opening them one by one, set to on by default"""
     display_name = "Stage Randomiser"
     option_vanilla = 0
     option_default = 1
