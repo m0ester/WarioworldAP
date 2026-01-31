@@ -8,9 +8,8 @@ import kvui
 from typing import TYPE_CHECKING, Optional, Any
 from CommonClient import ClientCommandProcessor, CommonContext, get_base_parser, gui_enabled, logger, server_loop
 from NetUtils import ClientStatus, NetworkItem
-from gamedata import Spriteling, Treasure, BossMedal, StageDoor, Junk, Trap, ITEM_TABLE
-from items import WwItem
-from worlds.stardew_valley.stardew_rule import true_
+from .gamedata import Spriteling, ITEM_TABLE
+from .items import WwItem, LOOKUP_ID_TO_NAME
 
 CONNECTION_REFUSED = (
     "Dolphin failed to connect. Please ensure you are using a Warioworld NTSC ROM. Trying again in 5 seconds..."
@@ -27,8 +26,9 @@ CONNECTION_ESTABLISHED = (
 CONNECTION_INITIAL = (
     "Dolphin Connection has not been initiated."
 )
-
-currentHP = DME.read_word(DME.follow_pointers(0x801c5820,[0xd8]))
+SLOTNAMEADDR = 0x80000400
+#currentHP = DME.read_word(DME.follow_pointers(0x801c5820,[0xd8]))
+#HPPtr = DME.read_word(0x801c5820)
 
 class WwCommandProcessor(ClientCommandProcessor):
     def __init__(self, ctx:CommonContext):
@@ -50,6 +50,7 @@ class WwContext(CommonContext):
         self.awaiting_rom: bool = False
         self.last_rcvd_index: int = -1
         self.has_send_death: bool = False
+        self.len_give_item_array: int = 0x10
 
     async def disconnect(self, allow_autoreconnect: bool = False) -> None:
         self.auth = None
@@ -81,33 +82,49 @@ class WwContext(CommonContext):
             ui = super().make_gui()
             ui.base_title = "Archipelago Warioworld Client"
             return ui
-    
+
+def currentHP():
+    return DME.read_word(DME.follow_pointers(0x801c5820,[0xd8]))
+
+def HPPtr():
+    return DME.read_word(0x801c5820)
+
 def read_short(console_address: int) -> int:
     return int.from_bytes(DME.read_bytes(console_address, 2), byteorder="big")
-
 
 def write_short(console_address: int, value: int) -> None:
     DME.write_bytes(console_address, value.to_bytes(2, byteorder="big"))
 
+def read_string(console_address: int, strlen: int) -> str:
+    return DME.read_bytes(console_address, strlen).split(b"\0", 1)[0].decode()
+
 async def check_playable() -> bool:
     if DME.read_word(0x801ce6f4) == 0:
-        return False
-    return True
-
-async def check_ingame() -> bool:
-    if DME.read_word(0x801ce6f4) == 3:
         return False
     else:
         return True
 
+def check_ingame() -> bool:
+    if DME.read_word(0x801ce6f0) == 3:
+        return False
+    else:
+        return True
+
+def check_pressstart() -> bool:
+    if DME.read_byte(0x801ef299) == 1:
+        return True
+    else:
+        return False
+
+
 async def check_alive() -> bool:
-    if check_ingame() and  currentHP != 0:
+    if check_ingame() and  currentHP() != 0:
         return True
     return False
 
 async def check_death(ctx: WwContext) -> None:
     if ctx.slot is not None and check_ingame():
-        if currentHP <= 0:
+        if currentHP() <= 0:
             if not ctx.has_send_death and time.time() >= ctx.last_death_link + 3:
                 ctx.has_send_death = True
                 await ctx.send_death(ctx.player_names[ctx.slot] + " ran out of hearts.")
@@ -123,19 +140,19 @@ def _give_death(ctx: WwContext) -> None:
         and check_alive()
     ):
         ctx.has_send_death = True
-        DME.write_word((0x801c5820) + 0xd8, 0)
+        DME.write_word(DME.read_word(0x801c5820) + 0xd8, 0)
     else:
         ctx.has_send_death = False
 
 def _give_item(ctx: WwContext, item_name: str) -> bool:
     if not check_ingame():
         return False
-    else:
-        item_id = ITEM_TABLE[item_name].value
-        if WwItem.type == Spriteling.ItemType: #load value in spriteling address, or with spriteling ID, store in spriteling address
-            write_short(Spriteling.loc,
-                    read_short(Spriteling.loc)|Spriteling.value)
+    for idx in range(ctx.len_give_item_array):
+        item_id = ITEM_TABLE[item_name].item_id
+        address = ITEM_TABLE[item_name].address
+        write_short(address, read_short(address) | item_id)
         return True
+    return False
 
 async def give_items(ctx: WwContext) -> None:
     """
@@ -148,7 +165,7 @@ async def give_items(ctx: WwContext) -> None:
         # If the item's index is greater than the player's expected index, give the player the item.
         if ctx.last_item_handled < idx:
             # Attempt to give the item and increment the expected index.
-            while not _give_item(ctx):
+            while not _give_item(ctx, LOOKUP_ID_TO_NAME[item.item]):
                 await asyncio.sleep(0.01)
 
             # Increment the expected index.
@@ -160,15 +177,13 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
 
     While connected, read the emulator's memory to look for any relevant changes made by the player in the game.
 
-    :param ctx: The Wind Waker client context.
+    :param ctx: Warioworld client context.
     """
     logger.info("Starting Dolphin connector. Use /dolphin for status information.")
     while not ctx.exit_event.is_set():
         try:
             if DME.is_hooked() and ctx.dolphin_status == CONNECTION_ESTABLISHED:
                 if not check_ingame():
-                    # Reset the give item array while not in the game.
-                    #DME.write_bytes(GIVE_ITEM_ARRAY_ADDR, bytes([0xFF] * ctx.len_give_item_array))
                     await asyncio.sleep(0.1)
                     continue
                 if ctx.slot is not None:
@@ -176,6 +191,8 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                         await check_death(ctx)
                     await give_items(ctx)
                 else:
+                    #if not ctx.auth:
+                        #ctx.auth = read_string(SLOTNAMEADDR, 0x40)
                     if ctx.awaiting_rom:
                         await ctx.server_auth()
                 await asyncio.sleep(0.1)
@@ -186,12 +203,14 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                 logger.info("Attempting to connect to Dolphin...")
                 DME.hook()
                 if DME.is_hooked():
+                    print("hooked")
                     if DME.read_bytes(0x80000000, 6) != b"GWWE01":
                         logger.info(CONNECTION_REFUSED)
                         ctx.dolphin_status = CONNECTION_REFUSED
                         DME.un_hook()
                         await asyncio.sleep(5)
                     else:
+                        print("connected")
                         logger.info(CONNECTION_ESTABLISHED)
                         ctx.dolphin_status = CONNECTION_ESTABLISHED
                         ctx.locations_checked = set()
@@ -206,9 +225,9 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
             logger.info("Connection to Dolphin failed, attempting again in 5 seconds...")
             logger.error(traceback.format_exc())
             ctx.dolphin_status = CONNECTION_LOST
+            await ctx.disconnect()
             await asyncio.sleep(5)
             continue
-
 
 def main(connect: Optional[str] = None, password: Optional[str] = None) -> None:
     """
@@ -244,8 +263,8 @@ def main(connect: Optional[str] = None, password: Optional[str] = None) -> None:
             await asyncio.sleep(3)
             await ctx.dolphin_sync_task
 
-    import colorama
+    import colorama as colourama
 
-    colorama.init()
+    colourama.init()
     asyncio.run(_main(connect, password))
-    colorama.deinit()
+    colourama.deinit()
