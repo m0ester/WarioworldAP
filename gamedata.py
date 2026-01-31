@@ -1,5 +1,4 @@
 from typing import NamedTuple
-import dolphin_memory_engine as DME
 from BaseClasses import ItemClassification as IC
 
 PROG = IC.progression
@@ -13,312 +12,309 @@ class Treasure(NamedTuple):
     value is ingame value
     ItemID is archipelago itemcode
     """
-    loc: int
-    value: int
-    name: str
+    memloc: int
+    memvalue: int
     ItemID: int
     classification = FILL
-    ItemType = 1
+    ItemType = "Treasure"
 
-Treasures_h: list = [
-    Treasure(0x801ce3b8,	1,	"Ruby", 1),
-    Treasure(0x801ce3b8,	2,	"Opal", 2),
-    Treasure(0x801ce3b8,	4,	"Amethyst", 3),
-    Treasure(0x801ce3b8,	8,	"Amber",    4),
-    Treasure(0x801ce3b8,	0x10,	"Sapphire", 5),
-    Treasure(0x801ce3b8,	0x20,	"Topaz",    6),
-    Treasure(0x801ce3b8,	0x40,	"Emerald",  7),
-    Treasure(0x801ce3b8,	0x80,	"Diamond",  8),
-    Treasure(0x801ce3c8,	1,	"Porcelain Urn",    9),
-    Treasure(0x801ce3c8,	2,	"Fine China",   10),
-    Treasure(0x801ce3c8,	4,	"Ceramic Vase", 11),
-    Treasure(0x801ce3c8,	8,	"Teapot",   12),
-    Treasure(0x801ce3c8,	0x10,	"Vase", 13),
-    Treasure(0x801ce3c8,	0x20,	"Precious Pot", 14),
-    Treasure(0x801ce3c8,	0x40,	"Lucky Figurine",   15),
-    Treasure(0x801ce3c8,	0x80,	"NES",  16),
-    Treasure(0x801ce3e8,	1,	"Candlestick",  17),
-    Treasure(0x801ce3e8,	2,	"Silver Candlestick",   18),
-    Treasure(0x801ce3e8,	4,	"Forest Painting",  19),
-    Treasure(0x801ce3e8,	8,	"Castle Painting",  20),
-    Treasure(0x801ce3e8,	0x10,	"Crystal Ball", 21),
-    Treasure(0x801ce3e8,	0x20,	"Knight's Helmet",  22),
-    Treasure(0x801ce3e8,	0x40,	"Gladiator's Helmet",   23),
-    Treasure(0x801ce3e8,	0x80,	"Ornate Bag",   24),
-    Treasure(0x801ce3f8,	1,	"Bugle",    25),
-    Treasure(0x801ce3f8,	2,	"Tambourine",   26),
-    Treasure(0x801ce3f8,	4,	"Triangle", 27),
-    Treasure(0x801ce3f8,	8,	"Clarinet", 28),
-    Treasure(0x801ce3f8,	0x10,	"Trombone", 29),
-    Treasure(0x801ce3f8,	0x20,	"Saxophone",    30),
-    Treasure(0x801ce3f8,	0x40,	"Drum", 31),
-    Treasure(0x801ce3f8,	0x80,	"Nintendo64",   32),
-    Treasure(0x801ce418,	1,	"Nice Glass",   33),
-    Treasure(0x801ce418,	2,	"Ancient Chalice",  34),
-    Treasure(0x801ce418,	4,	"Nice Cup", 35),
-    Treasure(0x801ce418,	8,	"Ornate Decanter",  36),
-    Treasure(0x801ce418,	0x10,	"Glass Decanter",   37),
-    Treasure(0x801ce418,	0x20,	"Nice Saucer",  38),
-    Treasure(0x801ce418,	0x40,	"Glass Bowl",   39),
-    Treasure(0x801ce418,	0x80,	"Jade Box", 40),
-    Treasure(0x801ce428,	1,	"Nice Goblet",  41),
-    Treasure(0x801ce428,	2,	"Violin",   42),
-    Treasure(0x801ce428,	4,	"Earring",  43),
-    Treasure(0x801ce428,	8,	"Jewelled Sword",   44),
-    Treasure(0x801ce428,	0x10,	"Gold Tiara",   45),
-    Treasure(0x801ce428,	0x20,	"Nice Sceptre", 46),
-    Treasure(0x801ce428,	0x40,	"King's Crown", 47),
-    Treasure(0x801ce428,	0x80,	"GameBoy Advance",  48),
-    Treasure(0x801ce448,	1,	"Big Mirror",   49),
-    Treasure(0x801ce448,	2,	"Antique Clock",    50),
-    Treasure(0x801ce448,	4,	"Gold Mirror",  51),
-    Treasure(0x801ce448,	8,	"Stained Glass",    52),
-    Treasure(0x801ce448,	0x10,	"Bronze Mirror",    53),
-    Treasure(0x801ce448,	0x20,	"Gold Clock",   54),
-    Treasure(0x801ce448,	0x40,	"Gold Pocketwatch", 55),
-    Treasure(0x801ce448,	0x80,	"Crazy Glasses",    56),
-    Treasure(0x801ce458,	1,	"Ancient Ring", 57),
-    Treasure(0x801ce458,	2,	"Ancient Necklace", 58),
-    Treasure(0x801ce458,	4,	"Ancient Relief",   59),
-    Treasure(0x801ce458,	8,	"Small Pyramid",    60),
-    Treasure(0x801ce458,	0x10,	"Ancient Bracelet", 61),
-    Treasure(0x801ce458,	0x20,	"Anubis Statue",   62),
-    Treasure(0x801ce458,	0x40,	"Monarch Mask", 63),
-    Treasure(0x801ce458,	0x80,	"Nintendo GameCube",    64),]
+Treasures_h: dict[str, Treasure] = {
+"Ruby": 	Treasure(0x801ce3b8,	1, 1),
+"Opal":	Treasure(0x801ce3b8,	2, 2),
+"Amethyst":	Treasure(0x801ce3b8,	4, 3),
+"Amber":	Treasure(0x801ce3b8,	8,    4),
+"Sapphire":	Treasure(0x801ce3b8,	0x10, 5),
+"Topaz":	Treasure(0x801ce3b8,	0x20,    6),
+"Emerald":	Treasure(0x801ce3b8,	0x40,  7),
+"Diamond":	Treasure(0x801ce3b8,	0x80,  8),
+"Porcelain Urn":	Treasure(0x801ce3c8,	1,    9),
+"Fine China":	Treasure(0x801ce3c8,	2,   10),
+"Ceramic Vase":	Treasure(0x801ce3c8,	4, 11),
+"Teapot":	Treasure(0x801ce3c8,	8,   12),
+"Vase":	Treasure(0x801ce3c8,	0x10, 13),
+"Precious Pot":	Treasure(0x801ce3c8,	0x20, 14),
+"Lucky Figurine":	Treasure(0x801ce3c8,	0x40,   15),
+"NES":	Treasure(0x801ce3c8,	0x80,	16),
+"Candlestick":	Treasure(0x801ce3e8,	1,  17),
+"Silver Candlestick":	Treasure(0x801ce3e8,	2,   18),
+"Forest Painting":	Treasure(0x801ce3e8,	4,  19),
+"Castle Painting":	Treasure(0x801ce3e8,	8, 20),
+"Crystal Ball":	Treasure(0x801ce3e8,	0x10, 21),
+"Knight's Helmet":	Treasure(0x801ce3e8,	0x20,  22),
+"Gladiator's Helmet":	Treasure(0x801ce3e8,	0x40,   23),
+"Ornate Bag":	Treasure(0x801ce3e8,	0x80,   24),
+"Bugle":	Treasure(0x801ce3f8,	1,	25),
+"Tambourine":	Treasure(0x801ce3f8,	2,	26),
+"Triangle":	Treasure(0x801ce3f8,	4,	27),
+"Clarinet":	Treasure(0x801ce3f8,	8,	28),
+"Trombone":	Treasure(0x801ce3f8,	0x10,	29),
+"Saxophone":	Treasure(0x801ce3f8,	0x20,	30),
+"Drum":	Treasure(0x801ce3f8,	0x40,	31),
+"Nintendo64":	Treasure(0x801ce3f8,	0x80,	32),
+"Nice Glass":	Treasure(0x801ce418,	1,	33),
+"Ancient Chalice":	Treasure(0x801ce418,	2,	34),
+"Nice Cup":	Treasure(0x801ce418,	4,	35),
+"Ornate Decanter":	Treasure(0x801ce418,	8,	36),
+"Glass Decanter":	Treasure(0x801ce418,	0x10,	37),
+"Nice Saucer":	Treasure(0x801ce418,	0x20,	38),
+"Glass Bowl":	Treasure(0x801ce418,	0x40,	39),
+"Jade Box":	Treasure(0x801ce418,	0x80,	40),
+"Nice Goblet":	Treasure(0x801ce428,	1,	41),
+"Violin":	Treasure(0x801ce428,	2,	42),
+"Earring":	Treasure(0x801ce428,	4,	43),
+"Jewelled Sword":	Treasure(0x801ce428,	8,	44),
+"Gold Tiara":	Treasure(0x801ce428,	0x10,	45),
+"Nice Sceptre":	Treasure(0x801ce428,	0x20,	46),
+"King's Crown":	Treasure(0x801ce428,	0x40,	47),
+"GameBoy Advance":	Treasure(0x801ce428,	0x80,	48),
+"Big Mirror":	Treasure(0x801ce448,	1,	49),
+"Antique Clock":	Treasure(0x801ce448,	2,	50),
+"Gold Mirror":	Treasure(0x801ce448,	4,	51),
+"Stained Glass":	Treasure(0x801ce448,	8,	52),
+"Bronze Mirror":	Treasure(0x801ce448,	0x10,	53),
+"Gold Clock":	Treasure(0x801ce448,	0x20,	54),
+"Gold Pocketwatch":	Treasure(0x801ce448,	0x40,	55),
+"Crazy Glasses":	Treasure(0x801ce448,	0x80,	56),
+"Ancient Ring":	Treasure(0x801ce458,	1,	57),
+"Ancient Necklace":	Treasure(0x801ce458,	2,	58),
+"Ancient Relief":	Treasure(0x801ce458,	4,	59),
+"Small Pyramid":	Treasure(0x801ce458,	8,	60),
+"Ancient Bracelet":	Treasure(0x801ce458,	0x10,	61),
+"Anubis Statue":	Treasure(0x801ce458,	0x20,	62),
+"Monarch Mask":	Treasure(0x801ce458,	0x40,	63),
+"Nintendo GameCube":	Treasure(0x801ce458,	0x80,	64),}
 
 class Chest(NamedTuple):
-    value: int
-    name: str
-    loc: int
+    memvalue: int
+    memloc: int
     CheckID: int
+    region: str
 
-Chests_b: list = [
-    Chest(1,	"Greenhorn Forest Red Chest",	0x801ce408, 1),
-    Chest(2,	"Greenhorn Forest Yellow Chest",	0x801ce408, 2),
-    Chest(4,	"Greenhorn Forest Chartreuse Chest",	0x801ce408, 3),
-    Chest(8,	"Greenhorn Forest Green Chest",	0x801ce408, 4),
-    Chest(0x10,	"Greenhorn Forest Cyan Chest",	0x801ce408, 5),
-    Chest(0x20,	"Greenhorn Forest Blue Chest",	0x801ce408, 6),
-    Chest(0x40,	"Greenhorn Forest Purple Chest",	0x801ce408, 7),
-    Chest(0x80,	"Greenhorn Forest Pink Chest",	0x801ce408, 8),
-    Chest(1,	"Greenhorn Ruins Red Chest",	0x801ce409, 9),
-    Chest(2,	"Greenhorn Ruins Yellow Chest",	0x801ce409, 10),
-    Chest(4,	"Greenhorn Ruins Chartreuse Chest",	0x801ce409, 11),
-    Chest(8,	"Greenhorn Ruins Green Chest",	0x801ce409, 12),
-    Chest(0x10,	"Greenhorn Ruins Cyan Chest",	0x801ce409, 13),
-    Chest(0x20,	"Greenhorn Ruins Blue Chest",	0x801ce409, 14),
-    Chest(0x40,	"Greenhorn Ruins Purple Chest",	0x801ce409, 15),
-    Chest(0x80,	"Greenhorn Ruins Pink Chest",	0x801ce409, 16),
-    Chest(1,	"Horror Manor Red Chest",	0x801ce40a, 17),
-    Chest(2,	"Horror Manor Yellow Chest",	0x801ce40a, 18),
-    Chest(4,	"Horror Manor Chartreuse Chest",	0x801ce40a, 19),
-    Chest(8,	"Horror Manor Green Chest",	0x801ce40a, 20),
-    Chest(0x10,	"Horror Manor Cyan Chest",	0x801ce40a, 21),
-    Chest(0x20,	"Horror Manor Blue Chest",	0x801ce40a, 22),
-    Chest(0x40,	"Horror Manor Purple Chest",	0x801ce40a, 23),
-    Chest(0x80,	"Horror Manor Pink Chest",	0x801ce40a, 24),
-    Chest(1,	"Wonky Circus Red Chest",	0x801ce40b, 25),
-    Chest(2,	"Wonky Circus Yellow Chest",	0x801ce40b, 26),
-    Chest(4,	"Wonky Circus Chartreuse Chest",	0x801ce40b, 27),
-    Chest(8,	"Wonky Circus Green Chest",	0x801ce40b, 28),
-    Chest(0x10,	"Wonky Circus Cyan Chest",	0x801ce40b, 29),
-    Chest(0x20,	"Wonky Circus Blue Chest",	0x801ce40b, 30),
-    Chest(0x40,	"Wonky Circus Purple Chest",	0x801ce40b, 31),
-    Chest(0x80,	"Wonky Circus Pink Chest",	0x801ce40b, 32),
-    Chest(1,	"Shivering Mountains Red Chest",	0x801ce40c, 33),
-    Chest(2,	"Shivering Mountains Yellow Chest",	0x801ce40c, 34),
-    Chest(4,	"Shivering Mountains Chartreuse Chest",	0x801ce40c, 35),
-    Chest(8,	"Shivering Mountains Green Chest",	0x801ce40c, 36),
-    Chest(0x10,	"Shivering Mountains Cyan Chest",	0x801ce40c, 37),
-    Chest(0x20,	"Shivering Mountains Blue Chest",	0x801ce40c, 38),
-    Chest(0x40,	"Shivering Mountains Purple Chest",	0x801ce40c, 39),
-    Chest(0x80,	"Shivering Mountains Pink Chest",	0x801ce40c, 40),
-    Chest(1,	"Beanstalk Way Red Chest",	0x801ce40d, 41),
-    Chest(2,	"Beanstalk Way Yellow Chest",	0x801ce40d, 42),
-    Chest(4,	"Beanstalk Way Chartreuse Chest",	0x801ce40d, 43),
-    Chest(8,	"Beanstalk Way Green Chest",	0x801ce40d, 44),
-    Chest(0x10,	"Beanstalk Way Cyan Chest",	0x801ce40d, 45),
-    Chest(0x20,	"Beanstalk Way Blue Chest",	0x801ce40d, 46),
-    Chest(0x40,	"Beanstalk Way Purple Chest",	0x801ce40d, 47),
-    Chest(0x80,	"Beanstalk Way Pink Chest",	0x801ce40d, 48),
-    Chest(1,	"Mirror Mansion Red Chest",	0x801ce40e, 49),
-    Chest(2,	"Mirror Mansion Yellow Chest",	0x801ce40e, 50),
-    Chest(4,	"Mirror Mansion Chartreuse Chest",	0x801ce40e, 51),
-    Chest(8,	"Mirror Mansion Green Chest",	0x801ce40e, 52),
-    Chest(0x10,	"Mirror Mansion Cyan Chest",	0x801ce40e, 53),
-    Chest(0x20,	"Mirror Mansion Blue Chest",	0x801ce40e, 54),
-    Chest(0x40,	"Mirror Mansion Purple Chest",	0x801ce40e, 55),
-    Chest(0x80,	"Mirror Mansion Pink Chest",	0x801ce40e, 56),
-    Chest(1,	"Pecan Sands Red Chest",	0x801ce40f, 57),
-    Chest(2,	"Pecan Sands Yellow Chest",	0x801ce40f, 58),
-    Chest(4,	"Pecan Sands Chartreuse Chest",	0x801ce40f, 59),
-    Chest(8,	"Pecan Sands Green Chest",	0x801ce40f, 60),
-    Chest(0x10,	"Pecan Sands Cyan Chest",	0x801ce40f, 61),
-    Chest(0x20,	"Pecan Sands Blue Chest",	0x801ce40f, 62),
-    Chest(0x40,	"Pecan Sands Purple Chest",	0x801ce40f, 63),
-    Chest(0x80,	"Pecan Sands Pink Chest",	0x801ce40f, 64),]
+Chests_b: dict[str, Chest] = {
+    "Greenhorn Forest Red Chest":	Chest(1,    0x801ce408, 1, "Greenhorn Forest"),
+    "Greenhorn Forest Yellow Chest":    Chest(2,	0x801ce408, 2,  "Greenhorn Forest"),
+    "Greenhorn Forest Chartreuse Chest":    Chest(4,	0x801ce408, 3,  "Greenhorn Forest"),
+    "Greenhorn Forest Green Chest": Chest(8,	0x801ce408, 4,  "Greenhorn Forest"),
+    "Greenhorn Forest Cyan Chest":  Chest(0x10,	0x801ce408, 5,  "Greenhorn Forest"),
+    "Greenhorn Forest Blue Chest":  Chest(0x20,	0x801ce408, 6,  "Greenhorn Forest"),
+    "Greenhorn Forest Purple Chest": Chest(0x40,	0x801ce408, 7,  "Greenhorn Forest"),
+    "Greenhorn Forest Pink Chest":  Chest(0x80,	0x801ce408, 8,  "Greenhorn Forest"),
+    "Greenhorn Ruins Red Chest":    Chest(1,	0x801ce409, 9,  "Greenhorn Ruins"),
+    "Greenhorn Ruins Yellow Chest": Chest(2,    0x801ce409, 10, "Greenhorn Ruins"),
+    "Greenhorn Ruins Chartreuse Chest": Chest(4,    0x801ce409, 11, "Greenhorn Ruins"),
+    "Greenhorn Ruins Green Chest":  Chest(8,	0x801ce409, 12, "Greenhorn Ruins"),
+    "Greenhorn Ruins Cyan Chest":   Chest(0x10, 0x801ce409, 13, "Greenhorn Ruins"),
+    "Greenhorn Ruins Blue Chest":   Chest(0x20,	0x801ce409, 14, "Greenhorn Ruins"),
+    "Greenhorn Ruins Purple Chest": Chest(0x40,	0x801ce409, 15, "Greenhorn Ruins"),
+    "Greenhorn Ruins Pink Chest":   Chest(0x80,	0x801ce409, 16, "Greenhorn Ruins"),
+    "Horror Manor Red Chest":   Chest(1,	0x801ce40a, 17, "Horror Manor"),
+    "Horror Manor Yellow Chest":    Chest(2,    0x801ce40a, 18, "Horror Manor"),
+    "Horror Manor Chartreuse Chest":    Chest(4,    0x801ce40a, 19, "Horror Manor"),
+    "Horror Manor Green Chest": Chest(8,    0x801ce40a, 20, "Horror Manor"),
+    "Horror Manor Cyan Chest": Chest(0x10,0x801ce40a, 21,   "Horror Manor"),
+    "Horror Manor Blue Chest":	Chest(0x20,	0x801ce40a, 22,"Horror Manor"),
+    "Horror Manor Purple Chest":    Chest(0x40,	0x801ce40a, 23, "Horror Manor"),
+    "Horror Manor Pink Chest":  Chest(0x80,	0x801ce40a, 24, "Horror Manor"),
+    "Wonky Circus Red Chest":   Chest(1,	0x801ce40b, 25, "Wonky Circus"),
+    "Wonky Circus Yellow Chest":    Chest(2,	0x801ce40b, 26, "Wonky Circus"),
+    "Wonky Circus Chartreuse Chest":    Chest(4,	0x801ce40b, 27, "Wonky Circus"),
+    "Wonky Circus Green Chest":	Chest(8,    0x801ce40b, 28, "Wonky Circus"),
+    "Wonky Circus Cyan Chest":  Chest(0x10,	0x801ce40b, 29, "Wonky Circus"),
+    "Wonky Circus Blue Chest":  Chest(0x20,	0x801ce40b, 30, "Wonky Circus"),
+    "Wonky Circus Purple Chest":    Chest(0x40,	0x801ce40b, 31, "Wonky Circus"),
+    "Wonky Circus Pink Chest":	Chest(0x80,	0x801ce40b, 32, "Wonky Circus"),
+    "Shivering Mountains Red Chest":	Chest(1,	0x801ce40c, 33, "Shivering Mountains"),
+    "Shivering Mountains Yellow Chest": Chest(2,	0x801ce40c, 34, "Shivering Mountains"),
+    "Shivering Mountains Chartreuse Chest": Chest(4,	0x801ce40c, 35, "Shivering Mountains"),
+    "Shivering Mountains Green Chest":  Chest(8,    0x801ce40c, 36, "Shivering Mountains"),
+    "Shivering Mountains Cyan Chest":	Chest(0x10,	0x801ce40c, 37, "Shivering Mountains"),
+    "Shivering Mountains Blue Chest":   Chest(0x20,	0x801ce40c, 38, "Shivering Mountains"),
+    "Shivering Mountains Purple Chest": Chest(0x40,	0x801ce40c, 39, "Shivering Mountains"),
+    "Shivering Mountains Pink Chest":	Chest(0x80,	0x801ce40c, 40, "Shivering Mountains"),
+    "Beanstalk Way Red Chest":	Chest(1,	0x801ce40d, 41, "Beanstalk Way"),
+    "Beanstalk Way Yellow Chest":   Chest(2,	0x801ce40d, 42, "Beanstalk Way"),
+    "Beanstalk Way Chartreuse Chest":	Chest(4,	0x801ce40d, 43, "Beanstalk Way"),
+    "Beanstalk Way Green Chest":    Chest(8,	0x801ce40d, 44, "Beanstalk Way"),
+    "Beanstalk Way Cyan Chest": Chest(0x10,	0x801ce40d, 45, "Beanstalk Way"),
+    "Beanstalk Way Blue Chest":	Chest(0x20,	0x801ce40d, 46, "Beanstalk Way"),
+    "Beanstalk Way Purple Chest":   Chest(0x40,	0x801ce40d, 47, "Beanstalk Way"),
+    "Beanstalk Way Pink Chest": Chest(0x80,	0x801ce40d, 48, "Beanstalk Way"),
+    "Mirror Mansion Red Chest": Chest(1,	0x801ce40e, 49, "Mirror Mansion"),
+    "Mirror Mansion Yellow Chest": Chest(2,    0x801ce40e, 50,  "Mirror Mansion"),
+    "Mirror Mansion Chartreuse Chest":  Chest(4,	0x801ce40e, 51, "Mirror Mansion"),
+    "Mirror Mansion Green Chest":   Chest(8,	0x801ce40e, 52, "Mirror Mansion"),
+    "Mirror Mansion Cyan Chest":    Chest(0x10,	0x801ce40e, 53, "Mirror Mansion"),
+    "Mirror Mansion Blue Chest":    Chest(0x20,	0x801ce40e, 54, "Mirror Mansion"),
+    "Mirror Mansion Purple Chest":  Chest(0x40,	0x801ce40e, 55,  "Mirror Mansion"),
+    "Mirror Mansion Pink Chest":    Chest(0x80,	0x801ce40e, 56, "Mirror Mansion"),
+    "Pecan Sands Red Chest":    Chest(1,	0x801ce40f, 57, "Pecan Sands"),
+    "Pecan Sands Yellow Chest": Chest(2,    0x801ce40f, 58, "Pecan Sands"),
+    "Pecan Sands Chartreuse Chest": Chest(4,	0x801ce40f, 59, "Pecan Sands"),
+    "Pecan Sands Green Chest":	Chest(8,    0x801ce40f, 60, "Pecan Sands"),
+    "Pecan Sands Cyan Chest":   Chest(0x10,	0x801ce40f, 61, "Pecan Sands"),
+    "Pecan Sands Blue Chest":   Chest(0x20,	0x801ce40f, 62, "Pecan Sands"),
+    "Pecan Sands Purple Chest": Chest(0x40,	0x801ce40f, 63, "Pecan Sands"),
+    "Pecan Sands Pink Chest":   Chest(0x80,	0x801ce40f, 64, "Pecan Sands"),}
 
 class Spriteling(NamedTuple):
-    loc: int
-    value: int
-    name: str
+    memloc: int
+    memvalue: int
     ItemID: int
-    classification =  FILL
-    ItemType = 2
+    classification =  PROG
+    ItemType = "Spriteling"
 
-Spritelings_h: list = [
-    Spriteling(0x801ce3b4,	1,	"Greenhorn Forest Red Spriteling",  65),
-    Spriteling(0x801ce3b4,	2,	"Greenhorn Forest Yellow Spriteling",   66),
-    Spriteling(0x801ce3b4,	4,	"Greenhorn Forest Green Spriteling",    67),
-    Spriteling(0x801ce3b4,	8,	"Greenhorn Forest Blue Spriteling", 68),
-    Spriteling(0x801ce3b4,	0x10,	"Greenhorn Forest Purple Spriteling",   69),
-    Spriteling(0x801ce3c4,	1,	"Greenhorn Ruins Red Spriteling",   70),
-    Spriteling(0x801ce3c4,	2,	"Greenhorn Ruins Yellow Spriteling",    71),
-    Spriteling(0x801ce3c4,	4,	"Greenhorn Ruins Green Spriteling", 72),
-    Spriteling(0x801ce3c4,	8,	"Greenhorn Ruins Blue Spriteling",  73),
-    Spriteling(0x801ce3c4,	0x10,	"Greenhorn Ruins Purple Spriteling",    74),
-    Spriteling(0x801ce3e4,	1,	"Horror Manor Red Spriteling",  75),
-    Spriteling(0x801ce3e4,	2,	"Horror Manor Yellow Spriteling",   76),
-    Spriteling(0x801ce3e4,	4,	"Horror Manor Green Spriteling",    77),
-    Spriteling(0x801ce3e4,	8,	"Horror Manor Blue Spriteling", 78),
-    Spriteling(0x801ce3e4,	0x10,	"Horror Manor Purple Spriteling",   79),
-    Spriteling(0x801ce3f4,	1,	"Wonky Circus Red Spriteling",  80),
-    Spriteling(0x801ce3f4,	2,	"Wonky Circus Yellow Spriteling",   81),
-    Spriteling(0x801ce3f4,	4,	"Wonky Circus Green Spriteling",    82),
-    Spriteling(0x801ce3f4,	8,	"Wonky Circus Blue Spriteling", 83),
-    Spriteling(0x801ce3f4,	0x10,	"Wonky Circus Purple Spriteling",   84),
-    Spriteling(0x801ce414,	1,	"Shivering Mountains Red Spriteling",   85),
-    Spriteling(0x801ce414,	2,	"Shivering Mountains Yellow Spriteling",    86),
-    Spriteling(0x801ce414,	4,	"Shivering Mountains Green Spriteling", 87),
-    Spriteling(0x801ce414,	8,	"Shivering Mountains Blue Spriteling",  88),
-    Spriteling(0x801ce414,	0x10,	"Shivering Mountains Purple Spriteling",    89),
-    Spriteling(0x801ce424,	1,	"Beanstalk Way Red Spriteling", 90),
-    Spriteling(0x801ce424,	2,	"Beanstalk Way Yellow Spriteling",  91),
-    Spriteling(0x801ce424,	4,	"Beanstalk Way Green Spriteling",   92),
-    Spriteling(0x801ce424,	8,	"Beanstalk Way Blue Spriteling",    93),
-    Spriteling(0x801ce424,	0x10,	"Beanstalk Way Purple Spriteling",  94),
-    Spriteling(0x801ce444,	1,	"Mirror Mansion Red Spriteling", 95),
-    Spriteling(0x801ce444,	2,	"Mirror Mansion Yellow Spriteling", 96),
-    Spriteling(0x801ce444,	4,	"Mirror Mansion Green Spriteling",  97),
-    Spriteling(0x801ce444,	8,	"Mirror Mansion Blue Spriteling",   98),
-    Spriteling(0x801ce444,	0x10,	"Mirror Mansion Purple Spriteling", 99),
-    Spriteling(0x801ce454,	1,	"Pecan Way Red Spriteling", 100),
-    Spriteling(0x801ce454,	2,	"Pecan Way Yellow Spriteling",  101),
-    Spriteling(0x801ce454,	4,	"Pecan Way Green Spriteling",   102),
-    Spriteling(0x801ce454,	8,	"Pecan Way Blue Spriteling",    103),
-    Spriteling(0x801ce454,	0x10,	"Pecan Way Purple Spriteling",  104),]
+Spritelings_h: dict[str, Spriteling] = {
+"Greenhorn Forest Red Spriteling":	Spriteling(0x801ce3b4,	1,	65),
+"Greenhorn Forest Yellow Spriteling":	Spriteling(0x801ce3b4,	2,	66),
+"Greenhorn Forest Green Spriteling":	Spriteling(0x801ce3b4,	4,	67),
+"Greenhorn Forest Blue Spriteling":	Spriteling(0x801ce3b4,	8,	68),
+"Greenhorn Forest Purple Spriteling":	Spriteling(0x801ce3b4,	0x10,	69),
+"Greenhorn Ruins Red Spriteling":	Spriteling(0x801ce3c4,	1,	70),
+"Greenhorn Ruins Yellow Spriteling":	Spriteling(0x801ce3c4,	2,	71),
+"Greenhorn Ruins Green Spriteling":	Spriteling(0x801ce3c4,	4,	72),
+"Greenhorn Ruins Blue Spriteling":	Spriteling(0x801ce3c4,	8,	73),
+"Greenhorn Ruins Purple Spriteling":	Spriteling(0x801ce3c4,	0x10,	74),
+"Horror Manor Red Spriteling":	Spriteling(0x801ce3e4,	1,	75),
+"Horror Manor Yellow Spriteling":	Spriteling(0x801ce3e4,	2,	76),
+"Horror Manor Green Spriteling":	Spriteling(0x801ce3e4,	4,	77),
+"Horror Manor Blue Spriteling":	Spriteling(0x801ce3e4,	8,	78),
+"Horror Manor Purple Spriteling":	Spriteling(0x801ce3e4,	0x10,	79),
+"Wonky Circus Red Spriteling":	Spriteling(0x801ce3f4,	1,	80),
+"Wonky Circus Yellow Spriteling":	Spriteling(0x801ce3f4,	2,	81),
+"Wonky Circus Green Spriteling":	Spriteling(0x801ce3f4,	4,	82),
+"Wonky Circus Blue Spriteling":	Spriteling(0x801ce3f4,	8,	83),
+"Wonky Circus Purple Spriteling":	Spriteling(0x801ce3f4,	0x10,	84),
+"Shivering Mountains Red Spriteling":	Spriteling(0x801ce414,	1,	85),
+"Shivering Mountains Yellow Spriteling":	Spriteling(0x801ce414,	2,	86),
+"Shivering Mountains Green Spriteling":	Spriteling(0x801ce414,	4,	87),
+"Shivering Mountains Blue Spriteling":	Spriteling(0x801ce414,	8,	88),
+"Shivering Mountains Purple Spriteling":	Spriteling(0x801ce414,	0x10,	89),
+"Beanstalk Way Red Spriteling":	Spriteling(0x801ce424,	1,	90),
+"Beanstalk Way Yellow Spriteling":	Spriteling(0x801ce424,	2,	91),
+"Beanstalk Way Green Spriteling":	Spriteling(0x801ce424,	4,	92),
+"Beanstalk Way Blue Spriteling":	Spriteling(0x801ce424,	8,	93),
+"Beanstalk Way Purple Spriteling":	Spriteling(0x801ce424,	0x10,	94),
+"Mirror Mansion Red Spriteling":	Spriteling(0x801ce444,	1,	95),
+"Mirror Mansion Yellow Spriteling":	Spriteling(0x801ce444,	2,	96),
+"Mirror Mansion Green Spriteling":	Spriteling(0x801ce444,	4,	97),
+"Mirror Mansion Blue Spriteling":	Spriteling(0x801ce444,	8,	98),
+"Mirror Mansion Purple Spriteling":	Spriteling(0x801ce444,	0x10,	99),
+"Pecan Sands Red Spriteling":	Spriteling(0x801ce454,	1,	100),
+"Pecan Sands Yellow Spriteling":	Spriteling(0x801ce454,	2,	101),
+"Pecan Sands Green Spriteling":	Spriteling(0x801ce454,	4,	102),
+"Pecan Sands Blue Spriteling":	Spriteling(0x801ce454,	8,	103),
+"Pecan Sands Purple Spriteling":	Spriteling(0x801ce454,	0x10,	104),}
 
 class Cage(NamedTuple):
-    value: int
-    name: str
-    loc: int
+    memvalue: int
+    memloc: int
     CheckID: int
+    region: str
 
-Cages_b: list = [
-    Cage(1,	"Greenhorn Forest Caged Red Spriteling",	0x801ce3d8, 65),
-    Cage(2,	"Greenhorn Forest Caged Yellow Spriteling",	0x801ce3d8, 66),
-    Cage(4,	"Greenhorn Forest Caged Green Spriteling",	0x801ce3d8, 67),
-    Cage(8,	"Greenhorn Forest Caged Blue Spriteling",	0x801ce3d8, 68),
-    Cage(0x10,	"Greenhorn Forest Caged Purple Spriteling",	0x801ce3d8, 69),
-    Cage(1,	"Greenhorn Ruins Caged Red Spriteling",	0x801ce3d9, 70),
-    Cage(2,	"Greenhorn Ruins Caged Yellow Spriteling",	0x801ce3d9, 71),
-    Cage(4,	"Greenhorn Ruins Caged Green Spriteling",	0x801ce3d9, 72),
-    Cage(8,	"Greenhorn Ruins Caged Blue Spriteling",	0x801ce3d9, 73),
-    Cage(0x10,	"Greenhorn Ruins Caged Purple Spriteling",	0x801ce3d9, 74),
-    Cage(1,	"Horror Manor Caged Red Spriteling",	0x801ce3da, 75),
-    Cage(2,	"Horror Manor Caged Yellow Spriteling",	0x801ce3da, 76),
-    Cage(4,	"Horror Manor Caged Green Spriteling",	0x801ce3da, 77),
-    Cage(8,	"Horror Manor Caged Blue Spriteling",	0x801ce3da, 78),
-    Cage(0x10,	"Horror Manor Caged Purple Spriteling",	0x801ce3da, 79),
-    Cage(1,	"Wonky Circus Caged Red Spriteling",	0x801ce3db, 80),
-    Cage(2,	"Wonky Circus Caged Yellow Spriteling",	0x801ce3db, 81),
-    Cage(4,	"Wonky Circus Caged Green Spriteling",	0x801ce3db, 82),
-    Cage(8,	"Wonky Circus Caged Blue Spriteling",	0x801ce3db, 83),
-    Cage(0x10,	"Wonky Circus Caged Purple Spriteling",	0x801ce3db, 84),
-    Cage(1,	"Shivering Mountains Caged Red Spriteling",	0x801ce3dc, 85),
-    Cage(2,	"Shivering Mountains Caged Yellow Spriteling",	0x801ce3dc, 86),
-    Cage(4,	"Shivering Mountains Caged Green Spriteling",	0x801ce3dc, 87),
-    Cage(8,	"Shivering Mountains Caged Blue Spriteling",	0x801ce3dc, 88),
-    Cage(0x10,	"Shivering Mountains Caged Purple Spriteling",	0x801ce3dc, 89),
-    Cage(1,	"Beanstalk Way Caged Red Spriteling",	0x801ce3dd, 90),
-    Cage(2,	"Beanstalk Way Caged Yellow Spriteling",	0x801ce3dd, 91),
-    Cage(4,	"Beanstalk Way Caged Green Spriteling",	0x801ce3dd, 92),
-    Cage(8,	"Beanstalk Way Caged Blue Spriteling",	0x801ce3dd, 93),
-    Cage(0x10,	"Beanstalk Way Caged Purple Spriteling",	0x801ce3dd, 94),
-    Cage(1,	"Mirror Mansion Caged Red Spriteling",	0x801ce3de, 95),
-    Cage(2,	"Mirror Mansion Caged Yellow Spriteling",	0x801ce3de, 96),
-    Cage(4,	"Mirror Mansion Caged Green Spriteling",	0x801ce3de, 97),
-    Cage(8,	"Mirror Mansion Caged Blue Spriteling",	0x801ce3de, 98),
-    Cage(0x10,	"Mirror Mansion Caged Purple Spriteling",	0x801ce3de, 99),
-    Cage(1,	"Pecan Way Caged Red Spriteling",	0x801ce3df, 100),
-    Cage(2,	"Pecan Way Caged Yellow Spriteling",	0x801ce3df, 101),
-    Cage(4,	"Pecan Way Caged Green Spriteling",	0x801ce3df, 102),
-    Cage(8,	"Pecan Way Caged Blue Spriteling",	0x801ce3df, 103),
-    Cage(0x10,	"Pecan Way Caged Purple Spriteling",	0x801ce3df, 104),]
+Cages_b: dict[str, Cage] = {
+    "Greenhorn Forest Red Spriteling Cage": Cage(1,	0x801ce3d8, 65, "Greenhorn Forest"),
+    "Greenhorn Forest Yellow Spriteling Cage":  Cage(2,	0x801ce3d8, 66, "Greenhorn Forest"),
+    "Greenhorn Forest Green Spriteling Cage":	Cage(4,	0x801ce3d8, 67, "Greenhorn Forest"),
+    "Greenhorn Forest Blue Spriteling Cage":	Cage(8,	0x801ce3d8, 68, "Greenhorn Forest"),
+    "Greenhorn Forest Purple Spriteling Cage":	Cage(0x10,	0x801ce3d8, 69, "Greenhorn Forest"),
+    "Greenhorn Ruins Red Spriteling Cage":	Cage(1,	0x801ce3d9, 70, "Greenhorn Ruins"),
+    "Greenhorn Ruins Yellow Spriteling Cage":	Cage(2,	0x801ce3d9, 71, "Greenhorn Ruins"),
+    "Greenhorn Ruins Green Spriteling Cage":	Cage(4,	0x801ce3d9, 72, "Greenhorn Ruins"),
+    "Greenhorn Ruins Blue Spriteling Cage":	Cage(8,	0x801ce3d9, 73, "Greenhorn Ruins"),
+    "Greenhorn Ruins Purple Spriteling Cage":	Cage(0x10,	0x801ce3d9, 74, "Greenhorn Ruins"),
+    "Horror Manor Red Spriteling Cage":	Cage(1,	0x801ce3da, 75, "Horror Manor"),
+    "Horror Manor Yellow Spriteling Cage":	Cage(2,	0x801ce3da, 76, "Horror Manor"),
+    "Horror Manor Green Spriteling Cage":	Cage(4,	0x801ce3da, 77, "Horror Manor"),
+    "Horror Manor Blue Spriteling Cage":	Cage(8,	0x801ce3da, 78, "Horror Manor"),
+    "Horror Manor Purple Spriteling Cage":	Cage(0x10,	0x801ce3da, 79, "Horror Manor"),
+    "Wonky Circus Red Spriteling Cage":	Cage(1,	0x801ce3db, 80, "Wonky Circus"),
+    "Wonky Circus Yellow Spriteling Cage":	Cage(2,	0x801ce3db, 81, "Wonky Circus"),
+    "Wonky Circus Green Spriteling Cage":	Cage(4,	0x801ce3db, 82, "Wonky Circus"),
+    "Wonky Circus Blue Spriteling Cage":	Cage(8,	0x801ce3db, 83, "Wonky Circus"),
+    "Wonky Circus Purple Spriteling Cage":	Cage(0x10,	0x801ce3db, 84, "Wonky Circus"),
+    "Shivering Mountains Red Spriteling Cage":	Cage(1,	0x801ce3dc, 85, "Shivering Mountains"),
+    "Shivering Mountains Yellow Spriteling Cage":	Cage(2,	0x801ce3dc, 86, "Shivering Mountains"),
+    "Shivering Mountains Green Spriteling Cage":	Cage(4,	0x801ce3dc, 87, "Shivering Mountains"),
+    "Shivering Mountains Blue Spriteling Cage":	Cage(8,	0x801ce3dc, 88, "Shivering Mountains"),
+    "Shivering Mountains Purple Spriteling Cage":	Cage(0x10,	0x801ce3dc, 89, "Shivering Mountains"),
+    "Beanstalk Way Red Spriteling Cage":	Cage(1,	0x801ce3dd, 90, "Beanstalk Way"),
+    "Beanstalk Way Yellow Spriteling Cage":	Cage(2,	0x801ce3dd, 91, "Beanstalk Way"),
+    "Beanstalk Way Green Spriteling Cage":	Cage(4,	0x801ce3dd, 92, "Beanstalk Way"),
+    "Beanstalk Way Blue Spriteling Cage":	Cage(8,	0x801ce3dd, 93, "Beanstalk Way"),
+    "Beanstalk Way Purple Spriteling Cage":	Cage(0x10,	0x801ce3dd, 94, "Beanstalk Way"),
+    "Mirror Mansion Red Spriteling Cage":	Cage(1,	0x801ce3de, 95, "Mirror Mansion"),
+    "Mirror Mansion Yellow Spriteling Cage":	Cage(2,	0x801ce3de, 96, "Mirror Mansion"),
+    "Mirror Mansion Green Spriteling Cage":	Cage(4,	0x801ce3de, 97, "Mirror Mansion"),
+    "Mirror Mansion Blue Spriteling Cage":	Cage(8,	0x801ce3de, 98, "Mirror Mansion"),
+    "Mirror Mansion Purple Spriteling Cage":	Cage(0x10,	0x801ce3de, 99, "Mirror Mansion"),
+    "Pecan Sands Red Spriteling Cage":	Cage(1,	0x801ce3df, 100,    "Pecan Sands"),
+    "Pecan Sands Yellow Spriteling Cage":	Cage(2,	0x801ce3df, 101,    "Pecan Sands"),
+    "Pecan Sands Green Spriteling Cage":	Cage(4,	0x801ce3df, 102,    "Pecan Sands"),
+    "Pecan Sands Blue Spriteling Cage":	Cage(8,	0x801ce3df, 103,    "Pecan Sands"),
+    "Pecan Sands Purple Spriteling Cage":	Cage(0x10,	0x801ce3df, 104,    "Pecan Sands"),}
 
 class BossMedal(NamedTuple):
-    value: int
-    name: str
+    memvalue: int
     ItemID: int
     classification = PROG
-    ItemType = 3
-    loc = 0x801ce3ac
+    ItemType = "BossMedal"
+    memloc = 0x801ce3ac
 
-BossMedals_h: list = [
-    BossMedal(1,	"Greenfist Boss Medal", 105),
-    BossMedal(2,	"Sandworm Boss Medal",  106),
-    BossMedal(4,	"DinoMighty Big Key Fragment",  107),
-    BossMedal(8,	"Brawl Doll Boss Medal",   108),
-    BossMedal(0x10,	"Clown-a-Round Boss Medal", 109),
-    BossMedal(0x20,	"Dual Dragon Big Key Fragment", 110),
-    BossMedal(0x40,	"Winter Windster Boss Medal",   111),
-    BossMedal(0x80,	"Spideraticus Boss Medal",  112),
-    BossMedal(0x100,	"Red-Brief J Big Key Fragment", 113),
-    BossMedal(0x200,	"The Mean Emcee Boss Medal",    114),
-    BossMedal(0x400,	"Ironsider Boss Medal", 115),
-    BossMedal(0x800,	"Captain Skull Big Key Fragment",   116),]
+BossMedals_h: dict[str, BossMedal] = {
+	"Greenfist Boss Medal":    BossMedal(1, 105),
+	"Sandworm Boss Medal":	BossMedal(2,  106),
+    "DinoMighty Big Key Fragment":	BossMedal(4,  107),
+    "Brawl Doll Boss Medal":	BossMedal(8,   108),
+    "Clown-a-Round Boss Medal":	BossMedal(0x10, 109),
+    "Dual Dragon Big Key Fragment":	BossMedal(0x20, 110),
+    "Winter Windster Boss Medal":	BossMedal(0x40,   111),
+    "Spideraticus Boss Medal":	BossMedal(0x80,  112),
+    "Red-Brief J Big Key Fragment":	BossMedal(0x100, 113),
+    "The Mean Emcee Boss Medal":	BossMedal(0x200,	114),
+    "Ironsider Boss Medal":	BossMedal(0x400,	115),
+    "Captain Skull Big Key Fragment":	BossMedal(0x800,   116),
+    }
 
 class StageDoor(NamedTuple):
-    value: int
-    name: str
+    memvalue: int
     ItemID: int
     classification = PROG
-    ItemType = 4
-    loc = 0x801ce3d0
+    ItemType = "StageDoor"
+    memloc = 0x801ce3d0
 
-Doors_b: list = [
-    StageDoor(1,	"Greenhorn Ruins Door", 117),
-    StageDoor(2,	"DinoMighty's Showdown Door",   118),
-    StageDoor(4,	"Horror Manor Door",    119),
-    StageDoor(8,	"Wonky Circus Door",    120),
-    StageDoor(0x10,	"Dual Dragon's Showdown Door",  121),
-    StageDoor(0x20,	"Shivering Mountains Door", 122),
-    StageDoor(0x40,	"Beanstalk Way Door",   123),
-    StageDoor(0x80,	"Red-Brief J's Showdown Door",  124),
-    StageDoor(0x100,	"Mirror Mansion Door",  125),
-    StageDoor(0x200,	"Pecan Sands Door", 126),
-    StageDoor(0x400,	"Captain Skull's Showdown Door",    127),]
+Doors_b: dict [str, StageDoor] = {
+    "Greenhorn Ruins Door":	StageDoor(1,	 117),
+    "DinoMighty's Showdown Door":	StageDoor(2,	118),
+    "Horror Manor Door":	StageDoor(4,	119),
+    "Wonky Circus Door":	StageDoor(8,	120),
+    "Dual Dragon's Showdown Door":	StageDoor(0x10,  121),
+    "Shivering Mountains Door":	StageDoor(0x20, 122),
+    "Beanstalk Way Door":	StageDoor(0x40,   123),
+    "Red-Brief J's Showdown Door":	StageDoor(0x80,  124),
+    "Mirror Mansion Door":	StageDoor(0x100,  125),
+    "Pecan Sands Door":	StageDoor(0x200,	126),
+    "Captain Skull's Showdown Door":	StageDoor(0x400,    127),}
 
 class BossBeat(NamedTuple):
-    value: int
-    name: str
+    memvalue: int
     CheckID: int
-    loc = 0x801ce3d2
+    region: str
+    memloc = 0x801ce3d2
 
-Bosses_b: list = [
-    BossBeat(1,	"Defeated Greenfist",   105),
-    BossBeat(2,	"Defeated Sandworm",    106),
-    BossBeat(4,	"Defeated DinoMighty",  107),
-    BossBeat(8,	"Defeated Brawl Doll",  108),
-    BossBeat(0x10,	"Defeated Clown-a-Round",   109),
-    BossBeat(0x20,	"Defeated Dual Dragon", 110),
-    BossBeat(0x40,  "Defeated Winter Windster", 111),
-    BossBeat(0x80,	"Defeated Spideraticus",    112),
-    BossBeat(0x10,	"Defeated Red-Brief J", 113),
-    BossBeat(0x200,	"Defeated The Mean Emcee",  114),
-    BossBeat(0x400,	"Defeated Ironsider",   115),
-    BossBeat(0x800,	"Defeated Captain Skull",   116),
-    BossBeat(0x1000,  "Defeated Black Jewel", 117),]
+Bosses_b: dict[str, BossBeat] = {
+    "Defeated Greenfist":   BossBeat(1,	105, "Greenhorn Forest"),
+    "Defeated Sandworm":    BossBeat(2,	106,    "Greenhorn Ruins"),
+    "Defeated DinoMighty":  BossBeat(4, 107,    "DinoMighty's Showdown"),
+    "Defeated Brawl Doll":  BossBeat(8, 108,    "Horror Manor"),
+    "Defeated Clown-a-Round":   BossBeat(0x10,  109,    "Wonky Circus"),
+    "Defeated Dual Dragon": BossBeat(0x20,  110,    "Dual Dragon's Showdown"),
+    "Defeated Winter Windster": BossBeat(0x40,  111,    "Shivering Mountains"),
+    "Defeated Spideraticus":    BossBeat(0x80,  112,    "Beanstalk Way"),
+    "Defeated Red-Brief J": BossBeat(0x10,  113,    "Red-Brief J's Showdown"),
+    "Defeated The Mean Emcee":  BossBeat(0x200, 114,    "Mirror Mansion"),
+    "Defeated Ironsider":   BossBeat(0x400,	115,    "Pecan Sands"),
+    "Defeated Captain Skull":   BossBeat(0x800, 116,    "Captain Skull's Showdown"),
+    "Defeated Black Jewel": BossBeat(0x1000,    None,   None),}
 
 class Junk(NamedTuple):
     loc: int
@@ -326,12 +322,12 @@ class Junk(NamedTuple):
     name: str
     ItemID: int
     classification = FILL
-    ItemType = 5
+    ItemType = "Junk"
 
-JunkItems: list = [
-    Junk(0x801ce3a4,    +50, "50 coins", 128),
-    Junk(DME.read_word(0x801c5820) + 0xd8, +2, "Garlic", 129),
-]
+#JunkItems: list = [
+ #   Junk(0x801ce3a4,    +50, "50 coins", 128),
+  #  Junk(DME.read_word(0x801c5820) + 0xd8, +2, "Garlic", 129),
+#]
 
 class Trap(NamedTuple):
     loc: int 
@@ -339,25 +335,23 @@ class Trap(NamedTuple):
     name: str
     ItemID: int
     classification = TRAP
-    ItemType = 6
+    ItemType = "Trap"
 
-TrapItems: list = [
-    Trap(0x801ce3a4,  -50, "Unithorn Attack", 130),
-    Trap(DME.read_word(0x801c5820) + 0xd8,  0,  "Death Trap",   131),
-    Trap(DME.read_word(0x801c5820) + 0xd8,  -2, "Take Damage", 132),
-]
+#TrapItems: list = [
+ #   Trap(0x801ce3a4,  -50, "Unithorn Attack", 130),
+  #  Trap(DME.read_word(0x801c5820) + 0xd8,  0,  "Death Trap",   131),
+   # Trap(DME.read_word(0x801c5820) + 0xd8,  -2, "Take Damage", 132),
+#]
 
-ITEM_TABLE: list = [
-    Spritelings_h,
-    TrapItems,
-    JunkItems,
-    Treasures_h,
-    BossMedals_h,
-    Doors_b,
-]
+ITEM_TABLE = {
+    **Spritelings_h,
+    **Treasures_h,
+    **BossMedals_h,
+    **Doors_b,
+}
 
-CHECK_TABLE: list = [
-    Chests_b,
-    Cages_b,
-    Bosses_b,
-]
+CHECK_TABLE = {
+    **Chests_b,
+    **Cages_b,
+    **Bosses_b,
+}
