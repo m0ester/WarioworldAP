@@ -6,7 +6,6 @@ class Goal(Choice):
     Fragments: Collect a set amount of Big Key Fragments to win"""
     display_name = "Goal"
     option_FinalBoss = 0
-    option_Fragments = 1
 
 
 class FragmentRequirement(Range):
