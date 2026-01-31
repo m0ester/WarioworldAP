@@ -13,7 +13,7 @@ from worlds.AutoWorld import WebWorld, World
 from worlds.generic.Rules import add_item_rule
 from worlds.LauncherComponents import Component, SuffixIdentifier, Type, components, launch_subprocess
 
-from worlds.WarioworldAP.items import WwItem
+from .items import WwItem
 from .locations import WwLocation
 from .gamedata import CHECK_TABLE, ITEM_TABLE
 from .Settings import WwOptions
@@ -35,6 +35,26 @@ components.append(
     )
 )
 
+class TWWWeb(WebWorld):
+    """
+    This class handles the web interface for The Wind Waker.
+
+    The web interface includes the setup guide and the options page for generating YAMLs.
+    """
+
+    tutorials = [
+        Tutorial(
+            "Multiworld Setup Guide",
+            "A guide to setting up the Warioworld Archipelago software on your computer.",
+            "English",
+            "setup_en.md",
+            "setup/en",
+            ["tanjo3", "Lunix"],
+        )
+    ]
+    theme = "ocean"
+    rich_text_options_doc = True
+
 class WwWorld(World):
     options_dataclass = WwOptions
     options: WwOptions
@@ -43,15 +63,17 @@ class WwWorld(World):
     topology_present: bool = True
 
     item_name_to_id: ClassVar[dict[str, int]] = {
-        name: WwItem.get_apid(data.code) for name, data in ITEM_TABLE.items() if data.code is not None
+        name: WwItem.get_apid(data.memvalue) for name, data in ITEM_TABLE.items() if data.memloc is not None
     }
     location_name_to_id: ClassVar[dict[str, int]] = {
-        name: WwLocation.get_apid(data.code) for name, data in CHECK_TABLE.items() if data.code is not None
+        name: WwLocation.get_apid(data.memvalue) for name, data in CHECK_TABLE.items() if data.memloc is not None
     }
 
     item_name_groups: ClassVar[dict[str, set[str]]]
 
     required_client_version: tuple[int, int, int] = (0, 6, 5)
+
+    web: ClassVar[TWWWeb] = TWWWeb()
 
     origin_region_name: str = "Overworld"
 
@@ -69,13 +91,6 @@ class WwWorld(World):
         # "The Overworld" region contains all locations that are not in a randomizable region.
         Overworld = Region("Overworld", player, multiworld)
         multiworld.regions.append(Overworld)
-        #for stages that require keys
-        GF = Region("Greenhorn Forest", player, multiworld)
-        GR = Region("Greenhorn Ruins", player, multiworld)
-        DS = Region("Dinomighty's Showdown", player, multiworld)
-        HM = Region("Horror Manor", player, multiworld)
-        WC = Region("Wonky Circus", player, multiworld)
-        DD = Region("Dual Dragon's Showdown", player, multiworld)
 
 
     def create_regions(self) -> None:
