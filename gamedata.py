@@ -314,40 +314,43 @@ Bosses_b: dict[str, BossBeat] = {
     "Defeated The Mean Emcee":  BossBeat(0x200, 114,    "Mirror Mansion"),
     "Defeated Ironsider":   BossBeat(0x400,	115,    "Pecan Sands"),
     "Defeated Captain Skull":   BossBeat(0x800, 116,    "Captain Skull's Showdown"),
-    "Defeated Black Jewel": BossBeat(0x1000,    None,   None),}
+    "Victory": BossBeat(0x1000,    None,   None),}
 
 class Junk(NamedTuple):
-    loc: int
-    value: int
-    name: str
+    memloc: int
+    memvalue: int
     ItemID: int
     classification = FILL
     ItemType = "Junk"
 
-#JunkItems: list = [
- #   Junk(0x801ce3a4,    +50, "50 coins", 128),
-  #  Junk(DME.read_word(0x801c5820) + 0xd8, +2, "Garlic", 129),
-#]
+JunkItems: dict[str, Junk] = {
+    "50 coins": Junk(0x801ce3a4,    +50, 128),
+    "Garlic":   Junk(None,   +2,   129),
+}
 
 class Trap(NamedTuple):
-    loc: int 
-    value: int
-    name: str
+    memloc: int
+    memvalue: int
     ItemID: int
     classification = TRAP
     ItemType = "Trap"
 
-#TrapItems: list = [
- #   Trap(0x801ce3a4,  -50, "Unithorn Attack", 130),
-  #  Trap(DME.read_word(0x801c5820) + 0xd8,  0,  "Death Trap",   131),
-   # Trap(DME.read_word(0x801c5820) + 0xd8,  -2, "Take Damage", 132),
-#]
+TrapItems: dict[str, Trap] = {
+    "Unithorn Attack":    Trap(0x801ce3a4,  -50, 130),
+    "Death Trap":   Trap(None,  0,  131),
+    "Take Damage": Trap(None,  -2, 132),
+}
 
 ITEM_TABLE = {
     **Spritelings_h,
     **Treasures_h,
     **BossMedals_h,
     **Doors_b,
+}
+
+FILLER_TABLE = {
+    **JunkItems,
+    **TrapItems,
 }
 
 CHECK_TABLE = {
