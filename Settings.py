@@ -1,20 +1,22 @@
 from Options import Choice, NamedRange, PerGameCommonOptions, Range, DeathLink
+from dataclasses import dataclass
 
 class Goal(Choice):
     """Victory condition for the game.
     Final Boss: Defeat the Black Jewel after collecting a set amount of Big Key Fragments
     Fragments: Collect a set amount of Big Key Fragments to win"""
     display_name = "Goal"
-    option_FinalBoss = 0
+    default = 0
+    option_final_boss = 0
 
 
-class FragmentRequirement(Range):
-    """How many Big Key Fragments are required to complete the set goal
+class StartingFragments(Range):
+    """How many Big Key Fragments are given on start?
     Recommended: 2 for a large pool of checks, 4 for a small or solo playthrough, set to 4 by default"""
     display_name = "Big Key Fragment Requirement"
-    default = 4
-    Range_start = 0
-    Range_end = 4
+    default = 0
+    range_start = 0
+    range_end = 4
 
 class SpritelingRequirement(NamedRange):
     """How many spritelings are needed for goal completion
@@ -45,9 +47,10 @@ class StageRandomiser(Choice):
     option_default = 1
     default = 1
 
+@dataclass
 class WwOptions(PerGameCommonOptions):
     goal: Goal
-    BigKeyFragments: FragmentRequirement
+    big_key_fragments: StartingFragments
     ending: SpritelingRequirement
     stage_randomiser: StageRandomiser
     deathlink: DeathLink
