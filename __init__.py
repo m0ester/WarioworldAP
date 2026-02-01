@@ -4,20 +4,22 @@ from dataclasses import fields
 from typing import Any, ClassVar
 
 import yaml
-
+from Utils import visualize_regions as visualise_regions
 from BaseClasses import Item
 from BaseClasses import ItemClassification as IC
 from BaseClasses import MultiWorld, Region, Tutorial
 from Options import Toggle
 from worlds.AutoWorld import WebWorld, World
 from worlds.generic.Rules import add_item_rule
-from worlds.LauncherComponents import Component, SuffixIdentifier, Type, components, launch_subprocess
+from worlds.LauncherComponents import Component, icon_paths, Type, components, launch_subprocess
 
-from .items import WwItem
+from .items import WwItem, create_item, create_items, create_filler
 from .locations import WwLocation
-from .gamedata import CHECK_TABLE, ITEM_TABLE
+from .gamedata import CHECK_TABLE, ITEM_TABLE, FILLER_TABLE, BigKeys
 from .Settings import WwOptions
-#from .Rules import set_rules
+from .regions import create_regions, connect_regions
+from .Rules import set_rules
+
 
 def run_client() -> None:
     """
@@ -31,11 +33,12 @@ def run_client() -> None:
 
 components.append(
     Component(
-        "Warioworld Client", func=run_client, component_type=Type.CLIENT
+        "Warioworld Client", func=run_client, component_type=Type.CLIENT,
+        icon = "WwAPlogo",
     )
 )
-
-class TWWWeb(WebWorld):
+icon_paths["WwAPlogo"] = "ap:worlds.WarioworldAP/icons/logo.png"
+class WwWeb(WebWorld):
     """
     This class handles the web interface for The Wind Waker.
 
@@ -63,72 +66,65 @@ class WwWorld(World):
     topology_present: bool = True
 
     item_name_to_id: ClassVar[dict[str, int]] = {
-        name: WwItem.get_apid(data.memvalue) for name, data in ITEM_TABLE.items() if data.memloc is not None
+        name: data.ItemID for name, data in ITEM_TABLE.items() if data.ItemID is not None
     }
     location_name_to_id: ClassVar[dict[str, int]] = {
-        name: WwLocation.get_apid(data.memvalue) for name, data in CHECK_TABLE.items() if data.memloc is not None
+        name: data.CheckID for name, data in CHECK_TABLE.items() if data.CheckID is not None
     }
 
     item_name_groups: ClassVar[dict[str, set[str]]]
 
     required_client_version: tuple[int, int, int] = (0, 6, 5)
 
-    web: ClassVar[TWWWeb] = TWWWeb()
-
-    origin_region_name: str = "Overworld"
+    web: ClassVar[WwWeb] = WwWeb()
 
     #set_rules = set_rules
-
-    def setup_base_regions(self) -> None:
-
-        def get_access_rule(region: str) -> str:
-            snake_case_region = region.lower().replace("'", "").replace(" ", "_")
-            return f"can_access_{snake_case_region}"
-
-        multiworld = self.multiworld
-        player = self.player
-
-        # "The Overworld" region contains all locations that are not in a randomizable region.
-        Overworld = Region("Overworld", player, multiworld)
-        multiworld.regions.append(Overworld)
-
+    def __init__(self, multiworld, player):
+        super().__init__(multiworld, player)
+        self.itemlist = []
 
     def create_regions(self) -> None:
         """
         Create and connect regions for the Warioworld world.
-
-        This method first randomizes the charts and picks the required bosses if these options are enabled.
-        It then loops through all the world's progress locations and creates the locations, assigning dungeon locations
-        to their respective dungeons.
-        Finally, the flags for sunken treasure locations are updated as appropriate, and the entrances are randomized
-        if that option is enabled.
         """
-        self.setup_base_regions()
+        create_regions(self)
+        connect_regions(self)
 
         player = self.player
         options = self.options
 
         # Assign each location to their region.
-        for location_name in sorted(self.progress_locations):
-            data = CHECK_TABLE[location_name]
-
-            region = self.get_region(data.region)
-            location = WwLocation(player, location_name, region, data)
+        for name,data in CHECK_TABLE.items():
+            if data.region is None:
+                continue
+            region: Region = self.multiworld.get_region(data.region, player)
+            location = WwLocation(player, name, data.CheckID, region)
+            region.locations.append(location)
 
     def determine_item_classification(self, name: str) -> IC | None:
         adjusted_classification = None
         if self.options.ending == 0 | 1:
             adjusted_classification = IC.filler
         return adjusted_classification
-    
-    def create_item(self, name):
-        """
-        Create an item for this world type and player.
 
-        :param name: The name of the item to create.
-        :raises KeyError: If an invalid item name is provided.
-        """
-        if name in ITEM_TABLE:
-            return WwItem(name, self.player, ITEM_TABLE[name], self.determine_item_classification(name))
-        raise KeyError(f"Invalid item name: {name}")
-    
+    def create_item(self, name):
+        return items.create_item(self, name)
+
+    def create_items(self):
+        if self.options.big_key_fragments:
+            self.random.sample(BigKeys, k=self.options.big_key_fragments.value)
+            for key in BigKeys:
+                self.push_precollected(Item(key, IC.progression, self.item_name_to_id[key], self.player))
+        items.create_items(self)
+
+    def set_rules(self):
+        Rules.set_rules(self)
+
+    def fill_slot_data(self):
+        visualise_regions(self.multiworld.get_region("Menu", self.player), f"Player{self.player}.puml",
+            show_entrance_names=True,
+            regions_to_highlight=self.multiworld.get_all_state(self.player).reachable_regions[
+                self.player])
+
+    def create_event(self):
+        Event.create_event(self)
