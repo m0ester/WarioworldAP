@@ -1,13 +1,14 @@
 from typing import NamedTuple
 from BaseClasses import ItemClassification as IC
-
+from dataclasses import dataclass
 PROG = IC.progression
 FILL = IC.filler
 USEF = IC.useful
 SKIP = IC.skip_balancing
 TRAP = IC.trap
 
-class Treasure(NamedTuple):
+@dataclass
+class Treasure():
     """loc is vanilla location
     value is ingame value
     ItemID is archipelago itemcode
@@ -84,12 +85,16 @@ Treasures_h: dict[str, Treasure] = {
 "Monarch Mask":	Treasure(0x801ce458,	0x40,	63),
 "Nintendo GameCube":	Treasure(0x801ce458,	0x80,	64),}
 
-class Chest(NamedTuple):
+@dataclass
+class CHECK():
     memvalue: int
     memloc: int
     CheckID: int
     region: str
 
+@dataclass
+class Chest(CHECK):
+    pass
 Chests_b: dict[str, Chest] = {
     "Greenhorn Forest Red Chest":	Chest(1,    0x801ce408, 1, "Greenhorn Forest"),
     "Greenhorn Forest Yellow Chest":    Chest(2,	0x801ce408, 2,  "Greenhorn Forest"),
@@ -156,7 +161,8 @@ Chests_b: dict[str, Chest] = {
     "Pecan Sands Purple Chest": Chest(0x40,	0x801ce40f, 63, "Pecan Sands"),
     "Pecan Sands Pink Chest":   Chest(0x80,	0x801ce40f, 64, "Pecan Sands"),}
 
-class Spriteling(NamedTuple):
+@dataclass
+class Spriteling():
     memloc: int
     memvalue: int
     ItemID: int
@@ -205,12 +211,9 @@ Spritelings_h: dict[str, Spriteling] = {
 "Pecan Sands Blue Spriteling":	Spriteling(0x801ce454,	8,	103),
 "Pecan Sands Purple Spriteling":	Spriteling(0x801ce454,	0x10,	104),}
 
-class Cage(NamedTuple):
-    memvalue: int
-    memloc: int
-    CheckID: int
-    region: str
-
+@dataclass
+class Cage(CHECK):
+    pass
 Cages_b: dict[str, Cage] = {
     "Greenhorn Forest Red Spriteling Cage": Cage(1,	0x801ce3d8, 65, "Greenhorn Forest"),
     "Greenhorn Forest Yellow Spriteling Cage":  Cage(2,	0x801ce3d8, 66, "Greenhorn Forest"),
@@ -295,29 +298,38 @@ Doors_b: dict [str, StageDoor] = {
     "Pecan Sands Door":	StageDoor(0x200,	126),
     "Captain Skull's Showdown Door":	StageDoor(0x400,    127),}
 
-class BossBeat(NamedTuple):
-    memvalue: int
-    CheckID: int
-    region: str
-    memloc = 0x801ce3d2
+@dataclass
+class BossBeat(CHECK):
+    pass
 
 Bosses_b: dict[str, BossBeat] = {
-    "Defeated Greenfist":   BossBeat(1,	105, "Greenhorn Forest"),
-    "Defeated Sandworm":    BossBeat(2,	106,    "Greenhorn Ruins"),
-    "Defeated DinoMighty":  BossBeat(4, 107,    "DinoMighty's Showdown"),
-    "Defeated Brawl Doll":  BossBeat(8, 108,    "Horror Manor"),
-    "Defeated Clown-a-Round":   BossBeat(0x10,  109,    "Wonky Circus"),
-    "Defeated Dual Dragon": BossBeat(0x20,  110,    "Dual Dragon's Showdown"),
-    "Defeated Winter Windster": BossBeat(0x40,  111,    "Shivering Mountains"),
-    "Defeated Spideraticus":    BossBeat(0x80,  112,    "Beanstalk Way"),
-    "Defeated Red-Brief J": BossBeat(0x10,  113,    "Red-Brief J's Showdown"),
-    "Defeated The Mean Emcee":  BossBeat(0x200, 114,    "Mirror Mansion"),
-    "Defeated Ironsider":   BossBeat(0x400,	115,    "Pecan Sands"),
-    "Defeated Captain Skull":   BossBeat(0x800, 116,    "Captain Skull's Showdown"),
-    "Victory": BossBeat(0x1000,    None,   None),}
+    "Defeated Greenfist":   BossBeat(1, 0x801ce3d2,	105, "Greenhorn Forest"),
+    "Defeated Sandworm":    BossBeat(2, 0x801ce3d2,	106,    "Greenhorn Ruins"),
+    "Defeated DinoMighty":  BossBeat(4, 0x801ce3d2, 107,    "DinoMighty's Showdown"),
+    "Defeated Brawl Doll":  BossBeat(8, 0x801ce3d2, 108,    "Horror Manor"),
+    "Defeated Clown-a-Round":   BossBeat(0x10,  0x801ce3d2,  109,    "Wonky Circus"),
+    "Defeated Dual Dragon": BossBeat(0x20,  0x801ce3d2,  110,    "Dual Dragon's Showdown"),
+    "Defeated Winter Windster": BossBeat(0x40,  0x801ce3d2,  111,    "Shivering Mountains"),
+    "Defeated Spideraticus":    BossBeat(0x80,  0x801ce3d2,  112,    "Beanstalk Way"),
+    "Defeated Red-Brief J": BossBeat(0x10,  0x801ce3d2,  113,    "Red-Brief J's Showdown"),
+    "Defeated The Mean Emcee":  BossBeat(0x200, 0x801ce3d2, 114,    "Mirror Mansion"),
+    "Defeated Ironsider":   BossBeat(0x400, 0x801ce3d2,	115,    "Pecan Sands"),
+    "Defeated Captain Skull":   BossBeat(0x800, 0x801ce3d2, 116,    "Captain Skull's Showdown"),
+    "Opened Greenhorn Ruins Door": BossBeat(1, 0x801ce3d2, 117, "Greenhorn Forest"),
+    "Opened DinoMighty's Door": BossBeat(2, 0x801ce3d2, 118, "Greenhorn Ruins"),
+    "Opened Horror Manor Door": BossBeat(4, 0x801ce3d2, 119, "DinoMighty's Showdown"),
+    "Opened Wonky Circus Door": BossBeat(8, 0x801ce3d2, 120, "Horror Manor"),
+    "Opened Dual Dragon Door": BossBeat(0x10, 0x801ce3d2, 121, "Wonky Circus"),
+    "Opened Shivering Mountains Door": BossBeat(0x20, 0x801ce3d2, 122, "Dual Dragon's Showdown"),
+    "Opened Beanstalk Way Door": BossBeat(0x40, 0x801ce3d2, 123, "Shivering Mountains"),
+    "Opened Red-Brief J Door": BossBeat(0x80, 0x801ce3d2, 124, "Beanstalk Way"),
+    "Opened Mirror Mansion Door": BossBeat(0x10, 0x801ce3d2, 125, "Red-Brief J's Showdown"),
+    "Opened Pecan Sands Door": BossBeat(0x200, 0x801ce3d2, 126, "Mirror Mansion"),
+    "Opened Captain Skull Door": BossBeat(0x400, 0x801ce3d2, 127, "Pecan Sands"),
+    "Victory": BossBeat(0x1000, 0x801ce3d2,    None,   "Menu"),}
 
 class Junk(NamedTuple):
-    memloc: int
+    memloc: int | None
     memvalue: int
     ItemID: int
     classification = FILL
@@ -329,7 +341,7 @@ JunkItems: dict[str, Junk] = {
 }
 
 class Trap(NamedTuple):
-    memloc: int
+    memloc: int | None
     memvalue: int
     ItemID: int
     classification = TRAP
@@ -358,3 +370,9 @@ CHECK_TABLE = {
     **Cages_b,
     **Bosses_b,
 }
+
+BigKeys = ["Captain Skull Big Key Fragment",
+"DinoMighty Big Key Fragment",
+"Red-Brief J Big Key Fragment",
+"Dual Dragon Big Key Fragment",
+]
