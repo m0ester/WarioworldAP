@@ -15,6 +15,15 @@ regions = [
     "Captain Skull's Showdown",
 ]
 
+bosses = ["Greenfist",
+          "Sandworm",
+          "Brawl Doll",
+          "Clown-a-Round",
+          "Winter Windster",
+          "Spideraticus",
+          "The Mean Emcee",
+          "Ironsider",]
+
 def create_region(world, name) -> Region:
     reg = Region(name, world.player, world.multiworld)
     world.multiworld.regions.append(reg)
@@ -24,6 +33,8 @@ def create_regions(world):
     create_region(world, "Menu")
     for name in regions:
         create_region(world, name)
+    for name in bosses:
+        create_region(world, name)
 
 
 def connect_regions(world):
@@ -31,3 +42,13 @@ def connect_regions(world):
         from_region = world.get_region("Menu")
         to_region = world.get_region(name)
         from_region.connect(to_region, f"Menu -> {name}")
+
+    i = 0  # regions list index
+    for name in bosses:
+        if "Showdown" in regions[i]:
+            i+=1
+        print(regions[i], name)
+        from_region = world.get_region(regions[i])
+        to_region = world.get_region(name)
+        from_region.connect(to_region, f"{regions[i]} -> {name}")
+        i+=1
