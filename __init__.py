@@ -1,23 +1,17 @@
-import os
-from collections.abc import Mapping
-from dataclasses import fields
-from typing import Any, ClassVar
+from typing import ClassVar
 
-import yaml
 from Utils import visualize_regions as visualise_regions
 from BaseClasses import Item
 from BaseClasses import ItemClassification as IC
-from BaseClasses import MultiWorld, Region, Tutorial
-from Options import Toggle
+from BaseClasses import Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
-from worlds.generic.Rules import add_item_rule
 from worlds.LauncherComponents import Component, icon_paths, Type, components, launch_subprocess
 
-from .items import WwItem, create_item, create_items, create_filler
-from .locations import WwLocation
+from .Items import WwItem, create_item, create_items, create_filler
+from .Locations import WwLocation
 from .gamedata import CHECK_TABLE, ITEM_TABLE, FILLER_TABLE, BigKeys
 from .Settings import WwOptions
-from .regions import create_regions, connect_regions
+from .Regions import create_regions, connect_regions
 from .Rules import set_rules
 
 
@@ -108,14 +102,14 @@ class WwWorld(World):
         return adjusted_classification
 
     def create_item(self, name):
-        return items.create_item(self, name)
+        return create_item(self, name)
 
     def create_items(self):
         if self.options.big_key_fragments:
             self.random.sample(BigKeys, k=self.options.big_key_fragments.value)
             for key in BigKeys:
                 self.push_precollected(Item(key, IC.progression, self.item_name_to_id[key], self.player))
-        items.create_items(self)
+        create_items(self)
 
     def set_rules(self):
         Rules.set_rules(self)
@@ -126,5 +120,5 @@ class WwWorld(World):
             regions_to_highlight=self.multiworld.get_all_state(self.player).reachable_regions[
                 self.player])
 
-    def create_event(self):
-        Event.create_event(self)
+    #def create_event(self):
+     #   Event.create_event(self)
