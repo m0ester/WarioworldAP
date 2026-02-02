@@ -1,6 +1,7 @@
 from typing import NamedTuple
 from BaseClasses import ItemClassification as IC
 from dataclasses import dataclass
+
 PROG = IC.progression
 FILL = IC.filler
 USEF = IC.useful
@@ -303,54 +304,203 @@ class BossBeat(CHECK):
     pass
 
 Bosses_b: dict[str, BossBeat] = {
-    "Defeated Greenfist":   BossBeat(1, 0x801ce3d2,	105, "Greenhorn Forest"),
-    "Defeated Sandworm":    BossBeat(2, 0x801ce3d2,	106,    "Greenhorn Ruins"),
+    "Defeated Greenfist":   BossBeat(1, 0x801ce3d2,	105, "Greenfist"),
+    "Defeated Sandworm":    BossBeat(2, 0x801ce3d2,	106,    "Sandworm"),
     "Defeated DinoMighty":  BossBeat(4, 0x801ce3d2, 107,    "DinoMighty's Showdown"),
-    "Defeated Brawl Doll":  BossBeat(8, 0x801ce3d2, 108,    "Horror Manor"),
-    "Defeated Clown-a-Round":   BossBeat(0x10,  0x801ce3d2,  109,    "Wonky Circus"),
+    "Defeated Brawl Doll":  BossBeat(8, 0x801ce3d2, 108,    "Brawl Doll"),
+    "Defeated Clown-a-Round":   BossBeat(0x10,  0x801ce3d2,  109,    "Clown-a-Round"),
     "Defeated Dual Dragon": BossBeat(0x20,  0x801ce3d2,  110,    "Dual Dragon's Showdown"),
-    "Defeated Winter Windster": BossBeat(0x40,  0x801ce3d2,  111,    "Shivering Mountains"),
-    "Defeated Spideraticus":    BossBeat(0x80,  0x801ce3d2,  112,    "Beanstalk Way"),
+    "Defeated Winter Windster": BossBeat(0x40,  0x801ce3d2,  111,    "Winter Windster"),
+    "Defeated Spideraticus":    BossBeat(0x80,  0x801ce3d2,  112,    "Spideraticus"),
     "Defeated Red-Brief J": BossBeat(0x10,  0x801ce3d2,  113,    "Red-Brief J's Showdown"),
-    "Defeated The Mean Emcee":  BossBeat(0x200, 0x801ce3d2, 114,    "Mirror Mansion"),
-    "Defeated Ironsider":   BossBeat(0x400, 0x801ce3d2,	115,    "Pecan Sands"),
+    "Defeated The Mean Emcee":  BossBeat(0x200, 0x801ce3d2, 114,    "The Mean Emcee"),
+    "Defeated Ironsider":   BossBeat(0x400, 0x801ce3d2,	115,    "Ironsider"),
     "Defeated Captain Skull":   BossBeat(0x800, 0x801ce3d2, 116,    "Captain Skull's Showdown"),
-    "Opened Greenhorn Ruins Door": BossBeat(1, 0x801ce3d2, 117, "Greenhorn Forest"),
-    "Opened DinoMighty's Door": BossBeat(2, 0x801ce3d2, 118, "Greenhorn Ruins"),
+    "Opened Greenhorn Ruins Door": BossBeat(1, 0x801ce3d2, 117, "Greenfist"),
+    "Opened DinoMighty's Door": BossBeat(2, 0x801ce3d2, 118, "Sandworm"),
     "Opened Horror Manor Door": BossBeat(4, 0x801ce3d2, 119, "DinoMighty's Showdown"),
-    "Opened Wonky Circus Door": BossBeat(8, 0x801ce3d2, 120, "Horror Manor"),
-    "Opened Dual Dragon Door": BossBeat(0x10, 0x801ce3d2, 121, "Wonky Circus"),
+    "Opened Wonky Circus Door": BossBeat(8, 0x801ce3d2, 120, "Brawl Doll"),
+    "Opened Dual Dragon Door": BossBeat(0x10, 0x801ce3d2, 121, "Clown-a-Round"),
     "Opened Shivering Mountains Door": BossBeat(0x20, 0x801ce3d2, 122, "Dual Dragon's Showdown"),
-    "Opened Beanstalk Way Door": BossBeat(0x40, 0x801ce3d2, 123, "Shivering Mountains"),
-    "Opened Red-Brief J Door": BossBeat(0x80, 0x801ce3d2, 124, "Beanstalk Way"),
+    "Opened Beanstalk Way Door": BossBeat(0x40, 0x801ce3d2, 123, "Winter Windster"),
+    "Opened Red-Brief J Door": BossBeat(0x80, 0x801ce3d2, 124, "Spideraticus"),
     "Opened Mirror Mansion Door": BossBeat(0x10, 0x801ce3d2, 125, "Red-Brief J's Showdown"),
-    "Opened Pecan Sands Door": BossBeat(0x200, 0x801ce3d2, 126, "Mirror Mansion"),
-    "Opened Captain Skull Door": BossBeat(0x400, 0x801ce3d2, 127, "Pecan Sands"),
+    "Opened Pecan Sands Door": BossBeat(0x200, 0x801ce3d2, 126, "The Mean Emcee"),
+    "Opened Captain Skull Door": BossBeat(0x400, 0x801ce3d2, 127, "Ironsider"),
     "Victory": BossBeat(0x1000, 0x801ce3d2,    None,   "Menu"),}
+
+class RedDiamond(NamedTuple):
+    """loc is vanilla location
+    value is ingame value
+    ItemID is archipelago itemcode
+    """
+    memloc: int
+    memvalue: int
+    ItemID: int
+    classification = PROG
+    ItemType = "Red Diamond"
+
+Diamonds_h: dict [str, RedDiamond] = {
+"Greenhorn Forest Red Diamond 1":	RedDiamond(0x801ce3ba,	1,	128),
+"Greenhorn Forest Red Diamond 2":	RedDiamond(0x801ce3ba,	2,	129),
+"Greenhorn Forest Red Diamond 3":	RedDiamond(0x801ce3ba,	4,	130),
+"Greenhorn Forest Red Diamond 4":	RedDiamond(0x801ce3ba,	8,	131),
+"Greenhorn Forest Red Diamond 5":	RedDiamond(0x801ce3ba,	0x10,	132),
+"Greenhorn Forest Red Diamond 6":	RedDiamond(0x801ce3ba,	0x20,	133),
+"Greenhorn Forest Red Diamond 7":	RedDiamond(0x801ce3ba,	0x40,	134),
+"Greenhorn Forest Red Diamond 8":	RedDiamond(0x801ce3ba,	0x80,	135),
+"Greenhorn Ruins Red Diamond 1":	RedDiamond(0x801ce3ca,	1,	136),
+"Greenhorn Ruins Red Diamond 2":	RedDiamond(0x801ce3ca,	2,	137),
+"Greenhorn Ruins Red Diamond 3":	RedDiamond(0x801ce3ca,	4,	138),
+"Greenhorn Ruins Red Diamond 4":	RedDiamond(0x801ce3ca,	8,	139),
+"Greenhorn Ruins Red Diamond 5":	RedDiamond(0x801ce3ca,	0x10,	140),
+"Greenhorn Ruins Red Diamond 6":	RedDiamond(0x801ce3ca,	0x20,	141),
+"Greenhorn Ruins Red Diamond 7":	RedDiamond(0x801ce3ca,	0x40,	142),
+"Greenhorn Ruins Red Diamond 8":	RedDiamond(0x801ce3ca,	0x80,	143),
+"Horror Manor Red Diamond 1":	RedDiamond(0x801ce3ea,	1,	144),
+"Horror Manor Red Diamond 2":	RedDiamond(0x801ce3ea,	2,	145),
+"Horror Manor Red Diamond 3":	RedDiamond(0x801ce3ea,	4,	146),
+"Horror Manor Red Diamond 4":	RedDiamond(0x801ce3ea,	8,	147),
+"Horror Manor Red Diamond 5":	RedDiamond(0x801ce3ea,	0x10,	148),
+"Horror Manor Red Diamond 6":	RedDiamond(0x801ce3ea,	0x20,	149),
+"Horror Manor Red Diamond 7":	RedDiamond(0x801ce3ea,	0x40,	150),
+"Horror Manor Red Diamond 8":	RedDiamond(0x801ce3ea,	0x80,	151),
+"Wonky Circus Red Diamond 1":	RedDiamond(0x801ce3fa,	1,	152),
+"Wonky Circus Red Diamond 2":	RedDiamond(0x801ce3fa,	2,	153),
+"Wonky Circus Red Diamond 3":	RedDiamond(0x801ce3fa,	4,	154),
+"Wonky Circus Red Diamond 4":	RedDiamond(0x801ce3fa,	8,	155),
+"Wonky Circus Red Diamond 5":	RedDiamond(0x801ce3fa,	0x10,	156),
+"Wonky Circus Red Diamond 6":	RedDiamond(0x801ce3fa,	0x20,	157),
+"Wonky Circus Red Diamond 7":	RedDiamond(0x801ce3fa,	0x40,	158),
+"Wonky Circus Red Diamond 8":	RedDiamond(0x801ce3fa,	0x80,	159),
+"Shivering Mountains Red Diamond 1":	RedDiamond(0x801ce41a,	1,	160),
+"Shivering Mountains Red Diamond 2":	RedDiamond(0x801ce41a,	2,	161),
+"Shivering Mountains Red Diamond 3":	RedDiamond(0x801ce41a,	4,	162),
+"Shivering Mountains Red Diamond 4":	RedDiamond(0x801ce41a,	8,	163),
+"Shivering Mountains Red Diamond 5":	RedDiamond(0x801ce41a,	0x10,	164),
+"Shivering Mountains Red Diamond 6":	RedDiamond(0x801ce41a,	0x20,	165),
+"Shivering Mountains Red Diamond 7":	RedDiamond(0x801ce41a,	0x40,	166),
+"Shivering Mountains Red Diamond 8":	RedDiamond(0x801ce41a,	0x80,	167),
+"Beanstalk Way Red Diamond 1":	RedDiamond(0x801ce42a,	1,	168),
+"Beanstalk Way Red Diamond 2":	RedDiamond(0x801ce42a,	2,	169),
+"Beanstalk Way Red Diamond 3":	RedDiamond(0x801ce42a,	4,	170),
+"Beanstalk Way Red Diamond 4":	RedDiamond(0x801ce42a,	8,	171),
+"Beanstalk Way Red Diamond 5":	RedDiamond(0x801ce42a,	0x10,	172),
+"Beanstalk Way Red Diamond 6":	RedDiamond(0x801ce42a,	0x20,	173),
+"Beanstalk Way Red Diamond 7":	RedDiamond(0x801ce42a,	0x40,	174),
+"Beanstalk Way Red Diamond 8":	RedDiamond(0x801ce42a,	0x80,	175),
+"Mirror Mansion Red Diamond 1":	RedDiamond(0x801ce44a,	1,	176),
+"Mirror Mansion Red Diamond 2":	RedDiamond(0x801ce44a,	2,	177),
+"Mirror Mansion Red Diamond 3":	RedDiamond(0x801ce44a,	4,	178),
+"Mirror Mansion Red Diamond 4":	RedDiamond(0x801ce44a,	8,	179),
+"Mirror Mansion Red Diamond 5":	RedDiamond(0x801ce44a,	0x10,	180),
+"Mirror Mansion Red Diamond 6":	RedDiamond(0x801ce44a,	0x20,	181),
+"Mirror Mansion Red Diamond 7":	RedDiamond(0x801ce44a,	0x40,	182),
+"Mirror Mansion Red Diamond 8":	RedDiamond(0x801ce44a,	0x80,	183),
+"Pecan Sands Red Diamond 1":	RedDiamond(0x801ce45a,	1,	184),
+"Pecan Sands Red Diamond 2":	RedDiamond(0x801ce45a,	2,	185),
+"Pecan Sands Red Diamond 3":	RedDiamond(0x801ce45a,	4,	186),
+"Pecan Sands Red Diamond 4":	RedDiamond(0x801ce45a,	8,	187),
+"Pecan Sands Red Diamond 5":	RedDiamond(0x801ce45a,	0x10,	188),
+"Pecan Sands Red Diamond 6":	RedDiamond(0x801ce45a,	0x20,	189),
+"Pecan Sands Red Diamond 7":	RedDiamond(0x801ce45a,	0x40,	190),
+"Pecan Sands Red Diamond 8":	RedDiamond(0x801ce45a,	0x80,	191)}
+
+
+@dataclass
+class DiamondPickup(CHECK):
+    pass
+
+DiamondPickups_b: dict[str, DiamondPickup] = {
+"Greenhorn Forest Trapdoor Red Diamond 1":	DiamondPickup(1,	0x801ce400,	128,	"Greenhorn Forest"),
+"Greenhorn Forest Trapdoor Red Diamond 2":	DiamondPickup(2,	0x801ce400,	129,	"Greenhorn Forest"),
+"Greenhorn Forest Trapdoor Red Diamond 3":	DiamondPickup(4,	0x801ce400,	130,	"Greenhorn Forest"),
+"Greenhorn Forest Trapdoor Red Diamond 4":	DiamondPickup(8,	0x801ce400,	131,	"Greenhorn Forest"),
+"Greenhorn Forest Trapdoor Red Diamond 5":	DiamondPickup(0x10,	0x801ce400,	132,	"Greenhorn Forest"),
+"Greenhorn Forest Trapdoor Red Diamond 6":	DiamondPickup(0x20,	0x801ce400,	133,	"Greenhorn Forest"),
+"Greenhorn Forest Trapdoor Red Diamond 7":	DiamondPickup(0x40,	0x801ce400,	134,	"Greenhorn Forest"),
+"Greenhorn Forest Trapdoor Red Diamond 8":	DiamondPickup(0x80,	0x801ce400,	135,	"Greenhorn Forest"),
+"Greenhorn Ruins Trapdoor Red Diamond 1":	DiamondPickup(1,	0x801ce401,	136,	"Greenhorn Ruins"),
+"Greenhorn Ruins Trapdoor Red Diamond 2":	DiamondPickup(2,	0x801ce401,	137,	"Greenhorn Ruins"),
+"Greenhorn Ruins Trapdoor Red Diamond 3":	DiamondPickup(4,	0x801ce401,	138,	"Greenhorn Ruins"),
+"Greenhorn Ruins Trapdoor Red Diamond 4":	DiamondPickup(8,	0x801ce401,	139,	"Greenhorn Ruins"),
+"Greenhorn Ruins Trapdoor Red Diamond 5":	DiamondPickup(0x10,	0x801ce401,	140,	"Greenhorn Ruins"),
+"Greenhorn Ruins Trapdoor Red Diamond 6":	DiamondPickup(0x20,	0x801ce401,	141,	"Greenhorn Ruins"),
+"Greenhorn Ruins Trapdoor Red Diamond 7":	DiamondPickup(0x40,	0x801ce401,	142,	"Greenhorn Ruins"),
+"Greenhorn Ruins Trapdoor Red Diamond 8":	DiamondPickup(0x80,	0x801ce401,	143,	"Greenhorn Ruins"),
+"Horror Manor Trapdoor Red Diamond 1":	DiamondPickup(1,	0x801ce402,	144,	"Horror Manor"),
+"Horror Manor Trapdoor Red Diamond 2":	DiamondPickup(2,	0x801ce402,	145,	"Horror Manor"),
+"Horror Manor Trapdoor Red Diamond 3":	DiamondPickup(4,	0x801ce402,	146,	"Horror Manor"),
+"Horror Manor Trapdoor Red Diamond 4":	DiamondPickup(8,	0x801ce402,	147,	"Horror Manor"),
+"Horror Manor Trapdoor Red Diamond 5":	DiamondPickup(0x10,	0x801ce402,	148,	"Horror Manor"),
+"Horror Manor Trapdoor Red Diamond 6":	DiamondPickup(0x20,	0x801ce402,	149,	"Horror Manor"),
+"Horror Manor Trapdoor Red Diamond 7":	DiamondPickup(0x40,	0x801ce402,	150,	"Horror Manor"),
+"Horror Manor Trapdoor Red Diamond 8":	DiamondPickup(0x80,	0x801ce402,	151,	"Horror Manor"),
+"Wonky Circus Trapdoor Red Diamond 1":	DiamondPickup(1,	0x801ce403,	152,	"Wonky Circus"),
+"Wonky Circus Trapdoor Red Diamond 2":	DiamondPickup(2,	0x801ce403,	153,	"Wonky Circus"),
+"Wonky Circus Trapdoor Red Diamond 3":	DiamondPickup(4,	0x801ce403,	154,	"Wonky Circus"),
+"Wonky Circus Trapdoor Red Diamond 4":	DiamondPickup(8,	0x801ce403,	155,	"Wonky Circus"),
+"Wonky Circus Trapdoor Red Diamond 5":	DiamondPickup(0x10,	0x801ce403,	156,	"Wonky Circus"),
+"Wonky Circus Trapdoor Red Diamond 6":	DiamondPickup(0x20,	0x801ce403,	157,	"Wonky Circus"),
+"Wonky Circus Trapdoor Red Diamond 7":	DiamondPickup(0x40,	0x801ce403,	158,	"Wonky Circus"),
+"Wonky Circus Trapdoor Red Diamond 8":	DiamondPickup(0x80,	0x801ce403,	159,	"Wonky Circus"),
+"Shivering Mountains Trapdoor Red Diamond 1":	DiamondPickup(1,	0x801ce404,	160,	"Shivering Mountains"),
+"Shivering Mountains Trapdoor Red Diamond 2":	DiamondPickup(2,	0x801ce404,	161,	"Shivering Mountains"),
+"Shivering Mountains Trapdoor Red Diamond 3":	DiamondPickup(4,	0x801ce404,	162,	"Shivering Mountains"),
+"Shivering Mountains Trapdoor Red Diamond 4":	DiamondPickup(8,	0x801ce404,	163,	"Shivering Mountains"),
+"Shivering Mountains Trapdoor Red Diamond 5":	DiamondPickup(0x10,	0x801ce404,	164,	"Shivering Mountains"),
+"Shivering Mountains Trapdoor Red Diamond 6":	DiamondPickup(0x20,	0x801ce404,	165,	"Shivering Mountains"),
+"Shivering Mountains Trapdoor Red Diamond 7":	DiamondPickup(0x40,	0x801ce404,	166,	"Shivering Mountains"),
+"Shivering Mountains Trapdoor Red Diamond 8":	DiamondPickup(0x80,	0x801ce404,	167,	"Shivering Mountains"),
+"Beanstalk Way Trapdoor Red Diamond 1":	DiamondPickup(1,	0x801ce405,	168,	"Beanstalk Way"),
+"Beanstalk Way Trapdoor Red Diamond 2":	DiamondPickup(2,	0x801ce405,	169,	"Beanstalk Way"),
+"Beanstalk Way Trapdoor Red Diamond 3":	DiamondPickup(4,	0x801ce405,	170,	"Beanstalk Way"),
+"Beanstalk Way Trapdoor Red Diamond 4":	DiamondPickup(8,	0x801ce405,	171,	"Beanstalk Way"),
+"Beanstalk Way Trapdoor Red Diamond 5":	DiamondPickup(0x10,	0x801ce405,	172,	"Beanstalk Way"),
+"Beanstalk Way Trapdoor Red Diamond 6":	DiamondPickup(0x20,	0x801ce405,	173,	"Beanstalk Way"),
+"Beanstalk Way Trapdoor Red Diamond 7":	DiamondPickup(0x40,	0x801ce405,	174,	"Beanstalk Way"),
+"Beanstalk Way Trapdoor Red Diamond 8":	DiamondPickup(0x80,	0x801ce405,	175,	"Beanstalk Way"),
+"Mirror Mansion	Trapdoor Red Diamond 1":	DiamondPickup(1,	0x801ce406,	176,	"Mirror Mansion"),
+"Mirror Mansion	Trapdoor Red Diamond 2":	DiamondPickup(2,	0x801ce406,	177,	"Mirror Mansion"),
+"Mirror Mansion	Trapdoor Red Diamond 3":	DiamondPickup(4,	0x801ce406,	178,	"Mirror Mansion"),
+"Mirror Mansion	Trapdoor Red Diamond 4":	DiamondPickup(8,	0x801ce406,	179,	"Mirror Mansion"),
+"Mirror Mansion	Trapdoor Red Diamond 5":	DiamondPickup(0x10,	0x801ce406,	180,	"Mirror Mansion"),
+"Mirror Mansion	Trapdoor Red Diamond 6":	DiamondPickup(0x20,	0x801ce406,	181,	"Mirror Mansion"),
+"Mirror Mansion	Trapdoor Red Diamond 7":	DiamondPickup(0x40,	0x801ce406,	182,	"Mirror Mansion"),
+"Mirror Mansion	Trapdoor Red Diamond 8":	DiamondPickup(0x80,	0x801ce406,	183,	"Mirror Mansion"),
+"Pecan Sands Trapdoor Red Diamond 1":	DiamondPickup(1,	0x801ce407,	184,	"Pecan Sands"),
+"Pecan Sands Trapdoor Red Diamond 2":	DiamondPickup(2,	0x801ce407,	185,	"Pecan Sands"),
+"Pecan Sands Trapdoor Red Diamond 3":	DiamondPickup(4,	0x801ce407,	186,	"Pecan Sands"),
+"Pecan Sands Trapdoor Red Diamond 4":	DiamondPickup(8,	0x801ce407,	187,	"Pecan Sands"),
+"Pecan Sands Trapdoor Red Diamond 5":	DiamondPickup(0x10,	0x801ce407,	188,	"Pecan Sands"),
+"Pecan Sands Trapdoor Red Diamond 6":	DiamondPickup(0x20,	0x801ce407,	189,	"Pecan Sands"),
+"Pecan Sands Trapdoor Red Diamond 7":	DiamondPickup(0x40,	0x801ce407,	190,	"Pecan Sands"),
+"Pecan Sands Trapdoor Red Diamond 8":	DiamondPickup(0x80,	0x801ce407,	191,	"Pecan Sands"),
+}
 
 class Junk(NamedTuple):
     memloc: int | None
     memvalue: int
-    ItemID: int
+    ItemID: int | None
     classification = FILL
     ItemType = "Junk"
 
 JunkItems: dict[str, Junk] = {
-    "50 coins": Junk(0x801ce3a4,    +50, 128),
-    "Garlic":   Junk(None,   +2,   129),
+    "50 coins": Junk(0x801ce3a4,    +50, None),
+    "Garlic":   Junk(None,   +2,   None),
 }
 
 class Trap(NamedTuple):
     memloc: int | None
     memvalue: int
-    ItemID: int
+    ItemID: int | None
     classification = TRAP
     ItemType = "Trap"
 
 TrapItems: dict[str, Trap] = {
-    "Unithorn Attack":    Trap(0x801ce3a4,  -50, 130),
-    "Death Trap":   Trap(None,  0,  131),
-    "Take Damage": Trap(None,  -2, 132),
+    "Unithorn Attack":    Trap(0x801ce3a4,  -50, None),
+    "Death Trap":   Trap(None,  0,  None),
+    "Take Damage": Trap(None,  -2, None),
 }
 
 ITEM_TABLE = {
@@ -358,6 +508,7 @@ ITEM_TABLE = {
     **Treasures_h,
     **BossMedals_h,
     **Doors_b,
+    **Diamonds_h,
 }
 
 FILLER_TABLE = {
@@ -369,10 +520,15 @@ CHECK_TABLE = {
     **Chests_b,
     **Cages_b,
     **Bosses_b,
+    **DiamondPickups_b,
 }
 
-BigKeys = ["Captain Skull Big Key Fragment",
-"DinoMighty Big Key Fragment",
-"Red-Brief J Big Key Fragment",
-"Dual Dragon Big Key Fragment",
-]
+BigKeys = [x for x in BossMedals_h.keys() if "Big Key Fragment" in x]
+GFRedDiamonds = [x for x in Diamonds_h.keys() if "Greenhorn Forest Red Diamond" in x]
+GRRedDiamonds = [x for x in Diamonds_h.keys() if "Greenhorn Ruins Red Diamond" in x]
+HMRedDiamonds = [x for x in Diamonds_h.keys() if "Horror Manor Red Diamond" in x]
+WCRedDiamonds = [x for x in Diamonds_h.keys() if "Wonky Circus Red Diamond" in x]
+SMRedDiamonds = [x for x in Diamonds_h.keys() if "Shivering Mountains Red Diamond" in x]
+BWRedDiamonds = [x for x in Diamonds_h.keys() if "Beanstalk Way Red Diamond" in x]
+MMRedDiamonds = [x for x in Diamonds_h.keys() if "Mirror Mansion Red Diamond" in x]
+PSRedDiamonds = [x for x in Diamonds_h.keys() if "Pecan Sands Red Diamond" in x]
