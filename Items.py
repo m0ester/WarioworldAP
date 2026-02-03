@@ -1,6 +1,6 @@
 from typing import Optional
 from BaseClasses import Item, ItemClassification as IC
-from .gamedata import ITEM_TABLE, FILLER_TABLE, Spriteling, Treasure, BossMedal, StageDoor, Junk, Trap, RedDiamond
+from .gamedata import ITEM_TABLE, FILLER_TABLE, Spriteling, Treasure, BossMedal, StageDoor, Junk, Trap, RedDiamond, StatuePart
 from worlds.AutoWorld import World
 import dolphin_memory_engine as DME
 
@@ -19,7 +19,7 @@ class WwItem(Item):
     game: str = "Warioworld"
     type: Optional[str]
 
-    def __init__(self, name: str, player: int, data: Spriteling | Junk | Trap | Treasure | BossMedal | RedDiamond |StageDoor,
+    def __init__(self, name: str, player: int, data: Spriteling | Junk | Trap | Treasure | BossMedal | RedDiamond | StatuePart | StageDoor,
                  classification: Optional[IC] = None) -> None:
         super().__init__(
             name,
