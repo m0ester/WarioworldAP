@@ -72,13 +72,13 @@ def get_rules(world):
                 lambda state: True,
 
             "Greenhorn Forest -> Greenfist":
-            lambda state: has_greenfist(world, state),
+                lambda state: has_greenfist(world, state),
 
             "Menu -> Greenhorn Ruins":
                 lambda state: has_greenhornruins(world, state),
 
             "Greenhorn Ruins -> Sandworm":
-            lambda state: has_sandworm(world, state),
+                lambda state: has_sandworm(world, state),
 
             "Menu -> DinoMighty's Showdown":
                 lambda state: has_dinomighty(world, state),
@@ -93,7 +93,7 @@ def get_rules(world):
                 lambda state: has_wonkycircus(world, state),
 
             "Wonky Circus -> Clown-a-Round":
-            lambda state: has_wonkycircus(world, state),
+                lambda state: has_wonkycircus(world, state),
 
             "Menu -> Dual Dragon's Showdown":
                 lambda state: has_dualdragon(world, state),
