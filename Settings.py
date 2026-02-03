@@ -20,16 +20,16 @@ class StartingFragments(Range):
 
 class SpritelingRequirement(NamedRange):
     """How many spritelings are needed for goal completion
-    Plant ending by default, you may change to other endings here
-    Plant: 1
-    Wooden: 2 or more
-    Stone: 11 or more
-    Silver: 21 or more
-    Golden: 31 or more
+    Silver ending (21) by default, you may change to other endings here:
+    Plant: 0
+    Wooden: 2-10
+    Stone: 11-20
+    Silver: 21-30
+    Golden: 31-39
     Treasure: all 40
     or set your own!"""
     display_name = "Ending Type"
-    default = 0
+    default = 21
     range_start = 0
     range_end = 40
     special_range_names = {
@@ -51,6 +51,6 @@ class StageRandomiser(Choice):
 class WwOptions(PerGameCommonOptions):
     goal: Goal
     big_key_fragments: StartingFragments
-    ending: SpritelingRequirement
-    stage_randomiser: StageRandomiser
+    endingtype: SpritelingRequirement
+    #stage_randomiser: StageRandomiser
     deathlink: DeathLink
