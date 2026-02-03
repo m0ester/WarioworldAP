@@ -1,6 +1,6 @@
 from BaseClasses import Location
 from .gamedata import CHECK
-from .regions import *
+from .Regions import *
 
 class WwLocation(Location):
     game: str = "Warioworld"
