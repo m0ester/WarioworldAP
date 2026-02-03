@@ -100,9 +100,9 @@ class WwWorld(World):
             location = WwLocation(player, name, data.CheckID, region)
             region.locations.append(location)
 
-    def determine_item_classification(self, name: str) -> IC | None:
+    def set_spriteling_classification(self, name: str) -> IC | None:
         adjusted_classification = None
-        if self.options.ending == 0 | 1:
+        if self.options.endingtype == 0 | 1:
             adjusted_classification = IC.filler
         return adjusted_classification
 
