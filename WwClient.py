@@ -29,7 +29,6 @@ def _apply_dict_patch(code: dict[int, list[int]]):
     for start_address, rows in code.items():
         address = start_address
         for row in rows:
-            print(format(address, "0x"))
             DME.write_word(address, row)
             address += 4
 
@@ -135,12 +134,6 @@ def write_short(console_address: int, value: int) -> None:
 def read_string(console_address: int, strlen: int) -> str:
     return DME.read_bytes(console_address, strlen).split(b"\0", 1)[0].decode()
 
-def patchapply():
-    with files(asm).joinpath("Patch.bin").open("rb") as file:
-        byties = bytes(file.read())
-    DME.write_bytes(CODEFILEADDR, byties)
-    file.close()
-
 async def check_playable() -> bool:
     if DME.read_word(0x801ce6f4) == 0:
         return False
@@ -231,8 +224,9 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                     apply_patch(ctx)
                     logger.info("Patch Applied! loading savefile...")
                     patched = True
+                    await asyncio.sleep(0.1)
                     # DME.write_bytes(SAVEFILEADDR, ctx.stored_data.get("savedata"))
-                elif patched == False:
+                elif not patched:
                     logger.info("Patching Failed. Please ensure you are on the press start screen")
                     await asyncio.sleep(5)
                     continue
@@ -246,7 +240,6 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                 else:
                     if not ctx.auth:
                         ctx.auth = read_string(SLOTNAMEADDR, 0x40)
-
                     if ctx.awaiting_rom:
                         await ctx.server_auth()
                 await asyncio.sleep(0.1)
@@ -262,6 +255,7 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                         logger.info(CONNECTION_REFUSED)
                         ctx.dolphin_status = CONNECTION_REFUSED
                         DME.un_hook()
+                        patched = False
                         await asyncio.sleep(5)
                     else:
                         print("connected")
@@ -277,6 +271,7 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
         except Exception:
             DME.un_hook()
             logger.info("Connection to Dolphin failed, attempting again in 5 seconds...")
+            patched = False
             logger.error(traceback.format_exc())
             ctx.dolphin_status = CONNECTION_LOST
             await ctx.disconnect()
