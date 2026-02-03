@@ -478,6 +478,154 @@ DiamondPickups_b: dict[str, DiamondPickup] = {
 "Pecan Sands Trapdoor Red Diamond 8":	DiamondPickup(0x80,	0x801ce407,	191,	"Pecan Sands"),
 }
 
+class StatuePart(NamedTuple):
+    """loc is vanilla location
+    value is ingame value
+    ItemID is archipelago itemcode
+    """
+    memloc: int
+    memvalue: int
+    ItemID: int
+    classification = USEF
+    ItemType = "StatuePart"
+
+StatueParts_h: dict[str, StatuePart] = {
+"Greenhorn Forest Left Arm Statue Part" :StatuePart(0x801ce3b6,	1,	192),
+"Greenhorn Forest Right Arm Statue Part" :StatuePart(0x801ce3b6,	2,	193),
+"Greenhorn Forest Torso Statue Part" :StatuePart(0x801ce3b6,	4,	194),
+"Greenhorn Forest Backside Statue Part" :StatuePart(0x801ce3b6,	8,	195),
+"Greenhorn Forest Head Statue Part" :StatuePart(0x801ce3b6,	0x10,	196),
+"Greenhorn Forest Left Foot Statue Part" :StatuePart(0x801ce3b6,	0x20,	197),
+"Greenhorn Forest Right Foot Statue Part" :StatuePart(0x801ce3b6,	0x40,	198),
+"Greenhorn Forest Moustache Statue Part" :StatuePart(0x801ce3b6,	0x80,	199),
+"Greenhorn Ruins Left Arm Statue Part" :StatuePart(0x801ce3c6,	1,	200),
+"Greenhorn Ruins Right Arm Statue Part" :StatuePart(0x801ce3c6,	2,	201),
+"Greenhorn Ruins Torso Statue Part" :StatuePart(0x801ce3c6,	4,	202),
+"Greenhorn Ruins Backside Statue Part" :StatuePart(0x801ce3c6,	8,	203),
+"Greenhorn Ruins Head Statue Part" :StatuePart(0x801ce3c6,	0x10,	204),
+"Greenhorn Ruins Left Foot Statue Part" :StatuePart(0x801ce3c6,	0x20,	205),
+"Greenhorn Ruins Right Foot Statue Part" :StatuePart(0x801ce3c6,	0x40,	206),
+"Greenhorn Ruins Moustache Statue Part" :StatuePart(0x801ce3c6,	0x80,	207),
+"Horror Manor Left Arm Statue Part" :StatuePart(0x801ce3e6,	1,	208),
+"Horror Manor Right Arm Statue Part" :StatuePart(0x801ce3e6,	2,	209),
+"Horror Manor Torso Statue Part" :StatuePart(0x801ce3e6,	4,	210),
+"Horror Manor Backside Statue Part" :StatuePart(0x801ce3e6,	8,	211),
+"Horror Manor Head Statue Part" :StatuePart(0x801ce3e6,	0x10,	212),
+"Horror Manor Left Foot Statue Part" :StatuePart(0x801ce3e6,	0x20,	213),
+"Horror Manor Right Foot Statue Part" :StatuePart(0x801ce3e6,	0x40,	214),
+"Horror Manor Moustache Statue Part" :StatuePart(0x801ce3e6,	0x80,	215),
+"Wonky Circus Left Arm Statue Part" :StatuePart(0x801ce3f6,	1,	216),
+"Wonky Circus Right Arm Statue Part" :StatuePart(0x801ce3f6,	2,	217),
+"Wonky Circus Torso Statue Part" :StatuePart(0x801ce3f6,	4,	218),
+"Wonky Circus Backside Statue Part" :StatuePart(0x801ce3f6,	8,	219),
+"Wonky Circus Head Statue Part" :StatuePart(0x801ce3f6,	0x10,	220),
+"Wonky Circus Left Foot Statue Part" :StatuePart(0x801ce3f6,	0x20,	221),
+"Wonky Circus Right Foot Statue Part" :StatuePart(0x801ce3f6,	0x40,	222),
+"Wonky Circus Moustache Statue Part" :StatuePart(0x801ce3f6,	0x80,	223),
+"Shivering Mountains Left Arm Statue Part" :StatuePart(0x801ce416,	1,	224),
+"Shivering Mountains Right Arm Statue Part" :StatuePart(0x801ce416,	2,	225),
+"Shivering Mountains Torso Statue Part" :StatuePart(0x801ce416,	4,	226),
+"Shivering Mountains Backside Statue Part" :StatuePart(0x801ce416,	8,	227),
+"Shivering Mountains Head Statue Part" :StatuePart(0x801ce416,	0x10,	228),
+"Shivering Mountains Left Foot Statue Part" :StatuePart(0x801ce416,	0x20,	229),
+"Shivering Mountain Right Foot Statue Part" :StatuePart(0x801ce416,	0x40,	230),
+"Shivering Mountains Moustache Statue Part" :StatuePart(0x801ce416,	0x80,	231),
+"Beanstalk Way Left Arm Statue Part" :StatuePart(0x801ce426,	1,	232),
+"Beanstalk Way Right Arm Statue Part" :StatuePart(0x801ce426,	2,	233),
+"Beanstalk Way Torso Statue Part" :StatuePart(0x801ce426,	4,	234),
+"Beanstalk Way Backside Statue Part" :StatuePart(0x801ce426,	8,	235),
+"Beanstalk Way Head Statue Part" :StatuePart(0x801ce426,	0x10,	236),
+"Beanstalk Way Left Foot Statue Part" :StatuePart(0x801ce426,	0x20,	237),
+"Beanstalk Way Right Foot Statue Part" :StatuePart(0x801ce426,	0x40,	238),
+"Beanstalk Way Moustache Statue Part" :StatuePart(0x801ce426,	0x80,	239),
+"Mirror Mansion Left Arm Statue Part" :StatuePart(0x801ce446,	1,	240),
+"Mirror Mansion Right Arm Statue Part" :StatuePart(0x801ce446,	2,	241),
+"Mirror Mansion Torso Statue Part" :StatuePart(0x801ce446,	4,	242),
+"Mirror Mansion Backside Statue Part" :StatuePart(0x801ce446,	8,	243),
+"Mirror Mansion Head Statue Part" :StatuePart(0x801ce446,	0x10,	244),
+"Mirror Mansion Left Foot Statue Part" :StatuePart(0x801ce446,	0x20,	245),
+"Mirror Mansion Right Foot Statue Part" :StatuePart(0x801ce446,	0x40,	246),
+"Mirror Mansion Moustache Statue Part" :StatuePart(0x801ce446,	0x80,	247),
+"Pecan Sands Left Arm Statue Part" :StatuePart(0x801ce456,	1,	248),
+"Pecan Sands Right Arm Statue Part" :StatuePart(0x801ce456,	2,	249),
+"Pecan Sands Torso Statue Part" :StatuePart(0x801ce456,	4,	250),
+"Pecan Sands Backside Statue Part" :StatuePart(0x801ce456,	8,	251),
+"Pecan Sands Head Statue Part" :StatuePart(0x801ce456,	0x10,	252),
+"Pecan Sands Left Foot Statue Part" :StatuePart(0x801ce456,	0x20,	253),
+"Pecan Sands Right Foot Statue Part" :StatuePart(0x801ce456,	0x40,	254),
+"Pecan Sands Moustache Statue Part" :StatuePart(0x801ce456,	0x80,	255),
+}
+
+@dataclass
+class StatuePiece(CHECK):
+    pass
+
+StatuePieces_b: dict[str, StatuePiece] = {
+"Greenhorn Forest Statue Piece 1":	StatuePiece(1,	0x801ce430,	192,	"Greenhorn Forest"),
+"Greenhorn Forest Statue Piece 2":	StatuePiece(2,	0x801ce430,	193,	"Greenhorn Forest"),
+"Greenhorn Forest Statue Piece 3":	StatuePiece(4,	0x801ce430,	194,	"Greenhorn Forest"),
+"Greenhorn Forest Statue Piece 4":	StatuePiece(8,	0x801ce430,	195,	"Greenhorn Forest"),
+"Greenhorn Forest Statue Piece 5":	StatuePiece(0x10,	0x801ce430,	196,	"Greenhorn Forest"),
+"Greenhorn Forest Statue Piece 6":	StatuePiece(0x20,	0x801ce430,	197,	"Greenhorn Forest"),
+"Greenhorn Forest Statue Piece 7":	StatuePiece(0x40,	0x801ce430,	198,	"Greenhorn Forest"),
+"Greenhorn Forest Statue Piece 8":	StatuePiece(0x80,	0x801ce430,	199,	"Greenhorn Forest"),
+"Greenhorn Ruins Statue Piece 1":	StatuePiece(1,	0x801ce431,	200,	"Greenhorn Ruins"),
+"Greenhorn Ruins Statue Piece 2":	StatuePiece(2,	0x801ce431,	201,	"Greenhorn Ruins"),
+"Greenhorn Ruins Statue Piece 3":	StatuePiece(4,	0x801ce431,	202,	"Greenhorn Ruins"),
+"Greenhorn Ruins Statue Piece 4":	StatuePiece(8,	0x801ce431,	203,	"Greenhorn Ruins"),
+"Greenhorn Ruins Statue Piece 5":	StatuePiece(0x10,	0x801ce431,	204,	"Greenhorn Ruins"),
+"Greenhorn Ruins Statue Piece 6":	StatuePiece(0x20,	0x801ce431,	205,	"Greenhorn Ruins"),
+"Greenhorn Ruins Statue Piece 7":	StatuePiece(0x40,	0x801ce431,	206,	"Greenhorn Ruins"),
+"Greenhorn Ruins Statue Piece 8":	StatuePiece(0x80,	0x801ce431,	207,	"Greenhorn Ruins"),
+"Horror Manor Statue Piece 1":	StatuePiece(1,	0x801ce432,	208,	"Horror Manor"),
+"Horror Manor Statue Piece 2":	StatuePiece(2,	0x801ce432,	209,	"Horror Manor"),
+"Horror Manor Statue Piece 3":	StatuePiece(4,	0x801ce432,	210,	"Horror Manor"),
+"Horror Manor Statue Piece 4":	StatuePiece(8,	0x801ce432,	211,	"Horror Manor"),
+"Horror Manor Statue Piece 5":	StatuePiece(0x10,	0x801ce432,	212,	"Horror Manor"),
+"Horror Manor Statue Piece 6":	StatuePiece(0x20,	0x801ce432,	213,	"Horror Manor"),
+"Horror Manor Statue Piece 7":	StatuePiece(0x40,	0x801ce432,	214,	"Horror Manor"),
+"Horror Manor Statue Piece 8":	StatuePiece(0x80,	0x801ce432,	215,	"Horror Manor"),
+"Wonky Circus Statue Piece 1":	StatuePiece(1,	0x801ce433,	216,	"Wonky Circus"),
+"Wonky Circus Statue Piece 2":	StatuePiece(2,	0x801ce433,	217,	"Wonky Circus"),
+"Wonky Circus Statue Piece 3":	StatuePiece(4,	0x801ce433,	218,	"Wonky Circus"),
+"Wonky Circus Statue Piece 4":	StatuePiece(8,	0x801ce433,	219,	"Wonky Circus"),
+"Wonky Circus Statue Piece 5":	StatuePiece(0x10,	0x801ce433,	220,	"Wonky Circus"),
+"Wonky Circus Statue Piece 6":	StatuePiece(0x20,	0x801ce433,	221,	"Wonky Circus"),
+"Wonky Circus Statue Piece 7":	StatuePiece(0x40,	0x801ce433,	222,	"Wonky Circus"),
+"Wonky Circus Statue Piece 8":	StatuePiece(0x80,	0x801ce433,	223,	"Wonky Circus"),
+"Shivering Mountains Statue Piece 1":	StatuePiece(1,	0x801ce434,	224,	"Shivering Mountains"),
+"Shivering Mountains Statue Piece 2":	StatuePiece(2,	0x801ce434,	225,	"Shivering Mountains"),
+"Shivering Mountains Statue Piece 3":	StatuePiece(4,	0x801ce434,	226,	"Shivering Mountains"),
+"Shivering Mountains Statue Piece 4":	StatuePiece(8,	0x801ce434,	227,	"Shivering Mountains"),
+"Shivering Mountains Statue Piece 5":	StatuePiece(0x10,	0x801ce434,	228,	"Shivering Mountains"),
+"Shivering Mountains Statue Piece 6":	StatuePiece(0x20,	0x801ce434,	229,	"Shivering Mountains"),
+"Shivering Mountains Statue Piece 7":	StatuePiece(0x40,	0x801ce434,	230,	"Shivering Mountains"),
+"Shivering Mountains Statue Piece 8":	StatuePiece(0x80,	0x801ce434,	231,	"Shivering Mountains"),
+"Beanstalk Way Statue Piece 1":	StatuePiece(1,	0x801ce435,	232,	"Beanstalk Way"),
+"Beanstalk Way Statue Piece 2":	StatuePiece(2,	0x801ce435,	233,	"Beanstalk Way"),
+"Beanstalk Way Statue Piece 3":	StatuePiece(4,	0x801ce435,	234,	"Beanstalk Way"),
+"Beanstalk Way Statue Piece 4":	StatuePiece(8,	0x801ce435,	235,	"Beanstalk Way"),
+"Beanstalk Way Statue Piece 5":	StatuePiece(0x10,	0x801ce435,	236,	"Beanstalk Way"),
+"Beanstalk Way Statue Piece 6":	StatuePiece(0x20,	0x801ce435,	237,	"Beanstalk Way"),
+"Beanstalk Way Statue Piece 7":	StatuePiece(0x40,	0x801ce435,	238,	"Beanstalk Way"),
+"Beanstalk Way Statue Piece 8":	StatuePiece(0x80,	0x801ce435,	239,	"Beanstalk Way"),
+"Mirror Mansion Statue Piece 1":	StatuePiece(1,	0x801ce436,	240,	"Mirror Mansion"),
+"Mirror Mansion Statue Piece 2":	StatuePiece(2,	0x801ce436,	241,	"Mirror Mansion"),
+"Mirror Mansion Statue Piece 3":	StatuePiece(4,	0x801ce436,	242,	"Mirror Mansion"),
+"Mirror Mansion Statue Piece 4":	StatuePiece(8,	0x801ce436,	243,	"Mirror Mansion"),
+"Mirror Mansion Statue Piece 5":	StatuePiece(0x10,	0x801ce436,	244,	"Mirror Mansion"),
+"Mirror Mansion Statue Piece 6":	StatuePiece(0x20,	0x801ce436,	245,	"Mirror Mansion"),
+"Mirror Mansion Statue Piece 7":	StatuePiece(0x40,	0x801ce436,	246,	"Mirror Mansion"),
+"Mirror Mansion Statue Piece 8":	StatuePiece(0x80,	0x801ce436,	247,	"Mirror Mansion"),
+"Pecan Sands Statue Piece 1":	StatuePiece(1,	0x801ce437,	248,	"Pecan Sands"),
+"Pecan Sands Statue Piece 2":	StatuePiece(2,	0x801ce437,	249,	"Pecan Sands"),
+"Pecan Sands Statue Piece 3":	StatuePiece(4,	0x801ce437,	250,	"Pecan Sands"),
+"Pecan Sands Statue Piece 4":	StatuePiece(8,	0x801ce437,	251,	"Pecan Sands"),
+"Pecan Sands Statue Piece 5":	StatuePiece(0x10,	0x801ce437,	252,	"Pecan Sands"),
+"Pecan Sands Statue Piece 6":	StatuePiece(0x20,	0x801ce437,	253,	"Pecan Sands"),
+"Pecan Sands Statue Piece 7":	StatuePiece(0x40,	0x801ce437,	254,	"Pecan Sands"),
+"Pecan Sands Statue Piece 8":	StatuePiece(0x80,	0x801ce437,	255,	"Pecan Sands"),}
+
 class Junk(NamedTuple):
     memloc: int | None
     memvalue: int
@@ -509,6 +657,7 @@ ITEM_TABLE = {
     **BossMedals_h,
     **Doors_b,
     **Diamonds_h,
+    **StatueParts_h,
 }
 
 FILLER_TABLE = {
@@ -521,6 +670,7 @@ CHECK_TABLE = {
     **Cages_b,
     **Bosses_b,
     **DiamondPickups_b,
+    **StatuePieces_b,
 }
 
 BigKeys = [x for x in BossMedals_h.keys() if "Big Key Fragment" in x]
