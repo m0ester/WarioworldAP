@@ -1,11 +1,15 @@
-from typing import ClassVar
-
+from typing import ClassVar, Any
+import zipfile
+import yaml
+import os
+from base64 import b64encode
 from Utils import visualize_regions as visualise_regions
 from BaseClasses import Item
 from BaseClasses import ItemClassification as IC
 from BaseClasses import Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
 from worlds.LauncherComponents import Component, icon_paths, Type, components, launch_subprocess
+from worlds.Files import APPlayerContainer
 
 from .Items import WwItem, create_item, create_items, create_filler
 from .Locations import WwLocation
@@ -14,6 +18,7 @@ from .Settings import WwOptions
 from .Regions import create_regions, connect_regions
 from .Rules import set_rules
 
+VERSION: tuple[int, int, int] = (0, 1, 0)
 
 def run_client() -> None:
     """
@@ -122,3 +127,49 @@ class WwWorld(World):
 
     #def create_event(self):
      #   Event.create_event(self)
+    def generate_output(self, output_directory: str) -> None:
+        multiworld = self.multiworld
+        player = self.player
+        # Output seed name and slot number to seed RNG in randomizer client.
+        output_data = {
+            "Version": list(VERSION),
+            "Seed": multiworld.seed_name,
+            "Slot": player,
+            "Name": self.player_name,
+            "Locations": {},
+            "Entrances": {},
+        }
+        apww = WwContainer(
+            path=os.path.join(
+                output_directory, f"{multiworld.get_out_file_name_base(player)}{WwContainer.patch_file_ending}"
+            ),
+            player=player,
+            player_name=self.player_name,
+            data=output_data
+        )
+        apww.write()
+
+
+class WwContainer(APPlayerContainer):
+    """
+    This class defines the container file for The Wind Waker.
+    """
+
+    game: str = "Warioworld"
+    patch_file_ending: str = ".apww"
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        if "data" in kwargs:
+            self.data = kwargs["data"]
+            del kwargs["data"]
+
+        super().__init__(*args, **kwargs)
+
+    def write_contents(self, opened_zipfile: zipfile.ZipFile) -> None:
+        """
+        Write the contents of the container file.
+        """
+        super().write_contents(opened_zipfile)
+
+        # Record the data for the game under the key `plando`.
+        opened_zipfile.writestr("plando", b64encode(bytes(yaml.safe_dump(self.data, sort_keys=False), "utf-8")))
