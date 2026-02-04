@@ -40,12 +40,12 @@ class SpritelingRequirement(NamedRange):
         "golden": 31,
         "treasure": 40,}
 
-class StageRandomiser(Choice):
-    """randomises which stages are unlocked instead of opening them one by one, set to on by default"""
-    display_name = "Stage Randomiser"
-    option_vanilla = 0
-    option_default = 1
-    default = 1
+#class StageRandomiser(Choice):
+#    """randomises which stages are unlocked instead of opening them one by one, set to on by default"""
+#    display_name = "Stage Randomiser"
+#    option_vanilla = 0
+#    option_default = 1
+#    default = 1
 
 @dataclass
 class WwOptions(PerGameCommonOptions):
@@ -53,4 +53,4 @@ class WwOptions(PerGameCommonOptions):
     big_key_fragments: StartingFragments
     endingtype: SpritelingRequirement
     #stage_randomiser: StageRandomiser
-    deathlink: DeathLink
+    death_link: DeathLink
