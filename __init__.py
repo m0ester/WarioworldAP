@@ -119,11 +119,16 @@ class WwWorld(World):
     def set_rules(self):
         Rules.set_rules(self)
 
-    def fill_slot_data(self):
+    def fill_slot_data(self) -> dict[str, any]:
         visualise_regions(self.multiworld.get_region("Menu", self.player), f"Player{self.player}.puml",
             show_entrance_names=True,
             regions_to_highlight=self.multiworld.get_all_state(self.player).reachable_regions[
                 self.player])
+        return{
+            "death_link": self.options.death_link.value,
+            "big key fragments": self.options.big_key_fragments.value,
+            "spriteling requirement": self.options.endingtype.value,
+        }
 
     #def create_event(self):
      #   Event.create_event(self)
