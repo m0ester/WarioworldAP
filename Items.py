@@ -24,23 +24,13 @@ class WwItem(Item):
         super().__init__(
             name,
             data.classification if classification is None else classification,
-            None if data.ItemID is None else WwItem.get_apid(data.ItemID),
+            data.ItemID,
             player,
         )
         self.itemtype = data.ItemType
-        self.item_id = data.memvalue
+        self.itemID = data.ItemID
+        self.memvalue = data.memvalue
         self.address = data.memloc
-
-    @staticmethod
-    def get_apid(ItemID: int) -> int:
-        """
-        Compute the Archipelago ID for the given item code.
-
-        :param ItemID: The unique code for the item.
-        :return: The computed Archipelago ID.
-        """
-        #base_id: int = 2322432
-        return ItemID
 
     def get_hpaddress(address) -> int:
         """
@@ -51,13 +41,13 @@ class WwItem(Item):
         return address
 
 LOOKUP_ID_TO_NAME: dict[int, str] = {
-    WwItem.get_apid(data.memvalue): item for item, data in ITEM_TABLE.items() if data.memvalue is not None
+    data.ItemID: item for item, data in ITEM_TABLE.items() if data.ItemID is not None
 }
 
 
 def create_item(world, name):
     if name in ITEM_TABLE:
-        return WwItem(name, world.player, ITEM_TABLE[name], world.determine_item_classification(name))
+        return WwItem(name, world.player, ITEM_TABLE[name], world.set_spriteling_classification(name))
     raise KeyError(f"Invalid item name: {name}")
 
 
