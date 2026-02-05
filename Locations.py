@@ -1,5 +1,5 @@
 from BaseClasses import Location
-from .gamedata import CHECK
+from .gamedata import CHECK_TABLE
 from .Regions import *
 
 class WwLocation(Location):
@@ -17,3 +17,4 @@ class WwLocation(Location):
     #def get_apid(code: int) -> int:
      #   return code
 
+#LOOKUP_NAME_TO_ID: dict[str, int] = {data.name:id for (id, data) in enumerate(CHECK_TABLE) if id > 0}
