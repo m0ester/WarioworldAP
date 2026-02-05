@@ -2,18 +2,16 @@ import asyncio
 import time
 import traceback
 import dolphin_memory_engine as DME
-from dolphin_memory_engine import write_bytes
 import Utils
 import kvui
-from importlib.resources import files
 
+from NetUtils import ClientStatus
 from typing import Optional, Any
 from CommonClient import ClientCommandProcessor, CommonContext, gui_enabled, logger, server_loop
 from NetUtils import NetworkItem
-from . import WwWorld
-from .gamedata import ITEM_TABLE, FILLER_TABLE, Doors_b
+from .gamedata import ITEM_TABLE, FILLER_TABLE, CHECK_TABLE, Doors_b, CHECK
 from .Items import LOOKUP_ID_TO_NAME, WwItem
-from . import asm
+#from .Locations import LOOKUP_NAME_TO_ID, WwLocation
 from . import Patches
 
 ###### Dolphin connection ######
@@ -24,14 +22,12 @@ def _apply_ar_code(code: list[int]):
         if command == 0x04:
             DME.write_word(address, code[i + 1])
 
-
-def _apply_dict_patch(code: dict[int, list[int]]):
+def _apply_fakegecko(code: dict[int, list[int]]):
     for start_address, rows in code.items():
         address = start_address
         for row in rows:
             DME.write_word(address, row)
             address += 4
-
 
 CONNECTION_REFUSED = (
     "Dolphin failed to connect. Please ensure you are using a Warioworld NTSC ROM. Trying again in 5 seconds..."
@@ -50,8 +46,9 @@ CONNECTION_INITIAL = (
 )
 SLOTNAMEADDR = 0x80003f88
 SAVEFILEADDR = 0x801ce3a4
-SAVEFILELEN = 0xCC
+SAVEFILELEN = 0xC8
 CODEFILEADDR = 0X80002330
+NETITEMSRECEIVED = 0X801ce3d4
 class WwCommandProcessor(ClientCommandProcessor):
     def __init__(self, ctx:CommonContext):
         super().__init__(ctx)
@@ -63,10 +60,11 @@ class WwCommandProcessor(ClientCommandProcessor):
 class WwContext(CommonContext):
     command_processor = WwCommandProcessor
     game: str = "Warioworld"
+    items_handling: int = 7
 
     def __init__(self, server_address = Optional[str], password = Optional[str]) -> None:
         super().__init__(server_address, password)
-        self.items_received: list[tuple[NetworkItem, int]] =[]
+        self.items_received: list[NetworkItem] =[]
         self.dolphin_sync_task: Optional[asyncio.Task[None]] = None
         self.dolphin_status: str = CONNECTION_INITIAL
         self.awaiting_rom: bool = False
@@ -76,37 +74,49 @@ class WwContext(CommonContext):
     async def disconnect(self, allow_autoreconnect: bool = False) -> None:
         self.auth = None
 
-
     async def server_auth(self, password_requested: bool = False) -> None:
+        """
+        Authenticate with the Archipelago server.
+
+        :param password_requested: Whether the server requires a password. Defaults to `False`.
+        """
         if password_requested and not self.password:
-            await super().server_auth(password_requested)
-        if not self.auth:
-            if self.awaiting_rom:
-                return
-            self.awaiting_rom = True
-            logger.info("Awaiting connection to Dolphin to get player information.")
-            return
+            await super(WwContext, self).server_auth(password_requested)
+        await self.get_username()
         await self.send_connect()
 
+#    async def server_auth(self, password_requested: bool = False) -> None:
+ #       if password_requested and not self.password:
+  #          await super().server_auth(password_requested)
+   #     if not self.auth:
+    #        if self.awaiting_rom:
+     #           return
+      #      self.awaiting_rom = True
+       #     logger.info("Awaiting connection to Dolphin to get player information.")
+        #    return
+        #await self.send_connect()
+
     def on_package(self, cmd, args: dict[str, Any]) -> None:
+        super().on_package(cmd, args)
         if cmd == "Connected":
             self.items_received = []
             self.last_rcvd_index = -1
+            self.stored_data["savedata"] = (DME.read_bytes(SAVEFILEADDR, SAVEFILELEN))
             if "death_link" in args["slot_data"]:
                 Utils.async_start(self.update_death_link(bool(args["slot_data"]["death_link"])))
+                print("connectpackage")
 
         elif cmd == "ReceivedItems":
             for item in args["items"]:
-                self.items_received.append((item, self.last_rcvd_index))
+                newitem = ITEM_TABLE[LOOKUP_ID_TO_NAME[item.item]]
+                self.items_received.append(item)
                 if item in Doors_b:
-                    DME.write_byte(item.address, item.item_id | DME.read_byte(item.address))
+                    DME.write_byte(newitem.memloc, newitem.memvalue | DME.read_byte(newitem.memloc))
                 else:
-                    write_short(item.address, item.item_id | read_short(item.address))
-                self.stored_data.set("savedata", DME.read_bytes(SAVEFILEADDR, SAVEFILELEN), True)
+                    write_short(newitem.memloc, newitem.memvalue | read_short(newitem.memloc))
+                print("gotitem")
 
-
-    
-    def on_deathlink(self, data: dict[str, Any]) -> None:
+    def on_death_link(self, data: dict[str, Any]) -> None:
         super().on_deathlink(data)
         _give_death(self)
 
@@ -116,11 +126,11 @@ class WwContext(CommonContext):
             return ui
 
 def apply_patch(ctx: WwContext):
-    _apply_dict_patch(Patches.patch)
+    _apply_fakegecko(Patches.patch)
     _apply_ar_code(Patches.arpatches)
 
 def currentHP():
-    return DME.read_word(DME.follow_pointers(0x801c5820,[0xd8]))
+    return DME.read_word(DME.read_word(0x801c5820)+0xd8)
 
 def HPPtr():
     return DME.read_word(0x801c5820)
@@ -167,6 +177,42 @@ async def check_death(ctx: WwContext) -> None:
         else:
             ctx.has_send_death = False
 
+def check_location(check_name: str) -> bool:
+    checked = False
+    memvalue = CHECK_TABLE[check_name].memvalue
+    address = CHECK_TABLE[check_name].memloc
+    # If the location is in the current stage, check the bitfields for the current stage as well.
+    if not checked:
+        checked = bool(DME.read_byte(address) & memvalue)
+        print(checked)
+    return checked
+
+async def check_locations(ctx: WwContext) -> None:
+    """
+    Iterate through all locations and check whether the player has checked each location.
+
+    Update the server with all newly checked locations since the last update. If the player has completed the goal,
+    notify the server.
+
+    :param ctx: The Warioworld client context.
+    """
+    # Loop through all locations to see if each has been checked.
+    for location in CHECK_TABLE[location]:
+        check_location(location)
+        check_id = CHECK_TABLE[location].CheckID
+        if True:
+            if check_id is None:
+                if not ctx.finished_game:
+                    await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+                    ctx.finished_game = True
+            else:
+                ctx.locations_checked.add(check_id)
+    # Send the list of newly-checked locations to the server.
+    locations_checked = ctx.locations_checked.difference(ctx.checked_locations)
+    ctx.stored_data["savedata"] = (DME.read_bytes(SAVEFILEADDR, SAVEFILELEN))
+    if locations_checked:
+        await ctx.send_msgs([{"cmd": "LocationChecks", "locations": locations_checked}])
+
 def _give_death(ctx: WwContext) -> None:
 
     if (
@@ -181,12 +227,14 @@ def _give_death(ctx: WwContext) -> None:
         ctx.has_send_death = False
 
 def _give_item(ctx: WwContext, item_name: str) -> bool:
+
     if not check_ingame():
         return False
     else:
-        item_id = ITEM_TABLE[item_name].item_id
-        address = ITEM_TABLE[item_name].address
-        write_short(address, read_short(address) | item_id)
+        memvalue = ITEM_TABLE[item_name].memvalue
+        address = ITEM_TABLE[item_name].memloc
+        write_short(address, read_short(address) | memvalue)
+        ctx.stored_data["savedata"] = (DME.read_bytes(SAVEFILEADDR, SAVEFILELEN))
         return True
 
 async def give_items(ctx: WwContext) -> None:
@@ -195,16 +243,18 @@ async def give_items(ctx: WwContext) -> None:
  
     :param ctx: Warioworld client context.
     """
-    # Loop through items to give.
-    for item, idx in ctx.items_received:
-        # If the item's index is greater than the player's expected index, give the player the item.
-        if ctx.last_item_handled < idx:
+    #check if ingame
+    if check_playable():
+        # Check if there are new items.
+        expected_itemamount = read_short(NETITEMSRECEIVED)
+        if len(ctx.items_received) <= expected_itemamount:
+            # There are no new items.
+            return
+        for idx, item in enumerate(ctx.items_received[expected_itemamount:]):
             # Attempt to give the item and increment the expected index.
             while not _give_item(ctx, LOOKUP_ID_TO_NAME[item.item]):
                 await asyncio.sleep(0.01)
-
-            # Increment the expected index.
-            ctx.last_item_handled = idx
+            write_short(NETITEMSRECEIVED, expected_itemamount + 1)
 
 async def dolphin_sync_task(ctx: WwContext) -> None:
     """
@@ -214,20 +264,31 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
 
     :param ctx: Warioworld client context.
     """
-    logger.info("Starting Dolphin connector. Use /dolphin for status information.")
     patched = False
+    loaded = False
+    logger.info("Starting Dolphin connector. Use /dolphin for status information.")
     while not ctx.exit_event.is_set():
         try:
             if DME.is_hooked() and ctx.dolphin_status == CONNECTION_ESTABLISHED:
-                if check_pressstart() and not check_ingame() and patched == False:
-                    print("applying patch")
+                if check_pressstart() and not check_ingame() and not patched:
                     apply_patch(ctx)
                     logger.info("Patch Applied! loading savefile...")
                     patched = True
                     await asyncio.sleep(0.1)
-                    # DME.write_bytes(SAVEFILEADDR, ctx.stored_data.get("savedata"))
                 elif not patched:
                     logger.info("Patching Failed. Please ensure you are on the press start screen")
+                    print(patched)
+                    print(check_pressstart())
+                    print(check_ingame())
+                    await asyncio.sleep(5)
+                    continue
+                if ctx.auth is not None and not loaded:
+                    DME.write_bytes(SAVEFILEADDR, ctx.stored_data["savedata"])
+                    print(ctx.stored_data["savedata"], hex(SAVEFILEADDR))
+                    logger.info("Savefile Loaded!")
+                    loaded = True
+                elif not loaded:
+                    logger.info("Savefile not loaded, please connect to the server.")
                     await asyncio.sleep(5)
                     continue
                 if not check_ingame():
@@ -237,9 +298,10 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                     if "DeathLink" in ctx.tags:
                         await check_death(ctx)
                     await give_items(ctx)
+                    await check_locations(ctx)
                 else:
-                    if not ctx.auth:
-                        ctx.auth = read_string(SLOTNAMEADDR, 0x40)
+                    #if not ctx.auth:
+                     #   ctx.auth = read_string(SLOTNAMEADDR, 0x40)
                     if ctx.awaiting_rom:
                         await ctx.server_auth()
                 await asyncio.sleep(0.1)
@@ -255,6 +317,7 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                         logger.info(CONNECTION_REFUSED)
                         ctx.dolphin_status = CONNECTION_REFUSED
                         DME.un_hook()
+                        print("gamburger")
                         patched = False
                         await asyncio.sleep(5)
                     else:
@@ -272,6 +335,7 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
             DME.un_hook()
             logger.info("Connection to Dolphin failed, attempting again in 5 seconds...")
             patched = False
+
             logger.error(traceback.format_exc())
             ctx.dolphin_status = CONNECTION_LOST
             await ctx.disconnect()
