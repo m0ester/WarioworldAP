@@ -682,3 +682,7 @@ SMRedDiamonds = [x for x in Diamonds_h.keys() if "Shivering Mountains Red Diamon
 BWRedDiamonds = [x for x in Diamonds_h.keys() if "Beanstalk Way Red Diamond" in x]
 MMRedDiamonds = [x for x in Diamonds_h.keys() if "Mirror Mansion Red Diamond" in x]
 PSRedDiamonds = [x for x in Diamonds_h.keys() if "Pecan Sands Red Diamond" in x]
+
+LOOKUP_checkID_TO_NAME: dict[int, str] = {
+    data.CheckID: item for item, data in CHECK_TABLE.items() if data.CheckID is not None
+}
