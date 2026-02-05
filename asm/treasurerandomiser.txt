@@ -20,17 +20,17 @@ sub r5, r5, r4
 #stage index now in r5
 #load check pointer
 #load check pointer
-lis r5, 0x801c
-ori r5, r5, 0xe408
+lis r4, 0x801c
+ori r4, r4, 0xe408
 #load check instead of actual collected
-lbzx r4, r5, r4
+lbzx r4, r4, r5
 
 ______________________________________________________
 #store treasure check instead of treasure
 #og inst
 sth r0, 0x14(r5)
-#insert at 
-8003099c
+#insert at
+80030990
 
 #generate stage ID using bullshit
 srwi r5, r5, 4
@@ -39,10 +39,12 @@ extsb r5, r5
 #stage ID in r5, filter out boss stages
 li r15, 3
 divw r15, r5, r15
-sub r5, r5, r16
+sub r5, r5, r15
 #stage index now in r5
 #load check pointer
 lis r15, 0x801c
 ori r15, r15, 0xe408
 #store check instead of actual collected
-stbx r0, r15, r5
+lbzx r4, r15, r5
+
+0403099c 7C0F29AE

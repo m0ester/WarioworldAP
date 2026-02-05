@@ -1,0 +1,49 @@
+Diamond Randomiser Decoupler
+#801ce3xa is Diamonds collected, where x is the stageID + 0xb (b is greenhorn forest, boss stages included but don't have any, we are using them as memory for checks)
+#801ce400 is pointer to custom treasure collected checks value, USE BYTEWISE
+______________________________________________________
+#decouples check from diamond itself
+#og inst
+lhz r3, 0x16(r3)
+#insert at
+80030bb8
+
+#generate stage ID using bullshit
+srwi r3, r3, 4
+subi r3, r3, 0x3a
+extsb r3, r3
+
+#stage ID in r3, filter out boss stages
+li r15, 3
+divw r15, r3, r15
+sub r3, r3, r15
+#stage index now in r3
+#load check pointer
+#load check pointer
+lis r15, 0x801c
+ori r15, r15, 0xe400
+#load check instead of actual collected
+lbzx r3, r15, r3
+______________________________________________________
+#store check instead of treasure
+#og inst
+sth r0, 0x16(r4)
+#insert at 
+80030b84
+
+#generate stage ID using bullshit
+srwi r4, r4, 4
+subi r4, r4, 0x3a
+extsb r4, r4
+#stage ID in r4, filter out boss stages
+li r15, 3
+divw r15, r4, r15
+sub r4, r4, r15
+#stage index now in r4
+#load check pointer
+lis r15, 0x801c
+ori r15, r15, 0xe400
+#load check instead of actual collected
+lbzx r3, r15, r4
+
+04030b84 7C0F21AE

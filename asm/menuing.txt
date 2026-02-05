@@ -1,0 +1,59 @@
+
+
+________________________________________
+store 804b385c in 804b9278 to skip book select menu
+#r4 free
+MORE BAD
+#insert at 
+8002fcd4 
+
+lis r4, 0x804b
+ori r4, r4, 0x3dac
+cmpw r4, r12
+bne END
+lis r4, 0x804b
+ori r4, r4, 0x385c
+stw r4, 0x54cc(r12)
+
+END:
+bctrl
+
+_________________________________________________________
+
+# Assume GPR 3 contains a modified instruction.
+# Assume GPR 4 contains the address of the memory location
+# where the modified instruction will be stored.
+The icbi instruction invalidates a block containing the byte addressed in the instruction cache.
+If RA is not 0, the icbi instruction calculates an effective address (EA) by adding the contents of general-purpose register (GPR) RA to the contents of GPR RB.
+stw     r3,0(r7)           # Store the modified instruction.
+li r15, 0
+dcbf    r15,r7              # Copy the modified instruction to
+                            # main memory.
+sync                        # Ensure update is in main memory.
+icbi    r15,r7              # Invalidate block with old instruction.
+isync                       # Discard prefetched instructions.
+b       newcode             # Go execute the new code.
+
+needs icbid:
+8002FCD4
+80030440
+8003752C
+
+#insert at
+#804B157C:
+#load instruction addresses
+lis r7, 0x8002
+ori r7, r7, 0xfcd4
+#clear instruction cache
+dcbf    r15,r7
+sync
+icbi    r15,r7
+addi r7, r7, 0x76c
+dcbf    r15,r7
+sync
+icbi    r15,r7
+ori r7, r7, 0x752c
+dcbf    r15,r7
+sync
+icbi    r15,r7
+blr

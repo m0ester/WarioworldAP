@@ -1,5 +1,6 @@
 #insertion
 80a12838
+#RELSHIT do not use
 #r5 free
 #og inst
 lbz r0, 0x10(r4)
@@ -9,3 +10,38 @@ or r0, r5, r0
 #load stage 3 of world and compare
 lbz r5, 0x90(r4)
 or r0, r5, r0
+
+______________________________________________________
+#THIS IS HORRIBLE DO NOT DO THIS AT ALL WHATSOEVER
+8003752C
+#check if entering correct function
+lis r14, 0x80a1
+ori r14, r14, 0x2834
+cmpw r12, r14
+bne NEXT
+#og inst inside func
+lwz r4, 0x28(r3)
+#load door byte if set
+lbz r0, 0x10(r4)
+#load stage 2 of world and compare
+lbz r5, 0x50(r4)
+or r0, r5, r0
+#load stage 3 of world and compare
+lbz r5, 0x90(r4)
+or r0, r5, r0
+#nop 1st 2 lines
+lis r5, 0x6000
+stw r5, 0(r12)
+stw r5, 4(r12)
+b END
+NEXT:
+#for book menu screen
+lis r14, 0x80a0
+ori r14, r14, 0xf998
+cmpw r14, r12
+bne END
+lis r14, 0x6000
+stw r14, 0x1c(r12)
+END:
+#og inst
+bctrl
