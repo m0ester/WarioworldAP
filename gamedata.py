@@ -9,7 +9,7 @@ SKIP = IC.skip_balancing
 TRAP = IC.trap
 
 @dataclass
-class Treasure():
+class Treasure:
     """loc is vanilla location
     value is ingame value
     ItemID is archipelago itemcode
@@ -87,7 +87,7 @@ Treasures_h: dict[str, Treasure] = {
 "Nintendo GameCube":	Treasure(0x801ce458,	0x80,	64),}
 
 @dataclass
-class CHECK():
+class CHECK:
     memvalue: int
     memloc: int
     CheckID: int
@@ -163,7 +163,7 @@ Chests_b: dict[str, Chest] = {
     "Pecan Sands Pink Chest":   Chest(0x80,	0x801ce40f, 64, "Pecan Sands"),}
 
 @dataclass
-class Spriteling():
+class Spriteling:
     memloc: int
     memvalue: int
     ItemID: int
