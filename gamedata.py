@@ -286,7 +286,7 @@ class StageDoor(NamedTuple):
     ItemType = "StageDoor"
     memloc = 0x801ce3d0
 
-Doors_b: dict [str, StageDoor] = {
+Doors_h: dict [str, StageDoor] = {
     "Greenhorn Ruins Door":	StageDoor(1,	 117),
     "DinoMighty's Showdown Door":	StageDoor(2,	118),
     "Horror Manor Door":	StageDoor(4,	119),
@@ -655,7 +655,7 @@ ITEM_TABLE = {
     **Spritelings_h,
     **Treasures_h,
     **BossMedals_h,
-    **Doors_b,
+    **Doors_h,
     **Diamonds_h,
     **StatueParts_h,
 }
