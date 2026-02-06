@@ -13,12 +13,12 @@ from worlds.Files import APPlayerContainer
 
 from .Items import WwItem, create_item, create_items, create_filler
 from .Locations import WwLocation
-from .gamedata import CHECK_TABLE, ITEM_TABLE, FILLER_TABLE, BigKeys
+from .gamedata import CHECK_TABLE, ITEM_TABLE, FILLER_TABLE, BigKeys, Spriteling
 from .Settings import WwOptions
 from .Regions import create_regions, connect_regions
 from .Rules import set_rules
 
-VERSION: tuple[int, int, int] = (0, 1, 0)
+VERSION: tuple[int, int, int] = (0, 1, 2)
 
 def run_client() -> None:
     """
@@ -106,15 +106,26 @@ class WwWorld(World):
             adjusted_classification = IC.filler
         return adjusted_classification
 
+    #def set_classification(self, name: str) -> IC | None:
+
+        classification = ITEM_TABLE[name].classification
+        if isinstance(ITEM_TABLE[name], Spriteling):
+            if self.options.endingtype == 0 | 1:
+                classification = IC.filler
+            return classification
+        else:
+            return classification
+
     def create_item(self, name):
         return create_item(self, name)
 
     def create_items(self):
+        givenkeys = []
         if self.options.big_key_fragments:
-            self.random.sample(BigKeys, k=self.options.big_key_fragments.value)
-            for key in BigKeys:
+            givenkeys = self.random.sample(BigKeys, k=self.options.big_key_fragments.value)
+            for key in givenkeys:
                 self.push_precollected(Item(key, IC.progression, self.item_name_to_id[key], self.player))
-        create_items(self)
+        create_items(self, givenkeys)
 
     def set_rules(self):
         Rules.set_rules(self)
@@ -135,7 +146,7 @@ class WwWorld(World):
     def generate_output(self, output_directory: str) -> None:
         multiworld = self.multiworld
         player = self.player
-        # Output seed name and slot number to seed RNG in randomizer client.
+        # Output seed name and slot number to seed RNG in randomiser client.
         output_data = {
             "Version": list(VERSION),
             "Seed": multiworld.seed_name,
@@ -157,7 +168,7 @@ class WwWorld(World):
 
 class WwContainer(APPlayerContainer):
     """
-    This class defines the container file for The Wind Waker.
+    This class defines the container file for Warioworld.
     """
 
     game: str = "Warioworld"
