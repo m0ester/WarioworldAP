@@ -21,7 +21,7 @@ class StartingFragments(Range):
 class SpritelingRequirement(NamedRange):
     """How many spritelings are needed for goal completion
     Silver ending (21) by default, you may change to other endings here:
-    Plant: 0
+    Plant: 0-1
     Wooden: 2-10
     Stone: 11-20
     Silver: 21-30
