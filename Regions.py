@@ -47,7 +47,6 @@ def connect_regions(world):
     for name in bosses:
         if "Showdown" in regions[i]:
             i+=1
-        print(regions[i], name)
         from_region = world.get_region(regions[i])
         to_region = world.get_region(name)
         from_region.connect(to_region, f"{regions[i]} -> {name}")
