@@ -47,7 +47,10 @@ LOOKUP_ID_TO_NAME: dict[int, str] = {
 
 def create_item(world, name):
     if name in ITEM_TABLE:
-        return WwItem(name, world.player, ITEM_TABLE[name], world.set_spriteling_classification(name))
+        if isinstance(ITEM_TABLE[name], Spriteling):
+            return WwItem(name, world.player, ITEM_TABLE[name], world.set_spriteling_classification(name))
+        else:
+            return WwItem(name, world.player, ITEM_TABLE[name], ITEM_TABLE[name].classification)
     raise KeyError(f"Invalid item name: {name}")
 
 
@@ -57,12 +60,14 @@ def create_filler(world, name):
     raise KeyError(f"Invalid item name: {name}")
 
 
-def create_items(world) -> None:
+def create_items(world, givenkeys) -> None:
     itemlist: list[WwItem] = []
     for item in ITEM_TABLE:
-        itemlist.append(world.create_item(item))
+        if item not in givenkeys:
+            itemlist.append(world.create_item(item))
     #filler item generation to fill remaining checks
     totalitems = len(itemlist)
+    print(totalitems)
     itemlist += [world.create_filler() for _ in
         range(len(world.multiworld.get_unfilled_locations(world.player)) - totalitems)]
 
