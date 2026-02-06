@@ -196,17 +196,19 @@ async def check_locations(ctx: WwContext) -> None:
     # Loop through all locations to see if each has been checked.
     for location in CHECK_TABLE.keys():
         check_id = CHECK_TABLE[location].CheckID
+        address = CHECK_TABLE[location].memloc
+        memvalue = CHECK_TABLE[location].memvalue
+        #print(sorted(ctx.locations_checked))
+        if check_id in ctx.checked_locations:
+            DME.write_byte(address, DME.read_byte(address) | memvalue)
         if check_location(location):
+            DME.write_byte(address, DME.read_byte(address) | memvalue)
             if check_id is None:
                 if not ctx.finished_game:
                     await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
                     ctx.finished_game = True
             else:
-                address = CHECK_TABLE[location].memloc
-                memvalue = CHECK_TABLE[location].memvalue
-                ctx.locations_checked.add(check_id)
-                DME.write_byte(address, DME.read_byte(address) | memvalue)
-                print(hex(address), check_id)
+                await ctx.check_locations([check_id])
     # Send the list of newly-checked locations to the server.
     locations_checked = ctx.locations_checked.difference(ctx.checked_locations)
     if locations_checked:
@@ -235,7 +237,6 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
         address = ITEM_TABLE[item_name].memloc
         write_short(address, read_short(address) | memvalue)
         #ctx.stored_data["savedata"] = (DME.read_bytes(SAVEFILEADDR, SAVEFILELEN))
-        print("saved to server, given items")
         return True
 
 async def give_items(ctx: WwContext) -> None:
@@ -271,20 +272,20 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
     while not ctx.exit_event.is_set():
         try:
             if DME.is_hooked() and ctx.dolphin_status == CONNECTION_ESTABLISHED:
-                if check_pressstart() and not check_ingame() and not patched:
+                if check_pressstart() and not check_ingame() and not patched and ctx.auth:
                     apply_patch(ctx)
-                    logger.info("Patch Applied! loading savefile...")
+                    logger.info("Patch Applied!")
                     patched = True
                     await asyncio.sleep(0.1)
                 elif not patched:
-                    logger.info("Patching Failed. Please ensure you are on the press start screen")
+                    logger.info("Patching Failed. Please ensure you are on the press start screen and connected to the server")
                     await asyncio.sleep(5)
                     continue
-                if ctx.auth is not None and not loaded:
+                #if ctx.auth is not None and not loaded:
                     #DME.write_bytes(SAVEFILEADDR, ctx.stored_data["savedata"])
                     logger.info("Savefile Loaded!")
                     loaded = True
-                elif not loaded:
+                #elif not loaded:
                     logger.info("Savefile not loaded, please connect to the server.")
                     await asyncio.sleep(5)
                     continue
