@@ -20,7 +20,7 @@ class WwItem(Item):
     type: Optional[str]
 
     def __init__(self, name: str, player: int, data: Spriteling | Junk | Trap | Treasure | BossMedal | RedDiamond | StatuePart | StageDoor,
-                 classification: Optional[IC] = None) -> None:
+                 classification: IC | None = None) -> None:
         super().__init__(
             name,
             data.classification if classification is None else classification,
@@ -32,13 +32,6 @@ class WwItem(Item):
         self.memvalue = data.memvalue
         self.address = data.memloc
 
-    def get_hpaddress(address) -> int:
-        """
-        compute dynamic mem address
-        """
-        if address is None:
-            address = DME.read_word(0x801c5820) + 0xd8
-        return address
 
 LOOKUP_ID_TO_NAME: dict[int, str] = {
     data.ItemID: item for item, data in ITEM_TABLE.items() if data.ItemID is not None
@@ -56,7 +49,7 @@ def create_item(world, name):
 
 def create_filler(world, name):
     if name in FILLER_TABLE:
-        return WwItem(name, world.player, FILLER_TABLE[name], world.determine_item_classification(name))
+        return WwItem(name, world.player, FILLER_TABLE[name], FILLER_TABLE[name].classification)
     raise KeyError(f"Invalid item name: {name}")
 
 
@@ -68,7 +61,7 @@ def create_items(world, givenkeys) -> None:
     #filler item generation to fill remaining checks
     totalitems = len(itemlist)
     print(totalitems)
-    itemlist += [world.create_filler() for _ in
+    itemlist += [create_filler(world, world.random.choice(list(FILLER_TABLE.keys()))) for _ in
         range(len(world.multiworld.get_unfilled_locations(world.player)) - totalitems)]
 
     world.multiworld.itempool += itemlist
