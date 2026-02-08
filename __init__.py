@@ -155,14 +155,14 @@ class WwWorld(World):
             "Locations": {},
             "Entrances": {},
         }
-        #apww = WwContainer(
-         #   path=os.path.join(
-          #      output_directory, f"{multiworld.get_out_file_name_base(player)}{WwContainer.patch_file_ending}"
-           # ),
-            #player=player,
-            #player_name=self.player_name,
-            #data=output_data
-        #)
+        apww = WwContainer(
+            path=os.path.join(
+                output_directory, f"{multiworld.get_out_file_name_base(player)}{WwContainer.patch_file_ending}"
+            ),
+            player=player,
+            player_name=self.player_name,
+            data=output_data
+        )
         #apww.write()
 
 
