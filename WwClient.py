@@ -9,8 +9,8 @@ from NetUtils import ClientStatus
 from typing import Optional, Any
 from CommonClient import ClientCommandProcessor, CommonContext, gui_enabled, logger, server_loop
 from NetUtils import NetworkItem
-from .gamedata import ITEM_TABLE, FILLER_TABLE, CHECK_TABLE, Doors_h, CHECK, LOOKUP_checkID_TO_NAME
-from .Items import LOOKUP_ID_TO_NAME, WwItem
+from .gamedata import ITEM_TABLE, FILLER_TABLE, CHECK_TABLE
+from .Items import LOOKUP_ID_TO_NAME #WwItem
 #from .Locations import LOOKUP_NAME_TO_ID, WwLocation
 from . import Patches
 
@@ -49,11 +49,17 @@ SAVEFILEADDR = 0x801ce3a4
 SAVEFILELEN = 0xC8
 CODEFILEADDR = 0X80002330
 NETITEMSRECEIVED = 0X801ce3d4
+
 class WwCommandProcessor(ClientCommandProcessor):
+    """
+        Command Processor for Warioworld client commands.
+
+        This class handles commands specific to Warioworld."""
     def __init__(self, ctx:CommonContext):
         super().__init__(ctx)
     
     def _cmd_dolphin(self) -> None:
+        """Display Dolphin Emulator's current connection status."""
         if isinstance(self.ctx, WwContext):
             logger.info(f"Dolphin Status: {self.ctx.dolphin_status}") 
 
@@ -235,8 +241,9 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
     else:
         memvalue = ITEM_TABLE[item_name].memvalue
         address = ITEM_TABLE[item_name].memloc
+        if address is None:
+            address = DME.read_word(0x801c5820) + 0xd8
         write_short(address, read_short(address) | memvalue)
-        #ctx.stored_data["savedata"] = (DME.read_bytes(SAVEFILEADDR, SAVEFILELEN))
         return True
 
 async def give_items(ctx: WwContext) -> None:
@@ -281,14 +288,7 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                     logger.info("Patching Failed. Please ensure you are on the press start screen and connected to the server")
                     await asyncio.sleep(5)
                     continue
-                #if ctx.auth is not None and not loaded:
-                    #DME.write_bytes(SAVEFILEADDR, ctx.stored_data["savedata"])
-                    logger.info("Savefile Loaded!")
-                    loaded = True
-                #elif not loaded:
-                    logger.info("Savefile not loaded, please connect to the server.")
-                    await asyncio.sleep(5)
-                    continue
+
                 if not check_ingame():
                     await asyncio.sleep(0.1)
                     continue
