@@ -102,7 +102,7 @@ class WwWorld(World):
 
     def set_spriteling_classification(self, name: str) -> IC | None:
         adjusted_classification = None
-        if self.options.endingtype == 0 | 1:
+        if self.options.endingtype.value in {0, 1}:
             adjusted_classification = IC.filler
         return adjusted_classification
 
@@ -155,15 +155,15 @@ class WwWorld(World):
             "Locations": {},
             "Entrances": {},
         }
-        apww = WwContainer(
-            path=os.path.join(
-                output_directory, f"{multiworld.get_out_file_name_base(player)}{WwContainer.patch_file_ending}"
-            ),
-            player=player,
-            player_name=self.player_name,
-            data=output_data
-        )
-        apww.write()
+        #apww = WwContainer(
+         #   path=os.path.join(
+          #      output_directory, f"{multiworld.get_out_file_name_base(player)}{WwContainer.patch_file_ending}"
+           # ),
+            #player=player,
+            #player_name=self.player_name,
+            #data=output_data
+        #)
+        #apww.write()
 
 
 class WwContainer(APPlayerContainer):
