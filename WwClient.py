@@ -349,7 +349,7 @@ def main(connect: Optional[str] = None, password: Optional[str] = None) -> None:
     :param connect: Address of the Archipelago server.
     :param password: Password for server authentication.
     """
-    Utils.init_logging("Mario Kart Double Dash Client")
+    Utils.init_logging("Warioworld Client")
 
     async def _main(connect: Optional[str], password: Optional[str]) -> None:
         ctx = WwContext(connect, password)
