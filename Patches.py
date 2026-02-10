@@ -187,7 +187,8 @@ patch = {
 0x3C80801C,
 0x6084E430,
 0x7C6418AE,
-0x7C7518AE,],
+0x7C7518AE,
+0x4802e4d0,],
 }
 
 arpatches =[
