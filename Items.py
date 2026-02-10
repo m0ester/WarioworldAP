@@ -1,6 +1,6 @@
 from typing import Optional
 from BaseClasses import Item, ItemClassification as IC
-from .gamedata import ITEM_TABLE, FILLER_TABLE, Spriteling, Treasure, BossMedal, StageDoor, Junk, Trap, RedDiamond, StatuePart
+from .gamedata import ITEM_TABLE, FILLER_TABLE, NET_TABLE, Spriteling, Treasure, BossMedal, StageDoor, Junk, Trap, RedDiamond, StatuePart
 from worlds.AutoWorld import World
 import dolphin_memory_engine as DME
 
@@ -34,7 +34,7 @@ class WwItem(Item):
 
 
 LOOKUP_ID_TO_NAME: dict[int, str] = {
-    data.ItemID: item for item, data in ITEM_TABLE.items() if data.ItemID is not None
+    data.ItemID: item for item, data in NET_TABLE.items() if data.ItemID is not None
 }
 
 
