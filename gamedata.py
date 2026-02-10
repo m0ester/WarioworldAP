@@ -312,10 +312,11 @@ Bosses_b: dict[str, BossBeat] = {
     "Defeated Dual Dragon": BossBeat(0x20,  0x801ce3d2,  110,    "Dual Dragon's Showdown"),
     "Defeated Winter Windster": BossBeat(0x40,  0x801ce3d2,  111,    "Winter Windster"),
     "Defeated Spideraticus":    BossBeat(0x80,  0x801ce3d2,  112,    "Spideraticus"),
-    "Defeated Red-Brief J": BossBeat(0x10,  0x801ce3d2,  113,    "Red-Brief J's Showdown"),
+    "Defeated Red-Brief J": BossBeat(0x100,  0x801ce3d2,  113,    "Red-Brief J's Showdown"),
     "Defeated The Mean Emcee":  BossBeat(0x200, 0x801ce3d2, 114,    "The Mean Emcee"),
     "Defeated Ironsider":   BossBeat(0x400, 0x801ce3d2,	115,    "Ironsider"),
     "Defeated Captain Skull":   BossBeat(0x800, 0x801ce3d2, 116,    "Captain Skull's Showdown"),
+    "Victory": BossBeat(0x1000, 0x801ce3d2, None, "Menu"),
     "Opened Greenhorn Ruins Door": BossBeat(1, 0x801ce3d2, 117, "Greenfist"),
     "Opened DinoMighty's Door": BossBeat(2, 0x801ce3d2, 118, "Sandworm"),
     "Opened Horror Manor Door": BossBeat(4, 0x801ce3d2, 119, "DinoMighty's Showdown"),
@@ -324,10 +325,10 @@ Bosses_b: dict[str, BossBeat] = {
     "Opened Shivering Mountains Door": BossBeat(0x20, 0x801ce3d2, 122, "Dual Dragon's Showdown"),
     "Opened Beanstalk Way Door": BossBeat(0x40, 0x801ce3d2, 123, "Winter Windster"),
     "Opened Red-Brief J Door": BossBeat(0x80, 0x801ce3d2, 124, "Spideraticus"),
-    "Opened Mirror Mansion Door": BossBeat(0x10, 0x801ce3d2, 125, "Red-Brief J's Showdown"),
+    "Opened Mirror Mansion Door": BossBeat(0x100, 0x801ce3d2, 125, "Red-Brief J's Showdown"),
     "Opened Pecan Sands Door": BossBeat(0x200, 0x801ce3d2, 126, "The Mean Emcee"),
-    "Opened Captain Skull Door": BossBeat(0x400, 0x801ce3d2, 127, "Ironsider"),
-    "Victory": BossBeat(0x1000, 0x801ce3d2,    None,   "Menu"),}
+    "Opened Captain Skull Door": BossBeat(0x400, 0x801ce3d2, 127, "Ironsider"),}
+
 
 class RedDiamond(NamedTuple):
     """loc is vanilla location
@@ -630,25 +631,25 @@ class Junk(NamedTuple):
     memloc: int | None
     memvalue: int
     ItemID: int | None
+    ItemType: str
     classification = FILL
-    ItemType = "Junk"
 
 JunkItems: dict[str, Junk] = {
-    "50 coins": Junk(0x801ce3a4,    +50, 2008),
-    "Garlic":   Junk(None,   +2,   2009),
+    "50 coins": Junk(0x801ce3a4,    +50, 2008, "add"),
+    "Garlic":   Junk(None,   +2,   2009, "add"),
 }
 
 class Trap(NamedTuple):
     memloc: int | None
     memvalue: int
     ItemID: int | None
+    ItemType: str
     classification = TRAP
-    ItemType = "Trap"
 
 TrapItems: dict[str, Trap] = {
-    "Unithorn Attack":    Trap(0x801ce3a4,  -50, 2010),
-    "Death Trap":   Trap(None,  0,  2011),
-    "Take Damage": Trap(None,  -2, 2012),
+    "Unithorn Attack":    Trap(0x801ce3a4,  -50, 2010, "add"),
+    "Death Trap":   Trap(None,  0,  2011, "set"),
+    "Take Damage": Trap(None,  -2, 2012, "add"),
 }
 
 ITEM_TABLE = {
@@ -671,6 +672,11 @@ CHECK_TABLE = {
     **Bosses_b,
     **DiamondPickups_b,
     **StatuePieces_b,
+}
+
+NET_TABLE = {
+    **ITEM_TABLE,
+    **FILLER_TABLE,
 }
 
 BigKeys = [x for x in BossMedals_h.keys() if "Big Key Fragment" in x]
