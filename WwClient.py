@@ -9,10 +9,11 @@ from NetUtils import ClientStatus
 from typing import Optional, Any
 from CommonClient import ClientCommandProcessor, CommonContext, gui_enabled, logger, server_loop
 from NetUtils import NetworkItem
-from .gamedata import ITEM_TABLE, FILLER_TABLE, CHECK_TABLE
+from .gamedata import ITEM_TABLE, NET_TABLE, CHECK_TABLE
 from .Items import LOOKUP_ID_TO_NAME #WwItem
 #from .Locations import LOOKUP_NAME_TO_ID, WwLocation
-from . import Patches
+from . import Patches, FILLER_TABLE
+
 
 ###### Dolphin connection ######
 def _apply_ar_code(code: list[int]):
@@ -107,17 +108,19 @@ class WwContext(CommonContext):
         if cmd == "Connected":
             self.items_received = []
             self.last_rcvd_index = -1
-            #if len(self.items_receivedd) == 0:
-                #self.stored_data["savedata"] = (DME.read_bytes(SAVEFILEADDR, SAVEFILELEN))
             if "death_link" in args["slot_data"]:
                 Utils.async_start(self.update_death_link(bool(args["slot_data"]["death_link"])))
                 print("connectpackage")
 
         elif cmd == "ReceivedItems":
             for item in args["items"]:
-                newitem = ITEM_TABLE[LOOKUP_ID_TO_NAME[item.item]]
+                item_name=LOOKUP_ID_TO_NAME[item.item]
+                newitem = NET_TABLE[item_name]
                 self.items_receivedd.append(item)
-                write_short(newitem.memloc, newitem.memvalue | read_short(newitem.memloc))
+                if item_name in ITEM_TABLE.keys():
+                    write_short(newitem.memloc, newitem.memvalue | read_short(newitem.memloc))
+                if item_name in FILLER_TABLE.keys():
+                        return
                 print("gotitem")
 
     def on_death_link(self, data: dict[str, Any]) -> None:
@@ -148,14 +151,11 @@ def write_short(console_address: int, value: int) -> None:
 def read_string(console_address: int, strlen: int) -> str:
     return DME.read_bytes(console_address, strlen).split(b"\0", 1)[0].decode()
 
-def check_playable() -> bool:
-    if DME.read_word(0x801ce6f4) == 0:
-        return False
-    else:
-        return True
 
 def check_ingame() -> bool:
-    if DME.read_word(0x801ce6f0) == 3:
+    if DME.read_word(0x801ce6f0) == 3 and DME.read_word(0x801ce6f4) == 0:
+        return False
+    elif DME.read_word(0x801ce6f0) == 1 and DME.read_word(0x801ce6f4) == 0:
         return False
     else:
         return True
@@ -239,12 +239,20 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
     if not check_ingame():
         return False
     else:
-        memvalue = ITEM_TABLE[item_name].memvalue
-        address = ITEM_TABLE[item_name].memloc
+        memvalue = NET_TABLE[item_name].memvalue
+        address = NET_TABLE[item_name].memloc
+    if item_name not in ITEM_TABLE.keys():
         if address is None:
             address = DME.read_word(0x801c5820) + 0xd8
-        write_short(address, read_short(address) | memvalue)
+        if FILLER_TABLE[item_name].ItemType == "add":
+            print(item_name)
+            DME.write_word(address, (DME.read_word(address) + memvalue))
+            return True
+        DME.write_word(address, memvalue)
         return True
+    else:
+        write_short(address, read_short(address) | memvalue)
+    return True
 
 async def give_items(ctx: WwContext) -> None:
     """
@@ -261,6 +269,7 @@ async def give_items(ctx: WwContext) -> None:
             return
         for idx, item in enumerate(ctx.items_receivedd[expected_itemamount:]):
             # Attempt to give the item and increment the expected index.
+            print(LOOKUP_ID_TO_NAME[item.item])
             while not _give_item(ctx, LOOKUP_ID_TO_NAME[item.item]):
                 await asyncio.sleep(0.01)
             write_short(NETITEMSRECEIVED, expected_itemamount + 1)
