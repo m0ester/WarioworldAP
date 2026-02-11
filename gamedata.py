@@ -630,7 +630,7 @@ StatuePieces_b: dict[str, StatuePiece] = {
 class Junk(NamedTuple):
     memloc: int | None
     memvalue: int
-    ItemID: int | None
+    ItemID: int
     ItemType: str
     classification = FILL
 
@@ -642,7 +642,7 @@ JunkItems: dict[str, Junk] = {
 class Trap(NamedTuple):
     memloc: int | None
     memvalue: int
-    ItemID: int | None
+    ItemID: int
     ItemType: str
     classification = TRAP
 
