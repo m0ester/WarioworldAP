@@ -118,8 +118,10 @@ class WwContext(CommonContext):
                 newitem = NET_TABLE[item_name]
                 self.items_receivedd.append(item)
                 if item_name in ITEM_TABLE.keys():
+                    print(item_name)
                     write_short(newitem.memloc, newitem.memvalue | read_short(newitem.memloc))
                 if item_name in FILLER_TABLE.keys():
+                        print(item_name, "donothing")
                         return
                 print("gotitem")
 
