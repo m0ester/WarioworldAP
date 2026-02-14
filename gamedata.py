@@ -259,7 +259,7 @@ Cages_b: dict[str, Cage] = {
 
 class BossMedal(NamedTuple):
     memvalue: int
-    ItemID: int
+    ItemID: int | None
     classification = PROG
     ItemType = "BossMedal"
     memloc = 0x801ce3ac
@@ -277,6 +277,7 @@ BossMedals_h: dict[str, BossMedal] = {
     "The Mean Emcee Boss Medal":	BossMedal(0x200,	114),
     "Ironsider Boss Medal":	BossMedal(0x400,	115),
     "Captain Skull Big Key Fragment":	BossMedal(0x800,   116),
+    "Victory": BossMedal(0x1000, None),
     }
 
 class StageDoor(NamedTuple):
@@ -316,7 +317,7 @@ Bosses_b: dict[str, BossBeat] = {
     "Defeated The Mean Emcee":  BossBeat(0x200, 0x801ce3d2, 114,    "The Mean Emcee"),
     "Defeated Ironsider":   BossBeat(0x400, 0x801ce3d2,	115,    "Ironsider"),
     "Defeated Captain Skull":   BossBeat(0x800, 0x801ce3d2, 116,    "Captain Skull's Showdown"),
-    "Victory": BossBeat(0x1000, 0x801ce3d2, None, "Menu"),
+    "VictoryLoc": BossBeat(0x1000, 0x801ce3d2, None, "FinalBoss"),
     "Opened Greenhorn Ruins Door": BossBeat(1, 0x801ce3d2, 117, "Greenfist"),
     "Opened DinoMighty's Door": BossBeat(2, 0x801ce3d2, 118, "Sandworm"),
     "Opened Horror Manor Door": BossBeat(4, 0x801ce3d2, 119, "DinoMighty's Showdown"),
