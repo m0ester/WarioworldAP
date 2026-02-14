@@ -13,6 +13,7 @@ regions = [
     "Mirror Mansion",
     "Pecan Sands",
     "Captain Skull's Showdown",
+    "FinalBoss",
 ]
 
 bosses = ["Greenfist",
@@ -22,7 +23,8 @@ bosses = ["Greenfist",
           "Winter Windster",
           "Spideraticus",
           "The Mean Emcee",
-          "Ironsider",]
+          "Ironsider",
+          ]
 
 def create_region(world, name) -> Region:
     reg = Region(name, world.player, world.multiworld)
