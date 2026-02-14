@@ -1,6 +1,6 @@
 from BaseClasses import CollectionState
 from .gamedata import GFRedDiamonds, GRRedDiamonds, HMRedDiamonds, WCRedDiamonds ,SMRedDiamonds, BWRedDiamonds, MMRedDiamonds, PSRedDiamonds
-from .Settings import WwOptions
+
 def has_greenhornruins(world, state: CollectionState):
     return state.has("Greenhorn Ruins Door", world.player)
 
@@ -68,6 +68,9 @@ def has_ironsider(world, state: CollectionState):
 def get_rules(world):
     rules = {
         "entrances": {
+            "Menu -> FinalBoss":
+                lambda state: has_blackjewel(world,state),
+
             "Menu -> Greenhorn Forest":
                 lambda state: True,
 
@@ -142,6 +145,5 @@ def set_rules(world):
             pass
 
     #world.get_location("Victory").access_rule = lambda state: False
-    world.multiworld.completion_condition[world.player] = lambda state: has_blackjewel(world, state)
+    world.multiworld.completion_condition[world.player] = lambda state: state.has("Victory", world.player)
     #and WwOptions.ending == SpritelingsCollected)
-
