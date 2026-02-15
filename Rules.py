@@ -145,5 +145,5 @@ def set_rules(world):
             pass
 
     #world.get_location("Victory").access_rule = lambda state: False
-    world.multiworld.completion_condition[world.player] = lambda state: state.has("Victory", world.player)
+    world.multiworld.completion_condition[world.player] = lambda state: state.can_reach_location("VictoryLoc", world.player)
     #and WwOptions.ending == SpritelingsCollected)
