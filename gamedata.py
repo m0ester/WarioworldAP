@@ -636,7 +636,7 @@ class Junk(NamedTuple):
     classification = FILL
 
 JunkItems: dict[str, Junk] = {
-    "50 coins": Junk(0x801ce3a4,    +50, 2008, "add"),
+    "50 Coins": Junk(0x801ce3a4,    +50, 2008, "add"),
     "Garlic":   Junk(None,   +2,   2009, "add"),
 }
 
