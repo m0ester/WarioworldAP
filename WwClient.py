@@ -9,7 +9,7 @@ from NetUtils import ClientStatus
 from typing import Optional, Any
 from CommonClient import ClientCommandProcessor, CommonContext, gui_enabled, logger, server_loop
 from NetUtils import NetworkItem
-from .gamedata import ITEM_TABLE, NET_TABLE, CHECK_TABLE
+from .gamedata import ITEM_TABLE, NET_TABLE, CHECK_TABLE, Bosses_h
 from .Items import LOOKUP_ID_TO_NAME #WwItem
 #from .Locations import LOOKUP_NAME_TO_ID, WwLocation
 from . import Patches, FILLER_TABLE
@@ -118,7 +118,6 @@ class WwContext(CommonContext):
                 newitem = NET_TABLE[item_name]
                 self.items_receivedd.append(item)
                 if item_name in ITEM_TABLE.keys():
-                    print(item_name)
                     write_short(newitem.memloc, newitem.memvalue | read_short(newitem.memloc))
                 if item_name in FILLER_TABLE.keys():
                         print(item_name, "donothing")
@@ -189,7 +188,10 @@ def check_location(check_name: str) -> bool:
     address = CHECK_TABLE[check_name].memloc
     # If the location is in the current stage, check the bitfields for the current stage as well.
     if not checked:
-        checked = bool(DME.read_byte(address) & memvalue)
+        if check_name in Bosses_h.keys():
+            checked = bool(read_short(address) & memvalue)
+        else:
+            checked = bool(DME.read_byte(address) & memvalue)
     return checked
 
 async def check_locations(ctx: WwContext) -> None:
@@ -207,12 +209,14 @@ async def check_locations(ctx: WwContext) -> None:
         address = CHECK_TABLE[location].memloc
         memvalue = CHECK_TABLE[location].memvalue
         #print(sorted(ctx.locations_checked))
-        if check_id in ctx.checked_locations:
-            DME.write_byte(address, DME.read_byte(address) | memvalue)
-        if check_location(location):
-            DME.write_byte(address, DME.read_byte(address) | memvalue)
-            if check_id is None:
+        if check_location(location) or check_id in ctx.checked_locations:
+            if location in Bosses_h.keys():
+                write_short(address, read_short(address) | memvalue)
+            else:
+                DME.write_byte(address, DME.read_byte(address) | memvalue)
+            if check_location("VictoryLoc"):
                 if not ctx.finished_game:
+                    print("sending cleared")
                     await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
                     ctx.finished_game = True
             else:
@@ -243,15 +247,15 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
     else:
         memvalue = NET_TABLE[item_name].memvalue
         address = NET_TABLE[item_name].memloc
-    if item_name not in ITEM_TABLE.keys():
+    if item_name in FILLER_TABLE.keys():
         if address is None:
             address = DME.read_word(0x801c5820) + 0xd8
         if FILLER_TABLE[item_name].ItemType == "add":
-            print(item_name)
             DME.write_word(address, (DME.read_word(address) + memvalue))
             return True
-        DME.write_word(address, memvalue)
-        return True
+        elif FILLER_TABLE[item_name].ItemType == "set":
+            DME.write_word(address, memvalue)
+            return True
     else:
         write_short(address, read_short(address) | memvalue)
     return True
@@ -271,7 +275,6 @@ async def give_items(ctx: WwContext) -> None:
             return
         for idx, item in enumerate(ctx.items_receivedd[expected_itemamount:]):
             # Attempt to give the item and increment the expected index.
-            print(LOOKUP_ID_TO_NAME[item.item])
             while not _give_item(ctx, LOOKUP_ID_TO_NAME[item.item]):
                 await asyncio.sleep(0.01)
             write_short(NETITEMSRECEIVED, expected_itemamount + 1)
@@ -321,16 +324,13 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                 logger.info("Attempting to connect to Dolphin...")
                 DME.hook()
                 if DME.is_hooked():
-                    print("hooked")
                     if DME.read_bytes(0x80000000, 6) != b"GWWE01":
                         logger.info(CONNECTION_REFUSED)
                         ctx.dolphin_status = CONNECTION_REFUSED
                         DME.un_hook()
-                        print("gamburger")
                         patched = False
                         await asyncio.sleep(5)
                     else:
-                        print("connected")
                         logger.info(CONNECTION_ESTABLISHED)
                         ctx.dolphin_status = CONNECTION_ESTABLISHED
                         ctx.locations_checked = set()
