@@ -1,8 +1,6 @@
 from typing import Optional
 from BaseClasses import Item, ItemClassification as IC
 from .gamedata import ITEM_TABLE, FILLER_TABLE, NET_TABLE, Spriteling, Treasure, BossMedal, StageDoor, Junk, Trap, RedDiamond, StatuePart
-from worlds.AutoWorld import World
-import dolphin_memory_engine as DME
 
 "logic to set progression value of spritelings depending on settings"
 "logic to give player a fixed amount of big keys depending on big keys set"
