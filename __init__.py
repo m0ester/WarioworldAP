@@ -1,7 +1,7 @@
-from typing import ClassVar, Any
 import zipfile
 import yaml
-import os
+
+from typing import ClassVar, Any, Dict, Optional
 from base64 import b64encode
 from Utils import visualize_regions as visualise_regions
 from BaseClasses import Item
@@ -77,6 +77,8 @@ class WwWorld(World):
 
     web: ClassVar[WwWeb] = WwWeb()
 
+    ut_can_gen_without_yaml = True
+
     #set_rules = set_rules
     def __init__(self, multiworld, player):
         super().__init__(multiworld, player)
@@ -106,16 +108,6 @@ class WwWorld(World):
             adjusted_classification = IC.filler
         return adjusted_classification
 
-    #def set_classification(self, name: str) -> IC | None:
-
-        classification = ITEM_TABLE[name].classification
-        if isinstance(ITEM_TABLE[name], Spriteling):
-            if self.options.endingtype == 0 | 1:
-                classification = IC.filler
-            return classification
-        else:
-            return classification
-
     def create_item(self, name):
         return create_item(self, name)
 
@@ -140,6 +132,27 @@ class WwWorld(World):
             "big key fragments": self.options.big_key_fragments.value,
             "spriteling requirement": self.options.endingtype.value,
         }
+
+    def generate_early(self) -> None:
+        self.handle_ut_yamless(None)
+
+    def handle_ut_yamless(self, slot_data: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+
+        if not slot_data \
+                and hasattr(self.multiworld, "re_gen_passthrough") \
+                and isinstance(self.multiworld.re_gen_passthrough, dict) \
+                and self.game in self.multiworld.re_gen_passthrough:
+            slot_data = self.multiworld.re_gen_passthrough[self.game]
+
+        if not slot_data:
+            return None
+
+        # fill in options
+        self.options.goal.value = slot_data["Goal"]
+        self.options.endingtype.value = slot_data["endingtype"]
+        self.options.big_key_fragments = slot_data["big_key_fragments"]
+
+        return slot_data
 
     #def create_event(self):
      #   Event.create_event(self)
