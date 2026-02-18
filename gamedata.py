@@ -636,8 +636,8 @@ class Junk(NamedTuple):
     classification = FILL
 
 JunkItems: dict[str, Junk] = {
-    "50 Coins": Junk(0x801ce3a4,    +50, 2008, "add"),
-    "Garlic":   Junk(None,   +2,   2009, "add"),
+    "50 Coins": Junk(0x801ce3a4,    50, 2008, "add"),
+    "Garlic":   Junk(None,   2,   2009, "add"),
 }
 
 class Trap(NamedTuple):
@@ -648,9 +648,9 @@ class Trap(NamedTuple):
     classification = TRAP
 
 TrapItems: dict[str, Trap] = {
-    "Unithorn Attack":    Trap(0x801ce3a4,  -50, 2010, "add"),
+    "Unithorn Attack":    Trap(0x801ce3a4,  50, 2010, "sub"),
     "Death Trap":   Trap(None,  0,  2011, "set"),
-    "Take Damage": Trap(None,  -2, 2012, "add"),
+    "Take Damage": Trap(None,  2, 2012, "sub"),
 }
 
 ITEM_TABLE = {
