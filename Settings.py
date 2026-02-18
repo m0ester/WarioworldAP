@@ -12,7 +12,7 @@ class Goal(Choice):
 
 class StartingFragments(Range):
     """How many Big Key Fragments are given on start?
-    Recommended: 2 for a large pool of checks, 4 for a small or solo playthrough, set to 4 by default"""
+    Recommended: 2 for a large pool of checks, 0 for a small or solo playthrough, set to 0 by default"""
     display_name = "Big Key Fragment Requirement"
     default = 0
     range_start = 0
