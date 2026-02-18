@@ -253,6 +253,9 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
         if FILLER_TABLE[item_name].ItemType == "add":
             DME.write_word(address, (DME.read_word(address) + memvalue))
             return True
+        if FILLER_TABLE[item_name].ItemType == "sub":
+            DME.write_word(address, (DME.read_word(address) - memvalue))
+            return True
         elif FILLER_TABLE[item_name].ItemType == "set":
             DME.write_word(address, memvalue)
             return True
