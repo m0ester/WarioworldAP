@@ -214,7 +214,7 @@ async def check_locations(ctx: WwContext) -> None:
                 write_short(address, read_short(address) | memvalue)
             else:
                 DME.write_byte(address, DME.read_byte(address) | memvalue)
-            if check_location("VictoryLoc"):
+            if check_location("Victory"):
                 if not ctx.finished_game:
                     print("sending cleared")
                     await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
@@ -247,7 +247,11 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
     else:
         memvalue = NET_TABLE[item_name].memvalue
         address = NET_TABLE[item_name].memloc
+        print(item_name)
     if item_name in FILLER_TABLE.keys():
+        if len(ctx.items_receivedd) <= read_short(NETITEMSRECEIVED):
+            # There are no new items.
+            return True
         if address is None:
             address = DME.read_word(0x801c5820) + 0xd8
         if FILLER_TABLE[item_name].ItemType == "add":
