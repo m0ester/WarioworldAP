@@ -9,8 +9,8 @@ from NetUtils import ClientStatus
 from typing import Optional, Any
 from CommonClient import ClientCommandProcessor, CommonContext, gui_enabled, logger, server_loop
 from NetUtils import NetworkItem
-from .gamedata import ITEM_TABLE, NET_TABLE, CHECK_TABLE, Bosses_h
-from .Items import LOOKUP_ID_TO_NAME #WwItem
+from .gamedata import NET_TABLE, CHECK_TABLE, Bosses_h
+from .Items import LOOKUP_ID_TO_NAME, WwItem
 #from .Locations import LOOKUP_NAME_TO_ID, WwLocation
 from . import Patches, FILLER_TABLE
 
@@ -270,14 +270,15 @@ async def give_items(ctx: WwContext) -> None:
     #check if ingame
     if check_ingame():
         # Check if there are new items.
-        #for idx, item in enumerate(ctx.items_received[expected_itemamount:]):
-        for item in ctx.items_received:
-            expected_itemamount = read_short(NETITEMSRECEIVED)
+        expected_itemamount = read_short(NETITEMSRECEIVED)
+        for idx, item in enumerate(ctx.items_received[expected_itemamount:]):
+        #for item in ctx.items_received:
             if len(ctx.items_received) <= expected_itemamount:
                 # There are no new items.
                 return
-            if expected_itemamount <= len(ctx.items_received) and LOOKUP_ID_TO_NAME[item.item] in FILLER_TABLE.keys():
+            if expected_itemamount != (len(ctx.items_received)-1) and LOOKUP_ID_TO_NAME[item.item] in FILLER_TABLE.keys():
                 #do not give already given filler
+                write_short(NETITEMSRECEIVED, expected_itemamount + 1)
                 return
             # Attempt to give the item and increment the expected index.
             print("need item", LOOKUP_ID_TO_NAME[item.item])
