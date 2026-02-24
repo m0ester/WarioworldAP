@@ -112,17 +112,17 @@ class WwContext(CommonContext):
                 Utils.async_start(self.update_death_link(bool(args["slot_data"]["death_link"])))
                 print("connectpackage")
 
-        elif cmd == "ReceivedItems":
-            for item in args["items"]:
-                item_name=LOOKUP_ID_TO_NAME[item.item]
-                newitem = NET_TABLE[item_name]
-                self.items_receivedd.append(item)
-                if item_name in ITEM_TABLE.keys():
-                    write_short(newitem.memloc, newitem.memvalue | read_short(newitem.memloc))
-                if item_name in FILLER_TABLE.keys():
-                        print(item_name, "donothing")
-                        return
-                print("gotitem")
+        #elif cmd == "ReceivedItems":
+            #for item in args["items"]:
+                #item_name=LOOKUP_ID_TO_NAME[item.item]
+                #newitem = NET_TABLE[item_name]
+                #self.items_receivedd.append(item)
+                #if item_name in ITEM_TABLE.keys():
+                    #write_short(newitem.memloc, newitem.memvalue | read_short(newitem.memloc))
+                #if item_name in FILLER_TABLE.keys():
+                        #print(item_name, "donothing")
+                        #return
+                #print("gotitem")
 
     def on_death_link(self, data: dict[str, Any]) -> None:
         super().on_deathlink(data)
@@ -247,11 +247,8 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
     else:
         memvalue = NET_TABLE[item_name].memvalue
         address = NET_TABLE[item_name].memloc
-        print(item_name)
+        print(item_name, len(ctx.items_received), read_short(NETITEMSRECEIVED))
     if item_name in FILLER_TABLE.keys():
-        if len(ctx.items_receivedd) <= read_short(NETITEMSRECEIVED):
-            # There are no new items.
-            return True
         if address is None:
             address = DME.read_word(0x801c5820) + 0xd8
         if FILLER_TABLE[item_name].ItemType == "add":
@@ -273,12 +270,17 @@ async def give_items(ctx: WwContext) -> None:
     #check if ingame
     if check_ingame():
         # Check if there are new items.
-        expected_itemamount = read_short(NETITEMSRECEIVED)
-        if len(ctx.items_receivedd) <= expected_itemamount:
-            # There are no new items.
-            return
-        for idx, item in enumerate(ctx.items_receivedd[expected_itemamount:]):
+        #for idx, item in enumerate(ctx.items_received[expected_itemamount:]):
+        for item in ctx.items_received:
+            expected_itemamount = read_short(NETITEMSRECEIVED)
+            if len(ctx.items_received) <= expected_itemamount:
+                # There are no new items.
+                return
+            if expected_itemamount <= len(ctx.items_received) and LOOKUP_ID_TO_NAME[item.item] in FILLER_TABLE.keys():
+                #do not give already given filler
+                return
             # Attempt to give the item and increment the expected index.
+            print("need item", LOOKUP_ID_TO_NAME[item.item])
             while not _give_item(ctx, LOOKUP_ID_TO_NAME[item.item]):
                 await asyncio.sleep(0.01)
             write_short(NETITEMSRECEIVED, expected_itemamount + 1)
