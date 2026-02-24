@@ -13,7 +13,7 @@ from worlds.Files import APPlayerContainer
 
 from .Items import WwItem, create_item, create_items, create_filler
 from .Locations import WwLocation
-from .gamedata import CHECK_TABLE, ITEM_TABLE, FILLER_TABLE, BigKeys, Spriteling
+from .gamedata import CHECK_TABLE, ITEM_TABLE, FILLER_TABLE, NET_TABLE, BigKeys, Spriteling
 from .Settings import WwOptions
 from .Regions import create_regions, connect_regions
 from .Rules import set_rules
@@ -65,7 +65,7 @@ class WwWorld(World):
     topology_present: bool = True
 
     item_name_to_id: ClassVar[dict[str, int]] = {
-        name: data.ItemID for name, data in ITEM_TABLE.items() if data.ItemID is not None
+        name: data.ItemID for name, data in NET_TABLE.items() if data.ItemID is not None
     }
     location_name_to_id: ClassVar[dict[str, int]] = {
         name: data.CheckID for name, data in CHECK_TABLE.items() if data.CheckID is not None
