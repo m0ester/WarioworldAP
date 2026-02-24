@@ -148,7 +148,7 @@ class WwWorld(World):
             return None
 
         # fill in options
-        self.options.goal.value = slot_data["Goal"]
+        self.options.goal.value = slot_data["goal"]
         self.options.endingtype.value = slot_data["endingtype"]
         self.options.big_key_fragments = slot_data["big_key_fragments"]
 
