@@ -9,10 +9,10 @@ from NetUtils import ClientStatus
 from typing import Optional, Any
 from CommonClient import ClientCommandProcessor, CommonContext, gui_enabled, logger, server_loop
 from NetUtils import NetworkItem
-from .gamedata import NET_TABLE, CHECK_TABLE, Bosses_h
+from .gamedata import NET_TABLE, CHECK_TABLE, Bosses_h, Spriteling
 from .Items import LOOKUP_ID_TO_NAME, WwItem
 #from .Locations import LOOKUP_NAME_TO_ID, WwLocation
-from . import Patches, FILLER_TABLE
+from . import Patches, FILLER_TABLE, WwWorld
 
 
 ###### Dolphin connection ######
@@ -29,6 +29,16 @@ def _apply_fakegecko(code: dict[int, list[int]]):
         for row in rows:
             DME.write_word(address, row)
             address += 4
+
+def _apply_gecko(code):
+    length = 0
+    for row in code:
+        codelen = row & 0x00000000000000FF
+        if row & 0xCDFFFFFFFFFF0000:
+            continue
+        else:
+            length += codelen
+    start = DME.read_word(0x80000034) - length
 
 CONNECTION_REFUSED = (
     "Dolphin failed to connect. Please ensure you are using a Warioworld NTSC ROM. Trying again in 5 seconds..."
@@ -71,6 +81,8 @@ class WwContext(CommonContext):
 
     def __init__(self, server_address = Optional[str], password = Optional[str]) -> None:
         super().__init__(server_address, password)
+        self.spritelings = 0
+        self.slotdata = None
         self.items_receivedd: list[NetworkItem] =[]
         self.dolphin_sync_task: Optional[asyncio.Task[None]] = None
         self.dolphin_status: str = CONNECTION_INITIAL
@@ -108,21 +120,11 @@ class WwContext(CommonContext):
         if cmd == "Connected":
             self.items_received = []
             self.last_rcvd_index = -1
+            self.slotdata = args["slot_data"]
+            print(self.slotdata["spriteling requirement"])
             if "death_link" in args["slot_data"]:
                 Utils.async_start(self.update_death_link(bool(args["slot_data"]["death_link"])))
                 print("connectpackage")
-
-        #elif cmd == "ReceivedItems":
-            #for item in args["items"]:
-                #item_name=LOOKUP_ID_TO_NAME[item.item]
-                #newitem = NET_TABLE[item_name]
-                #self.items_receivedd.append(item)
-                #if item_name in ITEM_TABLE.keys():
-                    #write_short(newitem.memloc, newitem.memvalue | read_short(newitem.memloc))
-                #if item_name in FILLER_TABLE.keys():
-                        #print(item_name, "donothing")
-                        #return
-                #print("gotitem")
 
     def on_death_link(self, data: dict[str, Any]) -> None:
         super().on_deathlink(data)
@@ -154,6 +156,7 @@ def read_string(console_address: int, strlen: int) -> str:
 
 
 def check_ingame() -> bool:
+    #rewrite this, horror manor doesn't like it
     if DME.read_word(0x801ce6f0) == 3 and DME.read_word(0x801ce6f4) == 0:
         return False
     elif DME.read_word(0x801ce6f0) == 1 and DME.read_word(0x801ce6f4) == 0:
@@ -214,9 +217,8 @@ async def check_locations(ctx: WwContext) -> None:
                 write_short(address, read_short(address) | memvalue)
             else:
                 DME.write_byte(address, DME.read_byte(address) | memvalue)
-            if check_location("Victory"):
+            if check_location("Victory") and ctx.spritelings >= ctx.slotdata["spriteling requirement"]:
                 if not ctx.finished_game:
-                    print("sending cleared")
                     await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
                     ctx.finished_game = True
             else:
@@ -248,6 +250,9 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
         memvalue = NET_TABLE[item_name].memvalue
         address = NET_TABLE[item_name].memloc
         print(item_name, len(ctx.items_received), read_short(NETITEMSRECEIVED))
+        if isinstance(NET_TABLE[item_name], Spriteling):
+            ctx.spritelings += 1
+            print(ctx.spritelings)
     if item_name in FILLER_TABLE.keys():
         if address is None:
             address = DME.read_word(0x801c5820) + 0xd8
