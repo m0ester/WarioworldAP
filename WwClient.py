@@ -7,13 +7,20 @@ import kvui
 
 from NetUtils import ClientStatus
 from typing import Optional, Any
-from CommonClient import ClientCommandProcessor, CommonContext, gui_enabled, logger, server_loop
+from CommonClient import gui_enabled, logger, server_loop
 from NetUtils import NetworkItem
 from .gamedata import NET_TABLE, CHECK_TABLE, Bosses_h, Spriteling
-from .Items import LOOKUP_ID_TO_NAME, WwItem
+from .Items import LOOKUP_ID_TO_NAME
 #from .Locations import LOOKUP_NAME_TO_ID, WwLocation
-from . import Patches, FILLER_TABLE, WwWorld
+from . import Patches, FILLER_TABLE
 
+tracker_loaded = False
+try:
+    from worlds.tracker.TrackerClient import (TrackerCommandProcessor as ClientCommandProcessor,
+                                              TrackerGameContext as CommonContext, UT_VERSION)
+    tracker_loaded = True
+except ImportError:
+    from CommonClient import ClientCommandProcessor, CommonContext
 
 ###### Dolphin connection ######
 def _apply_ar_code(code: list[int]):
@@ -121,19 +128,79 @@ class WwContext(CommonContext):
             self.items_received = []
             self.last_rcvd_index = -1
             self.slotdata = args["slot_data"]
-            print(self.slotdata["spriteling requirement"])
+
             if "death_link" in args["slot_data"]:
                 Utils.async_start(self.update_death_link(bool(args["slot_data"]["death_link"])))
-                print("connectpackage")
+
+            self.spritelingreq = self.slotdata["spriteling requirement"]
+            if self.ui:
+                self.ui.spritelingcountupdate(self.spritelings, self.spritelingreq)
+                #self.ui.doorupdate([])
+
 
     def on_death_link(self, data: dict[str, Any]) -> None:
         super().on_deathlink(data)
         _give_death(self)
 
     def make_gui(self) -> type["kvui.GameManager"]:
-            ui = super().make_gui()
-            ui.base_title = "Archipelago Warioworld Client"
-            return ui
+        """Initialises Warioworld GUI
+        Returns client GUI"""
+        from kvui import GameManager
+        base_class: type = GameManager
+        ut_title: str = ""
+        # Use Universal Tracker gui only if it's recent enough version.
+        if tracker_loaded and UT_VERSION >= "v0.2.12":
+            base_class = super().make_gui()
+            ut_title = f" | Universal Tracker {UT_VERSION}"
+        class WwManager(base_class):
+            logging_pairs = [("Client", "Archipelago")]
+            base_title = f"Archipelago Warioworld Client {ut_title} | Archipelago"
+
+            def build(self):
+                container = super().build()
+                from kivy.metrics import dp
+                from kvui import MDBoxLayout, MDLabel
+                from kivymd.uix.fitimage import FitImage
+
+                def get_image(source: str, width: int = 0, height: int = 0) -> FitImage:
+                    from importlib import resources
+                    from kivy.core.image import Image
+                    from io import BytesIO
+                    img = resources.files(__package__ + ".icons").joinpath(source)
+                    data = img.read_bytes()
+                    print(img, "picture!")
+                    raw_image = Image(BytesIO(data), ext=img.suffix[1:])
+                    image = FitImage(texture=raw_image.texture)
+                    if width > 0:
+                        image.size_hint_x = None
+                        image.width = dp(width)
+                    if height > 0:
+                        image.size_hint_y = None
+                        image.height = dp(height)
+                    return image
+
+                layout = MDBoxLayout(
+                    orientation="horizontal",
+                    size_hint_y=None,
+                    height=dp(50),
+                    spacing=dp(5),
+                    padding=dp(5),
+                )
+                layout.add_widget(get_image("Spritelings.png", 36, 36))
+
+                self.spritelingcount: MDLabel = MDLabel(text = "0/40", halign = "left", role = "large")
+                layout.add_widget(self.spritelingcount)
+
+                self.grid.add_widget(layout)
+                return container
+
+            def spritelingcountupdate(self, current: int, goal: int) -> None:
+                self.spritelingcount.text =f"{current}/{goal}"
+
+            #def doorupdate(self, doorsopened: list[int]) -> None:
+             #   self.spritelingcount.text = f"{doorsopened}"
+
+        return WwManager
 
 def apply_patch(ctx: WwContext):
     _apply_fakegecko(Patches.patch)
@@ -161,6 +228,8 @@ def check_ingame() -> bool:
         return False
     elif DME.read_word(0x801ce6f0) == 1 and DME.read_word(0x801ce6f4) == 0:
         return False
+    elif DME.read_double(0x801ce398) != 0xFFFFFFFFFFFFFFFF:
+        return True
     else:
         return True
 
@@ -211,7 +280,6 @@ async def check_locations(ctx: WwContext) -> None:
         check_id = CHECK_TABLE[location].CheckID
         address = CHECK_TABLE[location].memloc
         memvalue = CHECK_TABLE[location].memvalue
-        #print(sorted(ctx.locations_checked))
         if check_location(location) or check_id in ctx.checked_locations:
             if location in Bosses_h.keys():
                 write_short(address, read_short(address) | memvalue)
@@ -249,10 +317,6 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
     else:
         memvalue = NET_TABLE[item_name].memvalue
         address = NET_TABLE[item_name].memloc
-        print(item_name, len(ctx.items_received), read_short(NETITEMSRECEIVED))
-        if isinstance(NET_TABLE[item_name], Spriteling):
-            ctx.spritelings += 1
-            print(ctx.spritelings)
     if item_name in FILLER_TABLE.keys():
         if address is None:
             address = DME.read_word(0x801c5820) + 0xd8
@@ -264,6 +328,7 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
             return True
     else:
         write_short(address, read_short(address) | memvalue)
+        ctx.ui.spritelingcountupdate(ctx.spritelings, ctx.slotdata["spriteling requirement"])
     return True
 
 async def give_items(ctx: WwContext) -> None:
@@ -286,7 +351,6 @@ async def give_items(ctx: WwContext) -> None:
                 write_short(NETITEMSRECEIVED, expected_itemamount + 1)
                 return
             # Attempt to give the item and increment the expected index.
-            print("need item", LOOKUP_ID_TO_NAME[item.item])
             while not _give_item(ctx, LOOKUP_ID_TO_NAME[item.item]):
                 await asyncio.sleep(0.01)
             write_short(NETITEMSRECEIVED, expected_itemamount + 1)
@@ -300,7 +364,7 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
     :param ctx: Warioworld client context.
     """
     patched = False
-    loaded = False
+    items_filled = False
     logger.info("Starting Dolphin connector. Use /dolphin for status information.")
     while not ctx.exit_event.is_set():
         try:
@@ -314,8 +378,18 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                     logger.info("Patching Failed. Please ensure you are on the press start screen and connected to the server")
                     await asyncio.sleep(5)
                     continue
-
-                if not check_ingame():
+                #item prefill for important cutscene related items
+                if not items_filled:
+                    if DME.read_word(0x801cf810) < 5 :
+                        for item in ctx.items_received:
+                            itemname = LOOKUP_ID_TO_NAME[item.item]
+                            if itemname not in FILLER_TABLE.keys():
+                                write_short(NET_TABLE[itemname].memloc, read_short(NET_TABLE[itemname].memloc) | NET_TABLE[itemname].memvalue)
+                                print(itemname)
+                                if isinstance(NET_TABLE[itemname], Spriteling):
+                                    ctx.spritelings +=1
+                        ctx.ui.spritelingcountupdate(ctx.spritelings,ctx.slotdata["spriteling requirement"])
+                        items_filled=True
                     await asyncio.sleep(0.1)
                     continue
                 if ctx.slot is not None:
@@ -379,9 +453,9 @@ def main(connect: Optional[str] = None, password: Optional[str] = None) -> None:
         ctx.server_task = asyncio.create_task(server_loop(ctx), name="ServerLoop")
 
         # Runs Universal Tracker's internal generator
-        #if tracker_loaded:
-        #     ctx.run_generator()
-        #     ctx.tags.remove("Tracker")
+        if tracker_loaded:
+             ctx.run_generator()
+             ctx.tags.remove("Tracker")
 
         if gui_enabled:
             ctx.run_gui()
