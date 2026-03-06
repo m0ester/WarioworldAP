@@ -123,14 +123,17 @@ class WwWorld(World):
         Rules.set_rules(self)
 
     def fill_slot_data(self) -> dict[str, any]:
-        visualise_regions(self.multiworld.get_region("Menu", self.player), f"Player{self.player}.puml",
-            show_entrance_names=True,
-            regions_to_highlight=self.multiworld.get_all_state(self.player).reachable_regions[
-                self.player])
+        #puml generation code
+    #    visualise_regions(self.multiworld.get_region("Menu", self.player), f"Player{self.player}.puml",
+     #       show_entrance_names=True,
+      #      regions_to_highlight=self.multiworld.get_all_state(self.player).reachable_regions[
+       #         self.player])
         return{
             "death_link": self.options.death_link.value,
-            "big key fragments": self.options.big_key_fragments.value,
+            "big_key_fragments": self.options.big_key_fragments.value,
             "spriteling requirement": self.options.endingtype.value,
+            "goal": self.options.goal.value,
+            "endingtype": self.options.endingtype.value
         }
 
     def generate_early(self) -> None:
@@ -148,9 +151,10 @@ class WwWorld(World):
             return None
 
         # fill in options
+        print(slot_data, "beans")
         self.options.goal.value = slot_data["goal"]
         self.options.endingtype.value = slot_data["endingtype"]
-        self.options.big_key_fragments = slot_data["big_key_fragments"]
+        self.options.big_key_fragments.value = slot_data["big_key_fragments"]
 
         return slot_data
 
