@@ -341,19 +341,32 @@ async def give_items(ctx: WwContext) -> None:
     if check_ingame():
         # Check if there are new items.
         expected_itemamount = read_short(NETITEMSRECEIVED)
-        for idx, item in enumerate(ctx.items_received[expected_itemamount:]):
-        #for item in ctx.items_received:
+        for idx, item in enumerate(ctx.items_received[expected_itemamount:], start=expected_itemamount):
+            print(idx, expected_itemamount, len(ctx.items_received))
             if len(ctx.items_received) <= expected_itemamount:
                 # There are no new items.
                 return
             if expected_itemamount != (len(ctx.items_received)-1) and LOOKUP_ID_TO_NAME[item.item] in FILLER_TABLE.keys():
                 #do not give already given filler
-                write_short(NETITEMSRECEIVED, expected_itemamount + 1)
-                return
+                if expected_itemamount < idx+1:
+                    write_short(NETITEMSRECEIVED, idx+1)
+                continue
             # Attempt to give the item and increment the expected index.
             while not _give_item(ctx, LOOKUP_ID_TO_NAME[item.item]):
                 await asyncio.sleep(0.01)
-            write_short(NETITEMSRECEIVED, expected_itemamount + 1)
+            if expected_itemamount < idx+1:
+                write_short(NETITEMSRECEIVED, idx+1)
+            i=0
+            spritelinglist=[]
+            while i < len(ctx.items_received):
+                var = LOOKUP_ID_TO_NAME[ctx.items_received[i].item]
+                print(var)
+                if isinstance(NET_TABLE[var], Spriteling):
+                    spritelinglist.append(var)
+                i+=1
+            print(len(spritelinglist))
+            ctx.spritelings = len(spritelinglist)
+            ctx.ui.spritelingcountupdate(ctx.spritelings, ctx.slotdata["spriteling requirement"])
 
 async def dolphin_sync_task(ctx: WwContext) -> None:
     """
@@ -385,7 +398,6 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                             itemname = LOOKUP_ID_TO_NAME[item.item]
                             if itemname not in FILLER_TABLE.keys():
                                 write_short(NET_TABLE[itemname].memloc, read_short(NET_TABLE[itemname].memloc) | NET_TABLE[itemname].memvalue)
-                                print(itemname)
                                 if isinstance(NET_TABLE[itemname], Spriteling):
                                     ctx.spritelings +=1
                         ctx.ui.spritelingcountupdate(ctx.spritelings,ctx.slotdata["spriteling requirement"])
