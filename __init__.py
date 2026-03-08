@@ -13,7 +13,7 @@ from worlds.Files import APPlayerContainer
 
 from .Items import WwItem, create_item, create_items, create_filler
 from .Locations import WwLocation
-from .gamedata import CHECK_TABLE, ITEM_TABLE, FILLER_TABLE, NET_TABLE, BigKeys, Spriteling
+from .gamedata import CHECK_TABLE, NET_TABLE, BigKeys, BossMedals_h, Doors_h, Spritelings_h
 from .Settings import WwOptions
 from .Regions import create_regions, connect_regions
 from .Rules import set_rules
@@ -72,7 +72,11 @@ class WwWorld(World):
     }
 
     item_name_groups: ClassVar[dict[str, set[str]]]
-
+    item_name_groups = {
+        "Big Key": {x for x in BossMedals_h.keys() if "Big Key Fragment" in x},
+        "Door": {x for x in Doors_h.keys()},
+        "Spriteling":{x for x in Spritelings_h.keys()},
+    }
     required_client_version: tuple[int, int, int] = (0, 6, 5)
 
     web: ClassVar[WwWeb] = WwWeb()
