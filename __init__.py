@@ -18,7 +18,7 @@ from .Settings import WwOptions
 from .Regions import create_regions, connect_regions
 from .Rules import set_rules
 
-VERSION: tuple[int, int, int] = (0, 1, 2)
+VERSION: tuple[int, int, int] = (0, 1, 9)
 
 def run_client() -> None:
     """
