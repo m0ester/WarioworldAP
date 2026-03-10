@@ -4,11 +4,10 @@ from dataclasses import dataclass
 class Goal(Choice):
     """Victory condition for the game.
     Final Boss: Defeat the Black Jewel after collecting a set amount of Big Key Fragments
-    Fragments: Collect a set amount of Big Key Fragments to win"""
+    """
     display_name = "Goal"
     default = 0
     option_final_boss = 0
-
 
 class StartingFragments(Range):
     """How many Big Key Fragments are given on start?
