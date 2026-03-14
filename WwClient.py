@@ -212,13 +212,16 @@ class WwContext(CommonContext):
 
         return WwManager
 
-def apply_patch(ctx: WwContext):
+def apply_patch():
+    logger.info("Applying patch")
     if isPAL():
         _apply_gecko(Patches.PALGeckers)
         _apply_ar_code(Patches.arPALtches)
+        logger.info("PALpatch applied")
     else:
-        _apply_gecko(Patches.patch)
+        _apply_gecko(Patches.Geckers)
         _apply_ar_code(Patches.arpatches)
+        logger.info("NTSCpatch applied")
 
 def currentHP():
     if isPAL():
@@ -441,9 +444,7 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
         try:
             if DME.is_hooked() and ctx.dolphin_status == CONNECTION_ESTABLISHED:
                 if check_pressstart() and not check_ingame() and not patched and ctx.auth:
-                    if not isPAL():
-                        apply_patch(ctx)
-                    logger.info("Patch Applied!")
+                    apply_patch()
                     patched = True
                     await asyncio.sleep(0.1)
                 elif not patched:
