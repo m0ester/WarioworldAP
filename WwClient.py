@@ -9,10 +9,10 @@ from NetUtils import ClientStatus
 from typing import Optional, Any
 from CommonClient import gui_enabled, logger, server_loop
 from NetUtils import NetworkItem
-from .gamedata import NET_TABLE, CHECK_TABLE, Bosses_h, Spriteling
+from .gamedata import NET_TABLE, CHECK_TABLE, FILLER_TABLE, Bosses_h, Spriteling
 from .Items import LOOKUP_ID_TO_NAME
 #from .Locations import LOOKUP_NAME_TO_ID, WwLocation
-from . import Patches, FILLER_TABLE
+from . import Patches
 
 tracker_loaded = False
 try:
@@ -30,22 +30,31 @@ def _apply_ar_code(code: list[int]):
         if command == 0x04:
             DME.write_word(address, code[i + 1])
 
-def _apply_fakegecko(code: dict[int, list[int]]):
-    for start_address, rows in code.items():
-        address = start_address
-        for row in rows:
-            DME.write_word(address, row)
-            address += 4
+#def _apply_fakegecko(code: dict[int, list[int]]):
+ #   for start_address, rows in code.items():
+  #      address = start_address
+   #     for row in rows:
+    #        DME.write_word(address, row)
+     #       address += 4
 
-def _apply_gecko(code):
+def _apply_gecko(code: list[int]):
     length = 0
-    for row in code:
-        codelen = row & 0x00000000000000FF
-        if row & 0xCDFFFFFFFFFF0000:
-            continue
-        else:
-            length += codelen
+    for _ in code:
+        length += 8
     start = DME.read_word(0x80000034) - length
+    for row in code:
+        DME.write_word(start, row>>32)
+        DME.write_word(start+4,row&0x00000000FFFFFFFF)
+        start += 8
+    start = DME.read_word(0x80000034) - length
+    for row in code:
+        if row & 0xc2ffffff00ffffff and (row&0x00000000ff000000) == 0 and (row&0x00000000ffffffff) != 0:
+            c2 = int(row>>32)
+            start = start+8
+            c2len = int((row&0x0000000000FFFFFF)*8)
+            DME.write_word((c2-0x42000000), (start-(c2-0x42000000)+0x48000000))
+            DME.write_word(start+c2len-4, abs(start-8+c2len-c2-0x42000000)-0x38000000)
+            start = start + c2len
 
 CONNECTION_REFUSED = (
     "Dolphin failed to connect. Please ensure you are using a Warioworld NTSC ROM. Trying again in 5 seconds..."
@@ -67,6 +76,7 @@ SAVEFILEADDR = 0x801ce3a4
 SAVEFILELEN = 0xC8
 CODEFILEADDR = 0X80002330
 NETITEMSRECEIVED = 0X801ce3d4
+PALOFFSET = 0xa840
 
 class WwCommandProcessor(ClientCommandProcessor):
     """
@@ -139,6 +149,7 @@ class WwContext(CommonContext):
 
 
     def on_death_link(self, data: dict[str, Any]) -> None:
+        print("ondeathlink")
         super().on_deathlink(data)
         _give_death(self)
 
@@ -168,7 +179,6 @@ class WwContext(CommonContext):
                     from io import BytesIO
                     img = resources.files(__package__ + ".icons").joinpath(source)
                     data = img.read_bytes()
-                    print(img, "picture!")
                     raw_image = Image(BytesIO(data), ext=img.suffix[1:])
                     image = FitImage(texture=raw_image.texture)
                     if width > 0:
@@ -203,14 +213,24 @@ class WwContext(CommonContext):
         return WwManager
 
 def apply_patch(ctx: WwContext):
-    _apply_fakegecko(Patches.patch)
-    _apply_ar_code(Patches.arpatches)
+    if isPAL():
+        _apply_gecko(Patches.PALGeckers)
+        _apply_ar_code(Patches.arPALtches)
+    else:
+        _apply_gecko(Patches.patch)
+        _apply_ar_code(Patches.arpatches)
 
 def currentHP():
-    return DME.read_word(DME.read_word(0x801c5820)+0xd8)
+    if isPAL():
+        return DME.read_word(DME.read_word(0x801d00c0) + 0xd8)
+    else:
+        return DME.read_word(DME.read_word(0x801c5820)+0xd8)
 
 def HPPtr():
-    return DME.read_word(0x801c5820)
+    if isPAL():
+        return DME.read_word(0x801d00c0)
+    else:
+        return DME.read_word(0x801c5820)
 
 def read_short(console_address: int) -> int:
     return int.from_bytes(DME.read_bytes(console_address, 2), byteorder="big")
@@ -221,23 +241,34 @@ def write_short(console_address: int, value: int) -> None:
 def read_string(console_address: int, strlen: int) -> str:
     return DME.read_bytes(console_address, strlen).split(b"\0", 1)[0].decode()
 
+def isPAL():
+    if DME.read_bytes(0x80000000, 6) == b"GWWP01":
+        return True
+    else:
+        return False
+
 
 def check_ingame() -> bool:
-    #rewrite this, horror manor doesn't like it
-    if DME.read_word(0x801ce6f0) == 3 and DME.read_word(0x801ce6f4) == 0:
-        return False
-    elif DME.read_word(0x801ce6f0) == 1 and DME.read_word(0x801ce6f4) == 0:
-        return False
-    elif DME.read_double(0x801ce398) != 0xFFFFFFFFFFFFFFFF:
-        return True
+    if isPAL():
+        if DME.read_word(0x801ce6f0+PALOFFSET) in [3, 1] and DME.read_word(0x801ce6f4+PALOFFSET) == 0:
+            return False
+        elif DME.read_double(0x801ce398+PALOFFSET) != 0xFFFFFFFFFFFFFFFF:
+            return True
     else:
-        return True
+        if DME.read_word(0x801ce6f0) in {3,1} and DME.read_word(0x801ce6f4) == 0:
+            return False
+        elif DME.read_double(0x801ce398) != 0xFFFFFFFFFFFFFFFF:
+            return True
+    return True
 
 def check_pressstart() -> bool:
-    if DME.read_byte(0x801ef299) == 1:
-        return True
+    if isPAL():
+        if DME.read_byte(0x801f9b21) == 1:
+            return True
     else:
-        return False
+        if DME.read_byte(0x801ef299) == 1:
+            return True
+    return False
 
 
 async def check_alive() -> bool:
@@ -248,16 +279,27 @@ async def check_alive() -> bool:
 async def check_death(ctx: WwContext) -> None:
     if ctx.slot is not None and check_ingame():
         if currentHP() <= 0:
+            if isPAL():
+                if DME.read_word(0x801d00c0) == 0:
+                    ctx.has_send_death = False
+                    return
+            else:
+                if DME.read_word(0x801c5820) == 0:
+                    ctx.has_send_death = False
+                    return
             if not ctx.has_send_death and time.time() >= ctx.last_death_link + 3:
                 ctx.has_send_death = True
-                await ctx.send_death(ctx.player_names[ctx.slot] + " ran out of hearts.")
+                await ctx.send_death(ctx.player_names[ctx.slot] + " did not have a rotten day.")
         else:
             ctx.has_send_death = False
 
 def check_location(check_name: str) -> bool:
     checked = False
+    if isPAL():
+        address = CHECK_TABLE[check_name].memloc + PALOFFSET
+    else:
+        address = CHECK_TABLE[check_name].memloc
     memvalue = CHECK_TABLE[check_name].memvalue
-    address = CHECK_TABLE[check_name].memloc
     # If the location is in the current stage, check the bitfields for the current stage as well.
     if not checked:
         if check_name in Bosses_h.keys():
@@ -277,8 +319,11 @@ async def check_locations(ctx: WwContext) -> None:
     """
     # Loop through all locations to see if each has been checked.
     for location in CHECK_TABLE.keys():
+        if isPAL():
+            address = CHECK_TABLE[location].memloc+PALOFFSET
+        else:
+            address = CHECK_TABLE[location].memloc
         check_id = CHECK_TABLE[location].CheckID
-        address = CHECK_TABLE[location].memloc
         memvalue = CHECK_TABLE[location].memvalue
         if check_location(location) or check_id in ctx.checked_locations:
             if location in Bosses_h.keys():
@@ -297,7 +342,7 @@ async def check_locations(ctx: WwContext) -> None:
         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": locations_checked}])
 
 def _give_death(ctx: WwContext) -> None:
-
+    print("died lmao")
     if (
         ctx.slot is not None
         and DME.is_hooked()
@@ -306,20 +351,27 @@ def _give_death(ctx: WwContext) -> None:
     ):
         ctx.has_send_death = True
         print("sent deathlink")
-        DME.write_word(DME.read_word(0x801c5820) + 0xd8, 0)
-    else:
-        ctx.has_send_death = False
+        if isPAL():
+            DME.write_word(DME.read_word(0x801d00c0) + 0xd8, 0)
+        else:
+            DME.write_word(DME.read_word(0x801c5820) + 0xd8, 0)
 
 def _give_item(ctx: WwContext, item_name: str) -> bool:
 
     if not check_ingame():
         return False
     else:
+        if isPAL():
+            address = NET_TABLE[item_name].memloc+PALOFFSET
+        else:
+            address = NET_TABLE[item_name].memloc
         memvalue = NET_TABLE[item_name].memvalue
-        address = NET_TABLE[item_name].memloc
     if item_name in FILLER_TABLE.keys():
         if address is None:
-            address = DME.read_word(0x801c5820) + 0xd8
+            if isPAL():
+                address = DME.read_word(0x801d00c0) + 0xd8
+            else:
+                address = DME.read_word(0x801c5820) + 0xd8
         if FILLER_TABLE[item_name].ItemType == "add":
             DME.write_word(address, (DME.read_word(address) + memvalue))
             return True
@@ -340,31 +392,37 @@ async def give_items(ctx: WwContext) -> None:
     #check if ingame
     if check_ingame():
         # Check if there are new items.
-        expected_itemamount = read_short(NETITEMSRECEIVED)
+        if isPAL():
+            expected_itemamount = read_short(NETITEMSRECEIVED+PALOFFSET)
+        else:
+            expected_itemamount = read_short(NETITEMSRECEIVED)
         for idx, item in enumerate(ctx.items_received[expected_itemamount:], start=expected_itemamount):
-            print(idx, expected_itemamount, len(ctx.items_received))
             if len(ctx.items_received) <= expected_itemamount:
                 # There are no new items.
                 return
             if expected_itemamount != (len(ctx.items_received)-1) and LOOKUP_ID_TO_NAME[item.item] in FILLER_TABLE.keys():
                 #do not give already given filler
                 if expected_itemamount < idx+1:
-                    write_short(NETITEMSRECEIVED, idx+1)
+                    if isPAL():
+                        write_short(NETITEMSRECEIVED+PALOFFSET, idx+1)
+                    else:
+                        write_short(NETITEMSRECEIVED, idx+1)
                 continue
             # Attempt to give the item and increment the expected index.
             while not _give_item(ctx, LOOKUP_ID_TO_NAME[item.item]):
                 await asyncio.sleep(0.01)
             if expected_itemamount < idx+1:
-                write_short(NETITEMSRECEIVED, idx+1)
+                if isPAL():
+                    write_short(NETITEMSRECEIVED + PALOFFSET, idx + 1)
+                else:
+                    write_short(NETITEMSRECEIVED, idx + 1)
             i=0
             spritelinglist=[]
             while i < len(ctx.items_received):
                 var = LOOKUP_ID_TO_NAME[ctx.items_received[i].item]
-                print(var)
                 if isinstance(NET_TABLE[var], Spriteling):
                     spritelinglist.append(var)
                 i+=1
-            print(len(spritelinglist))
             ctx.spritelings = len(spritelinglist)
             ctx.ui.spritelingcountupdate(ctx.spritelings, ctx.slotdata["spriteling requirement"])
 
@@ -383,7 +441,8 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
         try:
             if DME.is_hooked() and ctx.dolphin_status == CONNECTION_ESTABLISHED:
                 if check_pressstart() and not check_ingame() and not patched and ctx.auth:
-                    apply_patch(ctx)
+                    if not isPAL():
+                        apply_patch(ctx)
                     logger.info("Patch Applied!")
                     patched = True
                     await asyncio.sleep(0.1)
@@ -393,11 +452,18 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                     continue
                 #item prefill for important cutscene related items
                 if not items_filled:
-                    if DME.read_word(0x801cf810) < 5 :
+                    if isPAL():
+                        loadingfillloopthing = 0x801cf810+PALOFFSET
+                    else:
+                        loadingfillloopthing = 0x801cf810
+                    if DME.read_word(loadingfillloopthing) < 5 :
                         for item in ctx.items_received:
                             itemname = LOOKUP_ID_TO_NAME[item.item]
                             if itemname not in FILLER_TABLE.keys():
-                                write_short(NET_TABLE[itemname].memloc, read_short(NET_TABLE[itemname].memloc) | NET_TABLE[itemname].memvalue)
+                                if isPAL():
+                                    write_short(NET_TABLE[itemname].memloc + PALOFFSET, read_short(NET_TABLE[itemname].memloc + PALOFFSET) | NET_TABLE[itemname].memvalue)
+                                else:
+                                    write_short(NET_TABLE[itemname].memloc, read_short(NET_TABLE[itemname].memloc) | NET_TABLE[itemname].memvalue)
                                 if isinstance(NET_TABLE[itemname], Spriteling):
                                     ctx.spritelings +=1
                         ctx.ui.spritelingcountupdate(ctx.spritelings,ctx.slotdata["spriteling requirement"])
@@ -422,7 +488,7 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                 logger.info("Attempting to connect to Dolphin...")
                 DME.hook()
                 if DME.is_hooked():
-                    if DME.read_bytes(0x80000000, 6) != b"GWWE01":
+                    if DME.read_bytes(0x80000000, 6) not in {b"GWWE01", b"GWWP01"}:
                         logger.info(CONNECTION_REFUSED)
                         ctx.dolphin_status = CONNECTION_REFUSED
                         DME.un_hook()
@@ -438,13 +504,10 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                     await ctx.disconnect()
                     await asyncio.sleep(5)
                     continue
-        except RuntimeError:
-            continue
         except Exception:
             DME.un_hook()
             logger.info("Connection to Dolphin failed, attempting again in 5 seconds...")
             patched = False
-
             logger.error(traceback.format_exc())
             ctx.dolphin_status = CONNECTION_LOST
             await ctx.disconnect()
