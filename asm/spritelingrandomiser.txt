@@ -26,6 +26,24 @@ ori r16, r16, 0xe3d8
 #load check instead of actual collected
 lbzx r3, r16, r3
 
+
+PALver
+#insert at
+800309c8
+#generate stage ID using bullshit
+srwi r3, r3, 4
+subi r3, r3, 0xbe
+extsb r3, r3
+#stage ID in r3, filter out boss stages
+li r16, 3
+divw r16, r3, r16
+sub r3, r3, r16
+#stage index now in r3
+#load check pointer
+lis r16, 0x801d
+ori r16, r16, 0x8c18
+#load check instead of actual collected
+lbzx r3, r16, r3
 ____________________________________________________________________________
 
 #store spriteling check instead of spriteling
@@ -51,7 +69,24 @@ lbzx r3, r16, r4
 
 04030a54 7C1021AE
 
+PALver
+8003098c
+#generate stage ID using bullshit
+srwi r4, r4, 4
+subi r4, r4, 0xbe
+extsb r4, r4
+#stage ID in r4, filter out boss stages
+li r16, 3
+divw r16, r4, r16
+sub r4, r4, r16
+#stage index now in r4
+#load check pointer
+lis r16, 0x801d
+ori r16, r16, 0x8c18
+#store check instead of actual collected
+lbzx r3, r16, r4
 
+04030994 7C1021AE
 
 
 

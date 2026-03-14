@@ -7,14 +7,27 @@ MORE BAD
 #insert at 
 8002fcd4 
 
-lis r4, 0x804b
-ori r4, r4, 0x3dac
-cmpw r4, r12
+lis r22, 0x804b
+ori r22, r22, 0x3dac
+cmpw r22, r12
 bne END
-lis r4, 0x804b
-ori r4, r4, 0x385c
-stw r4, 0x54cc(r12)
+lis r22, 0x804b
+ori r22, r22, 0x385c
+stw r22, 0x54cc(r12)
+END:
+bctrl
 
+store 804e626c in 804ebc98
+PALver
+#insert at
+8002fc34
+lis r22, 0x804e
+ori r22, r22, 0x67bc
+cmpw r22, r12
+bne END
+lis r22, 0x804e
+ori r22, r22, 0x626c
+stw r22, 0x54dc(r12)
 END:
 bctrl
 
@@ -48,12 +61,37 @@ ori r7, r7, 0xfcd4
 dcbf    r15,r7
 sync
 icbi    r15,r7
+isync
 addi r7, r7, 0x76c
 dcbf    r15,r7
 sync
 icbi    r15,r7
+isync
 ori r7, r7, 0x752c
 dcbf    r15,r7
 sync
 icbi    r15,r7
+isync
+blr
+
+
+PALver
+#insert at
+#804e3f58
+lis r7, 0x8002
+ori r7, r7, 0xfc34
+dcbf    r15,r7
+sync
+icbi    r15,r7
+isync
+addi r7, r7, 0x74C
+dcbf    r15,r7
+sync
+icbi    r15,r7
+isync
+ori r7, r7, 0x7498
+dcbf    r15,r7
+sync
+icbi    r15,r7
+isync
 blr

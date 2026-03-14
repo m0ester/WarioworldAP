@@ -16,15 +16,34 @@ srwi r3, r3, 4
 subi r3, r3, 0x3a
 extsb r3, r3
 #stage ID in r3, filter out boss stages
-li r16, 3
-divw r16, r3, r16
-sub r3, r3, r16
+li r4, 3
+divw r4, r3, r4
+sub r3, r3, r4
 #stage index now in r3
 #load check pointer
-lis r16, 0x801c
-ori r16, r16, 0xe430
+lis r4, 0x801c
+ori r4, r4, 0xe430
 #load check instead of actual collected
-lbzx r3, r16, r3
+lbzx r3, r4, r3
+
+
+PALver
+#insert at
+80030a48
+#generate stage ID using bullshit
+srwi r3, r3, 4
+subi r3, r3, 0xbe
+extsb r3, r3
+#stage ID in r3, filter out boss stages
+li r4, 3
+divw r4, r3, r4
+sub r3, r3, r4
+#stage index now in r3
+#load check pointer
+lis r4, 0x801d
+ori r4, r4, 0x8c70
+#load check instead of actual collected
+lbzx r3, r4, r3
 
 ____________________________________________________________________________
 
@@ -50,3 +69,24 @@ ori r16, r16, 0xe430
 lbzx r3, r16, r4
 
 04030ad4 7C1021AE
+
+PALver:
+#insert at
+80030a0c
+#generate stage ID using bullshit
+srwi r4, r4, 4
+subi r4, r4, 0xbe
+extsb r4, r4
+#stage ID in r4, filter out boss stages
+li r16, 3
+divw r16, r4, r15
+sub r4, r4, r15
+#stage index now in r4
+#load check pointer
+lis r16, 0x801d
+ori r16, r16, 0x8c70
+#store check instead of actual collected
+lbzx r3, r16, r4
+
+
+04030a14 7C1021AE

@@ -6,6 +6,7 @@ ______________________________________________________
 #og inst
 lhz r3, 0x16(r3)
 #insert at
+#not r17, 15
 80030bb8
 
 #generate stage ID using bullshit
@@ -14,36 +15,76 @@ subi r3, r3, 0x3a
 extsb r3, r3
 
 #stage ID in r3, filter out boss stages
-li r15, 3
-divw r15, r3, r15
-sub r3, r3, r15
+li r14, 3
+divw r14, r3, r14
+sub r3, r3, r14
 #stage index now in r3
 #load check pointer
 #load check pointer
-lis r15, 0x801c
-ori r15, r15, 0xe400
+lis r14, 0x801c
+ori r14, r14, 0xe400
 #load check instead of actual collected
-lbzx r3, r15, r3
+lbzx r3, r14, r3
+
+PALver
+#insert at
+80030af8
+#generate stage ID using bullshit
+srwi r3, r3, 4
+subi r3, r3, 0xbe
+extsb r3, r3
+
+#stage ID in r3, filter out boss stages
+li r14, 3
+divw r14, r3, r14
+sub r3, r3, r14
+#stage index now in r3
+#load check pointer
+#load check pointer
+lis r14, 0x801d
+ori r14, r14, 0x8c40
+#load check instead of actual collected
+lbzx r3, r14, r3
 ______________________________________________________
 #store check instead of treasure
 #og inst
 sth r0, 0x16(r4)
 #insert at 
-80030b84
+80030b7c
 
 #generate stage ID using bullshit
 srwi r4, r4, 4
 subi r4, r4, 0x3a
 extsb r4, r4
 #stage ID in r4, filter out boss stages
-li r15, 3
-divw r15, r4, r15
-sub r4, r4, r15
+li r17, 3
+divw r17, r4, r17
+sub r4, r4, r17
 #stage index now in r4
 #load check pointer
-lis r15, 0x801c
-ori r15, r15, 0xe400
+lis r17, 0x801c
+ori r17, r17, 0xe400
 #load check instead of actual collected
-lbzx r3, r15, r4
+lbzx r3, r17, r4
 
-04030b84 7C0F21AE
+04030b84 7C1121AE
+
+PALver
+#insert at
+80030abc
+#generate stage ID using bullshit
+srwi r4, r4, 4
+subi r4, r4, 0xbe
+extsb r4, r4
+#stage ID in r4, filter out boss stages
+li r17, 3
+divw r17, r4, r17
+sub r4, r4, r17
+#stage index now in r4
+#load check pointer
+lis r17, 0x801d
+ori r17, r17, 0x8c40
+#load check instead of actual collected
+lbzx r3, r17, r4
+
+04030ac4 7C1121AE
