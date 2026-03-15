@@ -96,7 +96,7 @@ def get_rules(world):
                 lambda state: has_wonkycircus(world, state),
 
             "Wonky Circus -> Clown-a-Round":
-                lambda state: has_wonkycircus(world, state),
+                lambda state: has_clownaround(world, state),
 
             "Menu -> Dual Dragon's Showdown":
                 lambda state: has_dualdragon(world, state),
