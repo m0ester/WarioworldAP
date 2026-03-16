@@ -148,7 +148,7 @@ class WwContext(CommonContext):
                 #self.ui.doorupdate([])
 
 
-    def on_death_link(self, data: dict[str, Any]) -> None:
+    def on_deathlink(self, data: dict[str, Any]) -> None:
         print("ondeathlink")
         super().on_deathlink(data)
         _give_death(self)
@@ -421,7 +421,7 @@ async def give_items(ctx: WwContext) -> None:
                     write_short(NETITEMSRECEIVED, idx + 1)
             i=0
             spritelinglist=[]
-            while i < len(ctx.items_received):
+            while i <= len(ctx.items_received):
                 var = LOOKUP_ID_TO_NAME[ctx.items_received[i].item]
                 if isinstance(NET_TABLE[var], Spriteling):
                     spritelinglist.append(var)
@@ -508,7 +508,6 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
         except Exception:
             DME.un_hook()
             logger.info("Connection to Dolphin failed, attempting again in 5 seconds...")
-            patched = False
             logger.error(traceback.format_exc())
             ctx.dolphin_status = CONNECTION_LOST
             await ctx.disconnect()
