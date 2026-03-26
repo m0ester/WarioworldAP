@@ -1,4 +1,4 @@
-from Options import Choice, NamedRange, PerGameCommonOptions, Range, DeathLink
+from Options import Choice, NamedRange, PerGameCommonOptions, Range, Toggle, DefaultOnToggle, DeathLink
 from dataclasses import dataclass
 
 class Goal(Choice):
@@ -39,6 +39,17 @@ class SpritelingRequirement(NamedRange):
         "golden": 31,
         "treasure": 40,}
 
+class RingLink(Toggle):
+    """
+    Games that support ringlink will be able to send and retrieve 'rings' sent from another ringlink game.
+
+    'Rings' in the context of Warioworld will be Coins.
+    """
+
+class RingLinkClientMsgs(DefaultOnToggle):
+    """
+    Enables messages in the client whenever a ring link is received.
+    """
 #class StageRandomiser(Choice):
 #    """randomises which stages are unlocked instead of opening them one by one, set to on by default"""
 #    display_name = "Stage Randomiser"
@@ -53,3 +64,5 @@ class WwOptions(PerGameCommonOptions):
     endingtype: SpritelingRequirement
     #stage_randomiser: StageRandomiser
     death_link: DeathLink
+    ring_link: RingLink
+    ring_link_msgs: RingLinkClientMsgs
