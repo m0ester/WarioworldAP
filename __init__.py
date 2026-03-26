@@ -134,11 +134,13 @@ class WwWorld(World):
       #      regions_to_highlight=self.multiworld.get_all_state(self.player).reachable_regions[
        #         self.player])
         return{
-            "death_link": self.options.death_link.value,
-            "big_key_fragments": self.options.big_key_fragments.value,
-            "spriteling requirement": self.options.endingtype.value,
+            "death_link":   self.options.death_link.value,
+            "big_key_fragments":    self.options.big_key_fragments.value,
+            "spriteling requirement":   self.options.endingtype.value,
             "goal": self.options.goal.value,
-            "endingtype": self.options.endingtype.value
+            "endingtype":   self.options.endingtype.value,
+            "ring_link":    self.options.ring_link.value,
+            "ring_link_msgs":   self.options.ring_link_msgs.value,
         }
 
     def generate_early(self) -> None:
