@@ -131,6 +131,16 @@ class WwContext(CommonContext):
        #     logger.info("Awaiting connection to Dolphin to get player information.")
         #    return
         #await self.send_connect()
+    async def update_ring_link(self, ring_link: bool):
+        """Helper function to set Ring Link connection tag on/off and update the connection if already connected."""
+        old_tags = self.tags.copy()
+        if ring_link:
+            self.tags.add("RingLink")
+        else:
+            self.tags -= {"RingLink"}
+        if old_tags != self.tags and self.server and not self.server.socket.closed:
+            await self.send_msgs([{"cmd": "ConnectUpdate", "tags": self.tags}])
+
 
     def on_package(self, cmd, args: dict[str, Any]) -> None:
         super().on_package(cmd, args)
@@ -141,12 +151,16 @@ class WwContext(CommonContext):
 
             if "death_link" in args["slot_data"]:
                 Utils.async_start(self.update_death_link(bool(args["slot_data"]["death_link"])))
+            if "ring_link" in args["slot_data"]:
+                Utils.async_start(self.update_ring_link(bool(args["slot_data"]["ring_link"])))
 
             self.spritelingreq = self.slotdata["spriteling requirement"]
             if self.ui:
                 self.ui.spritelingcountupdate(self.spritelings, self.spritelingreq)
                 #self.ui.doorupdate([])
 
+        if cmd == "Bounce":
+            if
 
     def on_deathlink(self, data: dict[str, Any]) -> None:
         print("ondeathlink")
