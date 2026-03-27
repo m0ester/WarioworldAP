@@ -140,7 +140,7 @@ class WwWorld(World):
             "goal": self.options.goal.value,
             "endingtype":   self.options.endingtype.value,
             "ring_link":    self.options.ring_link.value,
-            "ring_link_msgs":   self.options.ring_link_msgs.value,
+            #"ring_link_msgs":   self.options.ring_link_msgs.value,
         }
 
     def generate_early(self) -> None:
@@ -158,7 +158,6 @@ class WwWorld(World):
             return None
 
         # fill in options
-        print(slot_data, "beans")
         self.options.goal.value = slot_data["goal"]
         self.options.endingtype.value = slot_data["endingtype"]
         self.options.big_key_fragments.value = slot_data["big_key_fragments"]
