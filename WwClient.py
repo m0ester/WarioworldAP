@@ -49,6 +49,9 @@ def _apply_gecko(code: list[int]):
     start = DME.read_word(0x80000034) - length
     for row in code:
         if row & 0xc2ffffff00ffffff and (row&0x00000000ff000000) == 0 and (row&0x00000000ffffffff) != 0:
+            if row == 0xC202FCA400000012:
+                global callfuncbyte
+                callfuncbyte=start+0x60
             c2 = int(row>>32)
             start = start+8
             c2len = int((row&0x0000000000FFFFFF)*8)
@@ -159,8 +162,27 @@ class WwContext(CommonContext):
                 self.ui.spritelingcountupdate(self.spritelings, self.spritelingreq)
                 #self.ui.doorupdate([])
 
-        if cmd == "Bounce":
-            if
+        if cmd == "Bounced":
+            if "RingLink" in args.get("tags", []):
+                if check_ingame() and (time.time() - args["data"]["time"] <= 3) and (self.player_names[self.slot] != args["data"]["source"]):
+                    volume=0x60
+                    stereo=0x40
+                    if args["data"]["amount"] >= 10:
+                        sfxindex = 0x35d
+                    elif args["data"]["amount"] < 0:
+                        sfxindex = 0x2ba
+                    else:
+                        sfxindex = 0x2c
+                    if isPAL():
+                        DME.write_word(0x801ce3a4+PALOFFSET, DME.read_word(0x801ce3a4+PALOFFSET) + args["data"]["amount"])
+                        DME.write_word(callfuncbyte+0x8, 0x80173e08)
+                    else:
+                        DME.write_word(0x801ce3a4, DME.read_word(0x801ce3a4) + args["data"]["amount"])
+                        DME.write_word(callfuncbyte + 0x8, 0x801741f8)
+                    DME.write_word(callfuncbyte+0xc, sfxindex)
+                    DME.write_word(callfuncbyte+0x10, volume)
+                    DME.write_word(callfuncbyte+0x14, stereo)
+                    DME.write_word(callfuncbyte, 1)
 
     def on_deathlink(self, data: dict[str, Any]) -> None:
         print("ondeathlink")
@@ -310,6 +332,27 @@ async def check_death(ctx: WwContext) -> None:
         else:
             ctx.has_send_death = False
 
+async def check_coins(ctx:WwContext) -> None:
+    if isPAL():
+        offset=PALOFFSET
+    else:
+        offset=0
+    coindiff = read_short(0x801ce3d6 + offset)
+    if coindiff == 0:
+        return
+    if ctx.slot is not None and check_ingame() and coindiff != 0:
+        if coindiff >= 0x8000:
+            coindiff = -1 * (0x10000-coindiff)
+        await ctx.send_msgs([{
+            "cmd": "Bounce", "tags": ["RingLink"],
+            "data": {
+                "time": time.time(),
+                "source": ctx.player_names[ctx.slot],
+                "amount": coindiff
+            }
+        }])
+    DME.write_word(0x801ce3d6+offset,0)
+
 def check_location(check_name: str) -> bool:
     checked = False
     if isPAL():
@@ -435,7 +478,7 @@ async def give_items(ctx: WwContext) -> None:
                     write_short(NETITEMSRECEIVED, idx + 1)
             i=0
             spritelinglist=[]
-            while i <= len(ctx.items_received):
+            while i < len(ctx.items_received):
                 var = LOOKUP_ID_TO_NAME[ctx.items_received[i].item]
                 if isinstance(NET_TABLE[var], Spriteling):
                     spritelinglist.append(var)
@@ -488,6 +531,8 @@ async def dolphin_sync_task(ctx: WwContext) -> None:
                 if ctx.slot is not None:
                     if "DeathLink" in ctx.tags:
                         await check_death(ctx)
+                    if "RingLink" in ctx.tags:
+                        await check_coins(ctx)
                     await give_items(ctx)
                     await check_locations(ctx)
                 else:
