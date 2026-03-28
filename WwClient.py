@@ -36,6 +36,12 @@ def _apply_ar_code(code: list[int]):
    #     for row in rows:
     #        DME.write_word(address, row)
      #       address += 4
+def call_func(address, param1, param2, param3):
+    DME.write_word(callfuncbyte + 0x8, address)
+    DME.write_word(callfuncbyte + 0xc, param1)
+    DME.write_word(callfuncbyte + 0x10, param2)
+    DME.write_word(callfuncbyte + 0x14, param3)
+    DME.write_word(callfuncbyte, 1)
 
 def _apply_gecko(code: list[int]):
     length = 0
@@ -49,7 +55,7 @@ def _apply_gecko(code: list[int]):
     start = DME.read_word(0x80000034) - length
     for row in code:
         if row & 0xc2ffffff00ffffff and (row&0x00000000ff000000) == 0 and (row&0x00000000ffffffff) != 0:
-            if row == 0xC202FCA400000012:
+            if row in {0xC202FCA400000012, 0xC202FC0400000012}:
                 global callfuncbyte
                 callfuncbyte=start+0x60
             c2 = int(row>>32)
@@ -60,7 +66,7 @@ def _apply_gecko(code: list[int]):
             start = start + c2len
 
 CONNECTION_REFUSED = (
-    "Dolphin failed to connect. Please ensure you are using a Warioworld NTSC ROM. Trying again in 5 seconds..."
+    "Dolphin failed to connect. Please ensure you are using a Warioworld NTSC/PAL ROM. Trying again in 5 seconds..."
 )
 
 CONNECTION_LOST = (
@@ -175,14 +181,11 @@ class WwContext(CommonContext):
                         sfxindex = 0x2c
                     if isPAL():
                         DME.write_word(0x801ce3a4+PALOFFSET, DME.read_word(0x801ce3a4+PALOFFSET) + args["data"]["amount"])
-                        DME.write_word(callfuncbyte+0x8, 0x80173e08)
+                        address = 0x80173e08
                     else:
                         DME.write_word(0x801ce3a4, DME.read_word(0x801ce3a4) + args["data"]["amount"])
-                        DME.write_word(callfuncbyte + 0x8, 0x801741f8)
-                    DME.write_word(callfuncbyte+0xc, sfxindex)
-                    DME.write_word(callfuncbyte+0x10, volume)
-                    DME.write_word(callfuncbyte+0x14, stereo)
-                    DME.write_word(callfuncbyte, 1)
+                        address = 0x801741f8
+                    call_func(address, sfxindex, volume, stereo)
 
     def on_deathlink(self, data: dict[str, Any]) -> None:
         print("ondeathlink")
@@ -343,6 +346,8 @@ async def check_coins(ctx:WwContext) -> None:
     if ctx.slot is not None and check_ingame() and coindiff != 0:
         if coindiff >= 0x8000:
             coindiff = -1 * (0x10000-coindiff)
+        else:
+            coindiff = 1
         await ctx.send_msgs([{
             "cmd": "Bounce", "tags": ["RingLink"],
             "data": {
