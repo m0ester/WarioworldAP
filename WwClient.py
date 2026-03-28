@@ -180,11 +180,16 @@ class WwContext(CommonContext):
                     else:
                         sfxindex = 0x2c
                     if isPAL():
-                        DME.write_word(0x801ce3a4+PALOFFSET, DME.read_word(0x801ce3a4+PALOFFSET) + args["data"]["amount"])
+                        putmoneyhere = 0x801ce3a4+PALOFFSET
+
                         address = 0x80173e08
                     else:
-                        DME.write_word(0x801ce3a4, DME.read_word(0x801ce3a4) + args["data"]["amount"])
+                        putmoneyhere = 0x801ce3a4
                         address = 0x801741f8
+                    coindiff = (DME.read_word(putmoneyhere) + args["data"]["amount"])
+                    if coindiff < 0:
+                        coindiff = 0
+                    DME.write_word(putmoneyhere, coindiff)
                     call_func(address, sfxindex, volume, stereo)
 
     def on_deathlink(self, data: dict[str, Any]) -> None:
@@ -438,7 +443,10 @@ def _give_item(ctx: WwContext, item_name: str) -> bool:
             else:
                 address = DME.read_word(0x801c5820) + 0xd8
         if FILLER_TABLE[item_name].ItemType == "add":
-            DME.write_word(address, (DME.read_word(address) + memvalue))
+            newvalue = DME.read_word(address) + memvalue
+            if newvalue < 0:
+                newvalue = 0
+            DME.write_word(address, newvalue)
             return True
         elif FILLER_TABLE[item_name].ItemType == "set":
             DME.write_word(address, memvalue)
