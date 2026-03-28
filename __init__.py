@@ -26,9 +26,9 @@ def run_client() -> None:
     Launch the Warioworld client.
     """
     print("Running Warioworld Client")
-    from .WwClient import main
+    from . import WwClient
 
-    launch_subprocess(main, name="WarioworldClient")
+    launch_subprocess(WwClient.main, name="WarioworldClient")
 
 
 components.append(
