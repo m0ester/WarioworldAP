@@ -361,7 +361,7 @@ async def check_coins(ctx:WwContext) -> None:
                 "amount": coindiff
             }
         }])
-    DME.write_word(0x801ce3d6+offset,0)
+    write_short(0x801ce3d6+offset,0)
 
 def check_location(check_name: str) -> bool:
     checked = False
