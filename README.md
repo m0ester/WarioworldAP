@@ -6,6 +6,8 @@ In order to run this, you will need:
 
 >Dolphin Emulator (any version will do, The beta branch is recommended for regular updates)
 
+Setup Video: https://www.youtube.com/watch?v=5FW04sajszc
+
 To set this up, please download and drag the .apworld file into the custom_worlds folder of your archipelago install and generate a yaml using the Generate Template Options box in the launcher: (check https://archipelago.gg/ for more info)
 
 To patch, simply open the Warioworld Client from the Archipelago Launcher while the game is loaded and on the Start Menu in Dolphin and wait for the client to apply the patch for you.
