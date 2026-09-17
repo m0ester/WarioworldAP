@@ -81,3 +81,18 @@ stw r14, 0x1c(r12)
 END:
 #og inst
 bctrl
+
+______________________________________________
+replacement for mobile rels
+#insert at 8015c004
+
+#check correct rel
+lwz r5, 0x30(r31)
+lwz r5, 0(r5)
+cmpwi r5, 7
+bne END
+
+
+END:
+#og inst
+lwz r5, 0x18(r30)

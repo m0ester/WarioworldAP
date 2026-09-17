@@ -56,8 +56,13 @@ needs icbid:
 #804B157C:
 #load instruction addresses
 lis r7, 0x8002
-ori r7, r7, 0xfcd4
+ori r7, r7, 0xFCA4
 #clear instruction cache
+dcbf    r15,r7
+sync
+icbi    r15,r7
+isync
+addi r7, r7, 0x30
 dcbf    r15,r7
 sync
 icbi    r15,r7
@@ -67,11 +72,15 @@ dcbf    r15,r7
 sync
 icbi    r15,r7
 isync
+lis r7, 0x8003
 ori r7, r7, 0x752c
 dcbf    r15,r7
 sync
 icbi    r15,r7
 isync
+lis r22, 0x804b
+ori r22, r22, 0x385c
+stw r22, 0x7cfc(r12)
 blr
 
 
@@ -79,7 +88,12 @@ PALver
 #insert at
 #804e3f58
 lis r7, 0x8002
-ori r7, r7, 0xfc34
+ori r7, r7, 0xfc04
+dcbf    r15,r7
+sync
+icbi    r15,r7
+isync
+addi r7, r7, 0x30
 dcbf    r15,r7
 sync
 icbi    r15,r7
@@ -89,9 +103,13 @@ dcbf    r15,r7
 sync
 icbi    r15,r7
 isync
+lis r7, 0x8003
 ori r7, r7, 0x7498
 dcbf    r15,r7
 sync
 icbi    r15,r7
 isync
+lis r22, 0x804e
+ori r22, r22, 0x626c
+stw r22, 0x7d40(r12)
 blr

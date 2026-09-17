@@ -16,15 +16,15 @@ srwi r3, r3, 4
 subi r3, r3, 0x3a
 extsb r3, r3
 #stage ID in r3, filter out boss stages
-li r16, 3
-divw r16, r3, r16
-sub r3, r3, r16
+li r4, 3
+divw r4, r3, r4
+sub r3, r3, r4
 #stage index now in r3
 #load check pointer
-lis r16, 0x801c
-ori r16, r16, 0xe3d8
+lis r4, 0x801c
+ori r4, r4, 0xe3d8
 #load check instead of actual collected
-lbzx r3, r16, r3
+lbzx r3, r4, r3
 
 
 PALver
@@ -35,15 +35,15 @@ srwi r3, r3, 4
 subi r3, r3, 0xbe
 extsb r3, r3
 #stage ID in r3, filter out boss stages
-li r16, 3
-divw r16, r3, r16
-sub r3, r3, r16
+li r4, 3
+divw r4, r3, r4
+sub r3, r3, r4
 #stage index now in r3
 #load check pointer
-lis r16, 0x801d
-ori r16, r16, 0x8c18
+lis r4, 0x801d
+ori r4, r4, 0x8c18
 #load check instead of actual collected
-lbzx r3, r16, r3
+lbzx r3, r4, r3
 ____________________________________________________________________________
 
 #store spriteling check instead of spriteling

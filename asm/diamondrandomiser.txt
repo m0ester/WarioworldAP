@@ -13,7 +13,8 @@ lhz r3, 0x16(r3)
 srwi r3, r3, 4
 subi r3, r3, 0x3a
 extsb r3, r3
-
+subi sp, sp, 0x8
+stw r14, 0x4(sp)
 #stage ID in r3, filter out boss stages
 li r14, 3
 divw r14, r3, r14
@@ -25,6 +26,8 @@ lis r14, 0x801c
 ori r14, r14, 0xe400
 #load check instead of actual collected
 lbzx r3, r14, r3
+lwz r14, 0x4(sp)
+addi sp, sp, 0x8
 
 PALver
 #insert at
@@ -33,7 +36,8 @@ PALver
 srwi r3, r3, 4
 subi r3, r3, 0xbe
 extsb r3, r3
-
+subi sp, sp, 0x8
+stw r14, 0x4(sp)
 #stage ID in r3, filter out boss stages
 li r14, 3
 divw r14, r3, r14
@@ -45,6 +49,8 @@ lis r14, 0x801d
 ori r14, r14, 0x8c40
 #load check instead of actual collected
 lbzx r3, r14, r3
+lwz r14, 0x4(sp)
+addi sp, sp, 0x8
 ______________________________________________________
 #store check instead of treasure
 #og inst
